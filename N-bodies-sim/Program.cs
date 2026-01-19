@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using System.Runtime.InteropServices.JavaScript;
 using Raylib_cs;
 using System.Text.Json;
 using N_bodies_sim.lib;
@@ -534,7 +533,6 @@ internal abstract class Program
         double distanceScale = 1e9; // Cada pixel de la distancia entre astros representa 1000000 km
         double radiusScale = 1e6; // Cada pixel de un astro representa 2000 km.
         double timeStep = 86400; // Cada frame de la simulación significa un día terrestre en tiempo real.
-        double simTime = 0;
         int n = 1000; // Número de cálculos en los que se dividirá timeStep. Cuanto mayor sea, mejor precisión.
 
         float id = 0; // Id del astro que la cámara seguirá inicialmente
@@ -550,13 +548,6 @@ internal abstract class Program
 
         const double initialLerpSpeed = 0.08;
         double lerpSpeed = initialLerpSpeed;
-
-        // Ajuste de las físicas
-
-        double physicsAccumulator = 0.0;
-        const double physicsInterval = 1.0 / 60.0; // Actualizar física 60 veces por segundo real
-
-        // Cargando configuración de cámara y variables de configuración desde JSON
 
         // Intento de carga desde archivo JSON
 
@@ -700,7 +691,6 @@ internal abstract class Program
             double scaledTimeStep = timeStep * dt * 60.0; // Normalizado a 60 FPS
             UpdatePhysics(astros, scaledTimeStep, n);
             SaveTrail(astros);
-            simTime += timeStep;
 
             // Set Camera
 
