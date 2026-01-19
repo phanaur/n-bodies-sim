@@ -79,7 +79,7 @@
             "Id": 4,
             "TargetDistanceScale": 2e5,
             "TargetRadiusScale": 8e4,
-            "TargetTimeStep": 800,
+            "TargetTimeStep": 400,
             "TargetN": 2000,
             "InitialLerpSpeed": 0.08,
             "TextAlign": 40
