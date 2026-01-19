@@ -33,6 +33,7 @@ jobs:
           dotnet-version: "10.0.x"
 
       - name: Publish self-contained executable
+        shell: bash
         run: |
           dotnet publish N-bodies-sim/N-bodies-sim.csproj \
             -c Release \
