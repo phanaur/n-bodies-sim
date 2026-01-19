@@ -1,0 +1,136 @@
+{
+    "AstrosConfig": [
+        {
+            "KeyName": "Null",
+            "Key": 0,
+            "Name": "default",
+            "Id": 0,
+            "TargetDistanceScale": 1e9,
+            "TargetRadiusScale": 1e6,
+            "TargetTimeStep": 86400,
+            "TargetN": 1000,
+            "InitialLerpSpeed": 0.08,
+            "TextAlign": 40
+        },
+        {
+            "KeyName": "Espacio",
+            "Key": 32,
+            "Name": "Vista amplia del sistema",
+            "Id": 0,
+            "TargetDistanceScale": 1e10,
+            "TargetRadiusScale": 8e7,
+            "TargetTimeStep": 86400,
+            "TargetN": 1000,
+            "InitialLerpSpeed": 0.08,
+            "TextAlign": 20
+        },
+        {
+            "KeyName": "0",
+            "Key": 48,
+            "Name": "Sol",
+            "Id": 0,
+            "TargetDistanceScale": 1e9,
+            "TargetRadiusScale": 1e6,
+            "TargetTimeStep": 86400,
+            "TargetN": 1000,
+            "InitialLerpSpeed": 0.08,
+            "TextAlign": 40
+        },
+        {
+            "KeyName": "1",
+            "Key": 49,
+            "Name": "Mercurio",
+            "Id": 1,
+            "TargetDistanceScale": 2e7,
+            "TargetRadiusScale": 8e4,
+            "TargetTimeStep": 1800,
+            "TargetN": 2000,
+            "InitialLerpSpeed": 0.08,
+            "TextAlign": 30
+        },
+        {
+            "KeyName": "2",
+            "Key": 50,
+            "Name": "Venus",
+            "Id": 2,
+            "TargetDistanceScale": 2e7,
+            "TargetRadiusScale": 8e4,
+            "TargetTimeStep": 3600,
+            "TargetN": 2000,
+            "InitialLerpSpeed": 0.08,
+            "TextAlign": 40
+        },
+        {
+            "KeyName": "3",
+            "Key": 51,
+            "Name": "Tierra",
+            "Id": 3,
+            "TargetDistanceScale": 2e6,
+            "TargetRadiusScale": 8e4,
+            "TargetTimeStep": 3600,
+            "TargetN": 2000,
+            "InitialLerpSpeed": 0.08,
+            "TextAlign": 40
+        },
+        {
+            "KeyName": "4",
+            "Key": 52,
+            "Name": "Marte",
+            "Id": 4,
+            "TargetDistanceScale": 2e5,
+            "TargetRadiusScale": 8e4,
+            "TargetTimeStep": 800,
+            "TargetN": 2000,
+            "InitialLerpSpeed": 0.08,
+            "TextAlign": 40
+        },
+        {
+            "KeyName": "5",
+            "Key": 53,
+            "Name": "Júpiter",
+            "Id": 5,
+            "TargetDistanceScale": 4e6,
+            "TargetRadiusScale": 8e4,
+            "TargetTimeStep": 1800,
+            "TargetN": 1000,
+            "InitialLerpSpeed": 0.08,
+            "TextAlign": 40
+        },
+        {
+            "KeyName": "6",
+            "Key": 54,
+            "Name": "Saturno",
+            "Id": 6,
+            "TargetDistanceScale": 5e6,
+            "TargetRadiusScale": 8e4,
+            "TargetTimeStep": 3600,
+            "TargetN": 1000,
+            "InitialLerpSpeed": 0.08,
+            "TextAlign": 40
+        },
+        {
+            "KeyName": "7",
+            "Key": 55,
+            "Name": "Urano",
+            "Id": 7,
+            "TargetDistanceScale": 2e6,
+            "TargetRadiusScale": 8e4,
+            "TargetTimeStep": 3600,
+            "TargetN": 1000,
+            "InitialLerpSpeed": 0.08,
+            "TextAlign": 40
+        },
+        {
+            "KeyName": "8",
+            "Key": 56,
+            "Name": "Neptuno",
+            "Id": 8,
+            "TargetDistanceScale": 1e6,
+            "TargetRadiusScale": 8e4,
+            "TargetTimeStep": 3600,
+            "TargetN": 1000,
+            "InitialLerpSpeed": 0.08,
+            "TextAlign": 40
+        }
+    ]
+}

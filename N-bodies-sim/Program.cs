@@ -1,6 +1,8 @@
 ﻿using System.Numerics;
 using Raylib_cs;
 using System.Text.Json;
+using System.Security.Cryptography.X509Certificates;
+using System.Runtime;
 
 namespace N_bodies_sim;
 
@@ -170,19 +172,31 @@ internal abstract class Program
     }
 
     private static void Draw(List<Astro> astros, double distanceScale, double radiusScale, Vector2D cameraPos,
-        Astro astroActual, float ladoCruz, double lerpSpeed)
+        Astro astroActual, float ladoCruz, double lerpSpeed, int textAlign)
     {
         Raylib.BeginDrawing();
         Raylib.ClearBackground(Color.Black);
 
-        Raylib.DrawText(text: "Simulador de N-cuerpos | Espacio: Visión completa del sistema", posX: 10, posY: 10, fontSize: 20, color: Color.White);
+        Raylib.DrawText(text: "Simulador de N-cuerpos | Pulsa Escape (Esc) para salir ", posX: 10, posY: 10, fontSize: 20, color: Color.White);
         Raylib.DrawText(
-            text: "Cámara: 0 - Sol | 1 - Mercurio | 2 - Venus | ··· | 8 - Neptuno",
+            text: "Cámara: 0 - Sol | 1 - Mercurio | 2 - Venus | ··· | 8 - Neptuno | Espacio: Visión completa del sistema",
             posX: 10,
             posY: Raylib.GetRenderHeight() - 30,
             fontSize: 20,
             color: Color.White);
         Vector2 center = new Vector2((float)(Width) / 2, (float)(Height) / 2);
+
+        // Calcular el radio del Sol en pantalla ANTES del bucle
+        Astro sol = astros.First(a => a.Id == 0);
+        float radioSol = (float)(sol.Radius / radiusScale);
+        if (radioSol < 2.0f) radioSol = 2.0f;
+        if (radioSol > 40f) radioSol = 40.0f;
+        SunRadiusAtScale = radioSol;
+
+        // Calcular la posición del Sol en pantalla (en píxeles)
+        Vector2 posSolPantalla = (sol.Position - cameraPos).ToVector2((float)distanceScale);
+        posSolPantalla.X += (float)Width / 2;
+        posSolPantalla.Y += (float)Height / 2;
 
         foreach (Astro astro in astros)
         {
@@ -191,6 +205,7 @@ internal abstract class Program
             {
                 continue;
             }
+
 
             Vector2 posPantalla = (astro.Position - cameraPos).ToVector2((float)distanceScale);
             posPantalla.X += (float)Width / 2;
@@ -205,15 +220,26 @@ internal abstract class Program
             }
             else
             {
+                float radio = (float)(astro.Radius / radiusScale);
+
+                if (radio < 2.0f) radio = 2.0f;
+                if (radio > 40f) radio = 40.0f;
+
+                // Calcular la distancia en pantalla desde el Sol hasta el astro (en píxeles)
+                float distanciaDesdeElSol = Vector2.Distance(posSolPantalla, posPantalla);
+
+                // Si estamos en la vista amplia o viendo el Sol, y el astro está dentro del disco solar, ocultarlo
+                if ((KeyName == "Espacio" || astroActual.Id == 0) && astro.Id != 0 && distanciaDesdeElSol < SunRadiusAtScale)
+                {
+                    continue;
+                }
+
                 // Dibujamos la traza solo si hay dos posiciones o más
                 if (astro.Trail.Count > 1) DrawTrail(astro, distanceScale, cameraPos);
 
-                float radio = (float)(astro.Radius / radiusScale);
-                if (radio < 2.0f) radio = 2.0f;
-                if (radio > 40f) radio = 40.0f;
                 Raylib.DrawCircleV(center: posPantalla, radius: radio, color: astro.Color);
                 // Opcional: Dibujar el nombre del astro cerca del triángulo
-                Raylib.DrawText(astro.Name, (int)posPantalla.X - 15, (int)posPantalla.Y + 15, 12, astro.Color);
+                Raylib.DrawText(astro.Name, (int)posPantalla.X - textAlign, (int)posPantalla.Y + textAlign, 12, astro.Color);
 
             }
 
@@ -247,8 +273,30 @@ internal abstract class Program
             solPantalla.Y + asteroidBeltOuter > 0 && solPantalla.Y - asteroidBeltOuter < Height)
         {
             Raylib.DrawRing(solPantalla, asteroidBeltInner, asteroidBeltOuter, 0, 360, 100, new Color(139, 125, 107, 15));
-            float asteroidBeltMid = (asteroidBeltInner + asteroidBeltOuter) / 2;
-            Raylib.DrawText("Cinturón de asteroides", (int)(solPantalla.X + asteroidBeltMid), (int)solPantalla.Y - 5, 12, new Color(139, 125, 107, 150));
+
+            // Dibujar asteroides pequeños en el cinturón
+            Random rnd = new Random(42); // Semilla fija para que siempre aparezcan en el mismo lugar
+            int numAsteroides = 150; // Número de asteroides a dibujar
+            for (int i = 0; i < numAsteroides; i++)
+            {
+                double angulo = rnd.NextDouble() * 2 * Math.PI;
+                double radioAsteroide = asteroidBeltInner + rnd.NextDouble() * (asteroidBeltOuter - asteroidBeltInner);
+
+                float xAsteroide = solPantalla.X + (float)(Math.Cos(angulo) * radioAsteroide);
+                float yAsteroide = solPantalla.Y + (float)(Math.Sin(angulo) * radioAsteroide);
+
+                // Solo dibujar si está dentro de la pantalla
+                if (xAsteroide >= 0 && xAsteroide <= Width && yAsteroide >= 0 && yAsteroide <= Height)
+                {
+                    float tamaño = 1.0f + (float)rnd.NextDouble() * 1.5f;
+                    Raylib.DrawCircleV(new Vector2(xAsteroide, yAsteroide), tamaño, new Color(139, 125, 107, 180));
+                }
+            }
+
+            // Texto: si es vista ampliada, fuera del cinturón; si no, entre el Sol y el anillo
+            float textRadius = KeyName == "Espacio" ? asteroidBeltOuter * 1.15f : asteroidBeltInner * 0.7f;
+            int textWidth = Raylib.MeasureText("Cinturón de asteroides", 12);
+            Raylib.DrawText("Cinturón de asteroides", (int)(solPantalla.X - textWidth / 2), (int)(solPantalla.Y - textRadius), 12, new Color(139, 125, 107, 150));
         }
 
         // Cinturón de Kuiper (más allá de Neptuno, desde 35 UA hasta 50 UA)
@@ -259,8 +307,30 @@ internal abstract class Program
             solPantalla.Y + kuiperBeltOuter > 0 && solPantalla.Y - kuiperBeltOuter < Height)
         {
             Raylib.DrawRing(solPantalla, kuiperBeltInner, kuiperBeltOuter, 0, 360, 100, new Color(100, 100, 120, 10));
-            float kuiperBeltMid = (kuiperBeltInner + kuiperBeltOuter) / 2;
-            Raylib.DrawText("Cinturón de Kuiper", (int)(solPantalla.X + kuiperBeltMid), (int)solPantalla.Y - 5, 12, new Color(100, 100, 120, 150));
+
+            // Dibujar objetos pequeños en el cinturón de Kuiper
+            Random rnd = new Random(123); // Semilla diferente para distribución diferente
+            int numObjetos = 200; // Más objetos porque es un cinturón más grande
+            for (int i = 0; i < numObjetos; i++)
+            {
+                double angulo = rnd.NextDouble() * 2 * Math.PI;
+                double radioObjeto = kuiperBeltInner + rnd.NextDouble() * (kuiperBeltOuter - kuiperBeltInner);
+
+                float xObjeto = solPantalla.X + (float)(Math.Cos(angulo) * radioObjeto);
+                float yObjeto = solPantalla.Y + (float)(Math.Sin(angulo) * radioObjeto);
+
+                // Solo dibujar si está dentro de la pantalla
+                if (xObjeto >= 0 && xObjeto <= Width && yObjeto >= 0 && yObjeto <= Height)
+                {
+                    float tamaño = 1.0f + (float)rnd.NextDouble() * 1.5f;
+                    Raylib.DrawCircleV(new Vector2(xObjeto, yObjeto), tamaño, new Color(100, 100, 120, 150));
+                }
+            }
+
+            // Texto dentro del anillo, entre el Sol y el borde interior
+            float textRadius = kuiperBeltInner * 0.7f; // 70% del radio interior
+            int textWidth = Raylib.MeasureText("Cinturón de Kuiper", 12);
+            Raylib.DrawText("Cinturón de Kuiper", (int)(solPantalla.X - textWidth / 2), (int)(solPantalla.Y - textRadius), 12, new Color(100, 100, 120, 150));
         }
 
         // Cruz Satelital
@@ -284,9 +354,9 @@ internal abstract class Program
 
             // 3. Aplicamos la opacidad al color original del astro
             colorCruz = new Color(
-                astroActual.Color.R,
-                astroActual.Color.G,
-                astroActual.Color.B,
+                Color.DarkGray.R,
+                Color.DarkGray.G,
+                Color.DarkGray.B,
                 (byte)(factorOpacidad * 255)
             );
             Raylib.DrawLineV(center + new Vector2(ladoFinal, 0), center + new Vector2(-ladoFinal, 0), colorCruz);
@@ -308,24 +378,74 @@ internal abstract class Program
     private static int Height = Raylib.GetScreenHeight();
     private const double G = 6.674e-11;
 
+    // Condición visibilidad Mercurio
+    private static float SunRadiusAtScale = 0;
+    private static string KeyName = "Null";
+
     static void Main()
     {
 
 
-        // 4. Establecimiento de escalas y tiempos
+        // 4. Establecimiento de la configuración inicial
+
         double distanceScale = 1e9; // Cada pixel de la distancia entre astros representa 1000000 km
-        double radiusScale = 8e6; // Cada pixel de un astro representa 2000 km.
-        double targetRadiusScale = radiusScale;
+        double radiusScale = 1e6; // Cada pixel de un astro representa 2000 km.
         double timeStep = 86400; // Cada frame de la simulación significa un día terrestre en tiempo real.
         int n = 1000; // Número de cálculos en los que se dividirá timeStep. Cuanto mayor sea, mejor precisión.
 
-        // Id para la Cámara
-        float id = 0;
-        double targetDistanceScale = 1e9;
-        double targetTimeStep = 86400;
-        double targetN = 1000;
+        float id = 0; // Id del astro que la cámara seguirá inicialmente
+
+        double targetDistanceScale = 1e9; // Objetivo de distanceScale
+        double targetTimeStep = 86400; // Objetivo de timeStep
+        double targetN = 1000; // Objetivo de n
+        double targetRadiusScale = radiusScale; // Objetivo de radiusScale
+
+        int textAlign = 40;
+        float ladoCruz = 10;
+
+
         const double initialLerpSpeed = 0.08;
         double lerpSpeed = initialLerpSpeed;
+
+        // Cargando configuración de cámara y variables de configuración desde JSON
+
+        // Intento de carga desde archivo JSON
+
+        string jsonAstroConfig = File.ReadAllText("Data/astrosConfig.json");
+
+        // Configuramos las opciones del deserializador para que acepte strings como enums
+        var options = new JsonSerializerOptions
+        {
+            Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() }
+        };
+
+        // Le decimos qué tipo debe esperar
+        WrapperAstroConfig? wrapperAstrosConfig = JsonSerializer.Deserialize<WrapperAstroConfig>(jsonAstroConfig, options);
+
+        // Ahora recorremos toda la lista deserializada y construimos los objetos
+        // Para ello generamos un foreach que recorra cada objeto de la lista wrapper
+
+        if (wrapperAstrosConfig?.AstrosConfig == null)
+        {
+            throw new Exception("Error al cargar el archivo JSON o está vacío");
+        }
+
+        // Creamos el diccionario vacío que usaremos en el bucle principal
+        // La clave será la tecla del teclado (KeyboardKey) y el valor será la configuración (AstroConfig)
+        Dictionary<KeyboardKey, AstroConfig> cameraConf = new Dictionary<KeyboardKey, AstroConfig>();
+
+        // Iteramos sobre cada configuración de la lista que viene del JSON
+        // wrapperAstrosConfig.AstrosConfig es una List<AstroConfig>
+        foreach (AstroConfig config in wrapperAstrosConfig.AstrosConfig)
+        {
+            // config es directamente un objeto AstroConfig de la lista
+            // No necesitamos extraer kvp.Key ni kvp.Value porque ahora es una lista, no un diccionario
+
+            // Añadimos al diccionario usando la tecla que viene dentro de config.Key
+            // Ejemplo: si config.Key es KeyboardKey.One, entonces cameraConf[KeyboardKey.One] = config
+            cameraConf[config.Key] = config;
+        }
+
         Vector2D cameraPos = Vector2D.Zero;
 
 
@@ -342,21 +462,21 @@ internal abstract class Program
 
         // Intento de carga desde archivo JSON
 
-        string json = File.ReadAllText("Data/astros.json");
+        string jsonAstroData = File.ReadAllText("Data/astrosData.json");
 
         // Le decimos qué tipo debe esperar
-        WrapperClass? wrapper = JsonSerializer.Deserialize<WrapperClass>(json);
+        WrapperAstroData? wrapperAstroData = JsonSerializer.Deserialize<WrapperAstroData>(jsonAstroData);
 
         // Ahora recorremos toda la lista deserializada y construimos los objetos
         // Para ello generamos un foreach que recorra cada objeto de la lista wrapper
 
-        if (wrapper?.Astros == null)
+        if (wrapperAstroData?.Astros == null)
         {
             throw new Exception("Error al cargar el archivo JSON o está vacío");
         }
 
 
-        foreach (AstroData data in wrapper.Astros)
+        foreach (AstroData data in wrapperAstroData.Astros)
         {
             // Hecho todo el foreach por la IA, entendiendo el código
 
@@ -367,7 +487,7 @@ internal abstract class Program
             {
                 // Si ParentId existe, buscamos el astro que tenga el Id igual que el ParentId del satélite
 
-                AstroData? parentData = wrapper.Astros.FirstOrDefault(p => p.Id == data.ParentId);
+                AstroData? parentData = wrapperAstroData.Astros.FirstOrDefault(p => p.Id == data.ParentId);
 
                 //Si parentData no está vacío, entonces asignamos el TrailLength del planeta padre a la variable
 
@@ -409,11 +529,6 @@ internal abstract class Program
             astros.Add(astro);
         }
 
-        // Lado cruz objetivo
-        float ladoCruz = (float)(astros.First(a => a.Id == id).Radius / radiusScale + 10) > 40
-            ? (float)(astros.First(a => a.Id == id).Radius / radiusScale + 10)
-            : 50;
-
         // 5. Bucle principal
         while (!Raylib.WindowShouldClose())
         {
@@ -430,145 +545,52 @@ internal abstract class Program
 
             int key = Raylib.GetKeyPressed();
 
-            if (key != (int)KeyboardKey.Null)
+            if (key != (int)KeyboardKey.Null && cameraConf.ContainsKey((KeyboardKey)key))
             {
-                if (key != (int)KeyboardKey.Null)
-                {
-                    switch ((KeyboardKey)key)
-                    {
-                        case KeyboardKey.Space:
-                            id = 0; // Sol
-                            targetRadiusScale = 8e8;
-                            targetDistanceScale = 1e10; // Vista muy amplia del sistema solar
-                            targetTimeStep = 86400; // 1 día
-                            targetN = 1000;
-                            lerpSpeed = initialLerpSpeed;
-                            break;
-                        case KeyboardKey.Zero:
-                        case KeyboardKey.Kp0:
-                            id = 0; // Sol
-                            targetRadiusScale = 8e7;
-                            targetDistanceScale = 1e9; // Vista amplia del sistema solar interior
-                            targetTimeStep = 86400; // 1 día
-                            targetN = 1000;
-                            lerpSpeed = initialLerpSpeed;
-                            break;
-
-                        case KeyboardKey.One:
-                        case KeyboardKey.Kp1:
-                            id = 1; // Mercurio
-                            targetRadiusScale = 8e6;
-                            targetDistanceScale = 2e7; // Zoom cercano
-                            targetTimeStep = 1800; // 1/2 hora
-                            targetN = 2000;
-                            lerpSpeed = initialLerpSpeed;
-                            break;
-
-                        case KeyboardKey.Two:
-                        case KeyboardKey.Kp2:
-                            id = 2; // Venus
-                            targetRadiusScale = 8e6;
-                            targetDistanceScale = 2e7; // Zoom cercano
-                            targetTimeStep = 1800;
-                            targetN = 2000;
-                            lerpSpeed = initialLerpSpeed;
-                            break;
-
-                        case KeyboardKey.Three:
-                        case KeyboardKey.Kp3:
-                            id = 3; // Tierra
-                            targetRadiusScale = 8e5;
-                            targetDistanceScale = 2e6;
-                            targetTimeStep = 3600;
-                            targetN = 2000;
-                            lerpSpeed = initialLerpSpeed;
-                            break;
-
-                        case KeyboardKey.Four:
-                        case KeyboardKey.Kp4:
-                            id = 4; // Marte
-                            targetRadiusScale = 8e5;
-                            targetDistanceScale = 2e5;
-                            targetTimeStep = 1800; // 1/2 hora
-                            targetN = 2000;
-                            lerpSpeed = initialLerpSpeed;
-                            break;
-
-                        case KeyboardKey.Five:
-                        case KeyboardKey.Kp5:
-                            id = 5; // Júpiter
-                            targetRadiusScale = 8e6;
-                            targetDistanceScale = 7e6;
-                            targetTimeStep = 1800; // 1 día (se mueve más lento)
-                            targetN = 1000;
-                            lerpSpeed = initialLerpSpeed;
-                            break;
-
-                        case KeyboardKey.Six:
-                        case KeyboardKey.Kp6:
-                            id = 6; // Saturno
-                            targetRadiusScale = 8e6;
-                            targetDistanceScale = 5e6;
-                            targetTimeStep = 3600; // 1 hora
-                            targetN = 1000;
-                            lerpSpeed = initialLerpSpeed;
-                            break;
-
-                        case KeyboardKey.Seven:
-                        case KeyboardKey.Kp7:
-                            id = 7; // Urano
-                            targetRadiusScale = 3e6;
-                            targetDistanceScale = 2e6;
-                            targetTimeStep = 3600; // 1/2 día
-                            targetN = 1500;
-                            lerpSpeed = initialLerpSpeed;
-                            break;
-
-                        case KeyboardKey.Eight:
-                        case KeyboardKey.Kp8:
-                            id = 8; // Neptuno
-                            targetRadiusScale = 3e6;
-                            targetDistanceScale = 2e6;
-                            targetTimeStep = 3600; // 1/2 día
-                            targetN = 1500;
-                            lerpSpeed = initialLerpSpeed;
-                            break;
-
-                        default:
-                            id = 0;
-                            targetRadiusScale = 8e6;
-                            targetDistanceScale = 1e9;
-                            targetTimeStep = 86400;
-                            targetN = 1000;
-                            lerpSpeed = initialLerpSpeed;
-                            break;
-                    }
-                }
+                var config = cameraConf[(KeyboardKey)key];
+                id = config.Id;
+                targetDistanceScale = config.TargetDistanceScale;
+                targetRadiusScale = config.TargetRadiusScale;
+                targetTimeStep = config.TargetTimeStep;
+                targetN = config.TargetN;
+                lerpSpeed = config.InitialLerpSpeed;
+                textAlign = config.TextAlign;
+                KeyName = config.KeyName;
             }
-
-            // Interpolación de la cámara
-            if (lerpSpeed > 1) lerpSpeed = 1;
-
-            radiusScale += (targetRadiusScale - radiusScale) * lerpSpeed;
-
-            distanceScale += (targetDistanceScale - distanceScale) * lerpSpeed;
-
-            timeStep += (targetTimeStep - timeStep) * lerpSpeed;
-
-            n += (int)((targetN - n) * lerpSpeed);
 
             Astro astroActual = astros.First(a => a.Id == id);
 
+            // Interpolación
+
+            if (lerpSpeed > 100) lerpSpeed = 1; // Limitamos el lerpSpeed máximo
+
+            // Escalado de radios por frame
+
+            radiusScale += (targetRadiusScale - radiusScale) * lerpSpeed;
+
+            // Escalado de distancias por frame
+
+            distanceScale += (targetDistanceScale - distanceScale) * lerpSpeed;
+
+            // Tiempo de simulación por frame
+
+            timeStep += (targetTimeStep - timeStep) * lerpSpeed;
+
+            // Número de cálculos n
+
+            n += (int)((targetN - n) * lerpSpeed);
+
+
+            // Cámara
             cameraPos += (astroActual.Position - cameraPos) * lerpSpeed;
+
+            // Actualizar lerpspeed
 
             if (lerpSpeed < 1) lerpSpeed *= 1.01;
 
-            // Actualizar targetLadoCruz basado en el radio del astro actual
-            float targetLadoCruz = (float)(astroActual.Radius / (2 * radiusScale) + 10);
-
             // Dibujo del frame
-            ladoCruz += (float)((targetLadoCruz - ladoCruz) * lerpSpeed);
-            Draw(astros, distanceScale, radiusScale, cameraPos, astroActual, ladoCruz, lerpSpeed);
+
+            Draw(astros, distanceScale, radiusScale, cameraPos, astroActual, ladoCruz, lerpSpeed, textAlign);
 
 
         }
