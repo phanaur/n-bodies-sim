@@ -100,73 +100,95 @@ jobs:
           path: N-bodies-sim-${{ matrix.os }}.zip
           retention-days: 90
 
-  create-release-info:
-    name: Create Release Information
+  create-release:
+    name: Create GitHub Release
     runs-on: ubuntu-latest
     needs: build
+    permissions:
+      contents: write
     steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
 
+      - name: Generate version tag
+        id: version
+        run: echo "tag=v$(date +'%Y.%m.%d-%H%M')" >> $GITHUB_OUTPUT
+
       - name: Create release notes
+        id: notes
         run: |
-          cat > DOWNLOAD_INSTRUCTIONS.md << 'EOF'
-          # N-Bodies Simulator - Descarga e Instalación
+          cat > RELEASE_NOTES.md << 'EOF'
+          # N-Bodies Simulator - Solar System
 
-          ## Descargar tu plataforma
+          Simulación gravitatoria N-cuerpos del Sistema Solar con física realista.
 
-          Descarga el archivo ZIP correspondiente a tu sistema operativo desde los artifacts de este workflow.
+          ## 📦 Descargas
 
-          ## Instalación
+          Descarga el archivo correspondiente a tu sistema operativo:
+
+          - **Windows**: `N-bodies-sim-windows.zip`
+          - **Linux**: `N-bodies-sim-linux.zip`
+          - **macOS**: `N-bodies-sim-macos.zip`
+
+          ## 🚀 Instalación
 
           ### Windows
-          1. Descarga `N-bodies-sim-windows.zip`
-          2. Extrae el ZIP en una carpeta
-          3. Ejecuta `N-bodies-sim.exe`
+          1. Descarga y extrae el ZIP
+          2. Ejecuta `N-bodies-sim.exe`
 
           ### Linux
-          1. Descarga `N-bodies-sim-linux.zip`
-          2. Extrae el ZIP: `unzip N-bodies-sim-linux.zip`
-          3. Da permisos de ejecución: `chmod +x N-bodies-sim`
-          4. Ejecuta: `./N-bodies-sim`
+          1. Descarga y extrae: `unzip N-bodies-sim-linux.zip`
+          2. Da permisos: `chmod +x N-bodies-sim`
+          3. Ejecuta: `./N-bodies-sim`
 
           ### macOS
-          1. Descarga `N-bodies-sim-macos.zip`
-          2. Extrae el ZIP (doble clic)
-          3. Da permisos de ejecución: `chmod +x N-bodies-sim`
-          4. Ejecuta: `./N-bodies-sim`
-          5. Si macOS bloquea la app: Sistema > Privacidad y Seguridad > "Abrir de todas formas"
+          1. Descarga y extrae el ZIP
+          2. Da permisos: `chmod +x N-bodies-sim`
+          3. Ejecuta: `./N-bodies-sim`
+          4. Si macOS bloquea: Preferencias del Sistema > Privacidad y Seguridad > "Abrir de todas formas"
 
-          ## Contenido del paquete
+          ## 🎮 Controles
 
-          Cada ZIP contiene:
-          - Ejecutable del simulador (todo incluido, no necesita .NET instalado)
-          - Carpeta `Data/` con `astros.json` (configuración del sistema solar)
-          - `README.txt` con instrucciones y controles
+          - **ESPACIO**: Vista general del sistema solar
+          - **0-9**: Seleccionar planeta (0=Sol, 1=Mercurio, 2=Venus, etc.)
+          - **ESC**: Salir
 
-          ## Requisitos
+          ## ⚙️ Características
+
+          - ✅ 9 planetas + Sol
+          - ✅ 13 satélites naturales (Luna, Galileanos, Titán, etc.)
+          - ✅ Anillos planetarios (Saturno, Urano, Neptuno)
+          - ✅ Cinturón de asteroides y cinturón de Kuiper
+          - ✅ Trazas orbitales
+          - ✅ Física gravitatoria N-cuerpos con integrador Euler
+          - ✅ Timesteps adaptativos según el cuerpo observado
+
+          ## 📋 Requisitos
 
           - **Windows**: Windows 10/11 (64-bit)
-          - **Linux**: Distribución moderna con GLIBC 2.31+ y OpenGL
+          - **Linux**: GLIBC 2.31+ y drivers OpenGL
           - **macOS**: macOS 10.15+ (Catalina o superior)
 
-          ## Tamaño aproximado
+          ## 📝 Notas
 
-          - Cada ejecutable pesa ~60-80 MB porque incluye el runtime de .NET
-          - No requiere instalación de .NET ni dependencias adicionales
-
-          ## Problemas conocidos
-
-          - **Linux**: Necesita drivers de OpenGL instalados
-          - **macOS**: Primera ejecución puede requerir "abrir de todas formas" en Preferencias
-          - **Windows**: Puede requerir Visual C++ Redistributable (normalmente ya instalado)
+          - Cada ejecutable incluye el runtime de .NET (~70 MB)
+          - No requiere instalación de dependencias
+          - El archivo `Data/astros.json` contiene los parámetros orbitales
           EOF
 
-      - name: Upload release instructions
-        uses: actions/upload-artifact@v4
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: DOWNLOAD_INSTRUCTIONS
-          path: DOWNLOAD_INSTRUCTIONS.md
-          retention-days: 90
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: Release ${{ steps.version.outputs.tag }}
+          body_path: RELEASE_NOTES.md
+          draft: false
+          prerelease: false
+          files: |
+            artifacts/N-bodies-sim-windows/N-bodies-sim-windows.zip
+            artifacts/N-bodies-sim-linux/N-bodies-sim-linux.zip
+            artifacts/N-bodies-sim-macos/N-bodies-sim-macos.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
