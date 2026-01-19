@@ -534,6 +534,7 @@ internal abstract class Program
         double distanceScale = 1e9; // Cada pixel de la distancia entre astros representa 1000000 km
         double radiusScale = 1e6; // Cada pixel de un astro representa 2000 km.
         double timeStep = 86400; // Cada frame de la simulación significa un día terrestre en tiempo real.
+        double simTime = 0;
         int n = 1000; // Número de cálculos en los que se dividirá timeStep. Cuanto mayor sea, mejor precisión.
 
         float id = 0; // Id del astro que la cámara seguirá inicialmente
@@ -686,9 +687,15 @@ internal abstract class Program
         {
             _width = Raylib.GetScreenWidth();
             _height = Raylib.GetScreenHeight();
-
-            // Cálculos de la física de la simulación
+            double dt = Raylib.GetFrameTime();
+            
+            // PRIMERO: Calcular simTime
+            simTime = dt * targetTimeStep;
+            
+            // DESPUÉS: Usar simTime en la física
             UpdatePhysics(astros, timeStep, n);
+            
+            // Resto del código...
 
             // Save the trail position
             SaveTrail(astros);
@@ -726,7 +733,7 @@ internal abstract class Program
 
             // Tiempo de simulación por frame
 
-            timeStep += (targetTimeStep - timeStep) * lerpSpeed;
+            timeStep += (simTime - timeStep) * lerpSpeed;
 
             // Número de cálculos n
 
