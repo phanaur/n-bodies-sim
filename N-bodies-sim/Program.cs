@@ -253,8 +253,10 @@ internal abstract class Program
             posPantalla.X += Width / 2;
             posPantalla.Y += Height / 2;
 
-            float innerRadius = (float)(astroActual.InnerRingRadius / distanceScale);
-            float outerRadius = (float)(astroActual.OuterRingRadius / distanceScale);
+            // Factor para que los anillos se vean proporcionalmente correctos
+            double ringScale = distanceScale * 0.8;
+            float innerRadius = (float)(astroActual.InnerRingRadius / ringScale);
+            float outerRadius = (float)(astroActual.OuterRingRadius / ringScale);
 
             Raylib.DrawRing(posPantalla, innerRadius, outerRadius, 0, 360, 50, astroActual.RingColor.Value);
         }

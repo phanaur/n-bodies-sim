@@ -147,9 +147,9 @@
       "Velocity": [0, 9.7e3],
       "TrailLength": 10859,
       "HasRings": true,
-      "InnerRingRadius": 7.5e7,
-      "OuterRingRadius": 1.4e8,
-      "RingColor": [200, 180, 140, 15]
+      "InnerRingRadius": 7.47e7,
+      "OuterRingRadius": 1.402e8,
+      "RingColor": [200, 180, 140, 25]
     },
     {
       "Id": 6.1,
@@ -194,9 +194,9 @@
       "Velocity": [0, 6.8e3],
       "TrailLength": 30787,
       "HasRings": true,
-      "InnerRingRadius": 4.1e7,
-      "OuterRingRadius": 5.1e7,
-      "RingColor": [220, 220, 240, 5]
+      "InnerRingRadius": 3.8e7,
+      "OuterRingRadius": 5.115e7,
+      "RingColor": [220, 220, 240, 15]
     },
     {
       "Id": 7.1,
@@ -230,9 +230,9 @@
       "Velocity": [0, 5.4e3],
       "TrailLength": 60290,
       "HasRings": true,
-      "InnerRingRadius": 4.0e7,
+      "InnerRingRadius": 4.1e7,
       "OuterRingRadius": 6.3e7,
-      "RingColor": [150, 200, 255, 5]
+      "RingColor": [150, 200, 255, 15]
     },
     {
       "Id": 8.1,
@@ -244,6 +244,86 @@
       "Position": [4.515355e12, 0],
       "Velocity": [0, 1011],
       "TrailLength": 0
+    },
+    {
+      "Id": 100,
+      "Name": "Ceres",
+      "Mass": 9.38e20,
+      "Radius": 4.73e5,
+      "Color": [139, 125, 107, 255],
+      "Position": [4.14e11, 0],
+      "Velocity": [0, 17900],
+      "TrailLength": 1681
+    },
+    {
+      "Id": 101,
+      "Name": "Vesta",
+      "Mass": 2.59e20,
+      "Radius": 2.63e5,
+      "Color": [150, 140, 120, 255],
+      "Position": [0, 3.53e11],
+      "Velocity": [-19340, 0],
+      "TrailLength": 1325
+    },
+    {
+      "Id": 102,
+      "Name": "Pallas",
+      "Mass": 2.04e20,
+      "Radius": 2.56e5,
+      "Color": [130, 120, 100, 255],
+      "Position": [-4.15e11, 0],
+      "Velocity": [0, -17880],
+      "TrailLength": 1686
+    },
+    {
+      "Id": 103,
+      "Name": "Hygiea",
+      "Mass": 8.32e19,
+      "Radius": 2.17e5,
+      "Color": [120, 110, 95, 255],
+      "Position": [0, -4.70e11],
+      "Velocity": [16780, 0],
+      "TrailLength": 2036
+    },
+    {
+      "Id": 200,
+      "Name": "Plutón",
+      "Mass": 1.303e22,
+      "Radius": 1.188e6,
+      "Color": [200, 180, 160, 255],
+      "Position": [5.906e12, 0],
+      "Velocity": [0, 4670],
+      "TrailLength": 90560
+    },
+    {
+      "Id": 201,
+      "Name": "Eris",
+      "Mass": 1.66e22,
+      "Radius": 1.163e6,
+      "Color": [220, 220, 220, 255],
+      "Position": [0, 1.01e13],
+      "Velocity": [-3430, 0],
+      "TrailLength": 203025
+    },
+    {
+      "Id": 202,
+      "Name": "Makemake",
+      "Mass": 3.1e21,
+      "Radius": 7.15e5,
+      "Color": [180, 150, 130, 255],
+      "Position": [-6.85e12, 0],
+      "Velocity": [0, -4160],
+      "TrailLength": 111687
+    },
+    {
+      "Id": 203,
+      "Name": "Haumea",
+      "Mass": 4.0e21,
+      "Radius": 8.16e5,
+      "Color": [200, 190, 180, 255],
+      "Position": [0, -6.45e12],
+      "Velocity": [4290, 0],
+      "TrailLength": 103468
     }
   ]
 }
