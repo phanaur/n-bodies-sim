@@ -551,6 +551,11 @@ internal abstract class Program
         const double initialLerpSpeed = 0.08;
         double lerpSpeed = initialLerpSpeed;
 
+        // Ajuste de las físicas
+
+        double physicsAccumulator = 0.0;
+        const double physicsInterval = 1.0 / 60.0; // Actualizar física 60 veces por segundo real
+
         // Cargando configuración de cámara y variables de configuración desde JSON
 
         // Intento de carga desde archivo JSON
@@ -688,17 +693,14 @@ internal abstract class Program
             _width = Raylib.GetScreenWidth();
             _height = Raylib.GetScreenHeight();
             double dt = Raylib.GetFrameTime();
-            
-            // PRIMERO: Calcular simTime
-            simTime = dt * targetTimeStep;
-            
-            // DESPUÉS: Usar simTime en la física
-            UpdatePhysics(astros, timeStep, n);
-            
-            // Resto del código...
 
-            // Save the trail position
+            // Física: UNA vez por frame, independiente de FPS
+            // El timeStep controla cuánto tiempo simulado avanza
+            // n controla la precisión de los cálculos
+            double scaledTimeStep = timeStep * dt * 60.0; // Normalizado a 60 FPS
+            UpdatePhysics(astros, scaledTimeStep, n);
             SaveTrail(astros);
+            simTime += timeStep;
 
             // Set Camera
 
@@ -719,39 +721,23 @@ internal abstract class Program
 
             Astro astroActual = astros.First(a => (a.Id - id) == 0);
 
-            // Interpolación
+            // Interpolación visual (suave, basada en dt para ser independiente de FPS)
+            double smoothFactor = 1.0 - Math.Pow(1.0 - lerpSpeed, dt * 60.0);
 
-            if (lerpSpeed > 100) lerpSpeed = 1; // Limitamos el lerpSpeed máximo
-
-            // Escalado de radios por frame
-
-            radiusScale += (targetRadiusScale - radiusScale) * lerpSpeed;
-
-            // Escalado de distancias por frame
-
-            distanceScale += (targetDistanceScale - distanceScale) * lerpSpeed;
-
-            // Tiempo de simulación por frame
-
-            timeStep += (simTime - timeStep) * lerpSpeed;
-
-            // Número de cálculos n
-
-            n += (int)((targetN - n) * lerpSpeed);
-
+            radiusScale += (targetRadiusScale - radiusScale) * smoothFactor;
+            distanceScale += (targetDistanceScale - distanceScale) * smoothFactor;
+            timeStep += (targetTimeStep - timeStep) * smoothFactor;
+            n += (int)((targetN - n) * smoothFactor);
 
             // Cámara
-            cameraPos += (astroActual.Position - cameraPos) * lerpSpeed;
+            cameraPos += (astroActual.Position - cameraPos) * smoothFactor;
 
-            // Actualizar lerpspeed
-
-            if (lerpSpeed < 1) lerpSpeed *= 1.01;
+            // Actualizar lerpSpeed gradualmente
+            if (lerpSpeed < 1)
+                lerpSpeed = Math.Min(1.0, lerpSpeed * (1.0 + dt));
 
             // Dibujo del frame
-
             Draw(astros, distanceScale, radiusScale, cameraPos, astroActual, ladoCruz, textAlign);
-
-
         }
 
         Raylib.CloseWindow();
