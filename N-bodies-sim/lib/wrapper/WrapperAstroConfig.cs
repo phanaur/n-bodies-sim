@@ -1,6 +1,4 @@
-using System.Dynamic;
-using Raylib_cs;
-namespace N_bodies_sim;
+namespace N_bodies_sim.lib.wrapper;
 
 class WrapperAstroConfig
 {

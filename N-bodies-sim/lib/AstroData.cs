@@ -1,3 +1,5 @@
+namespace N_bodies_sim.lib;
+
 class AstroData
 {
     public required float Id { get; set; }
