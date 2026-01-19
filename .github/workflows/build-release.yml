@@ -47,7 +47,8 @@ jobs:
         shell: bash
         run: |
           mkdir -p output/${{ matrix.os }}/Data
-          cp N-bodies-sim/Data/astros.json output/${{ matrix.os }}/Data/
+          cp N-bodies-sim/Data/astrosData.json output/${{ matrix.os }}/Data/
+          cp N-bodies-sim/Data/astrosConfig.json output/${{ matrix.os }}/Data/
 
       - name: Create README
         shell: bash
@@ -70,7 +71,7 @@ jobs:
           - 0-9: Seleccionar planeta/astro
           - ESC: Salir
 
-          NOTA: El archivo Data/astros.json contiene las posiciones y velocidades iniciales
+          NOTA: El archivo Data/astrosData.json contienen las posiciones, velocidades iniciales y configuraciones
           de todos los cuerpos celestes. Puedes editarlo para modificar la simulación.
 
           Timesteps usados (n = substeps de integración):
