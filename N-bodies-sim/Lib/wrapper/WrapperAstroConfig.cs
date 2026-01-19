@@ -1,6 +1,6 @@
-namespace N_bodies_sim.lib.wrapper;
+namespace N_bodies_sim;
 
-class WrapperAstroConfig
+internal class WrapperAstroConfig
 {
     public required List<AstroConfig> AstrosConfig { get; set; }
 }
