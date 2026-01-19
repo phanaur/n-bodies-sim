@@ -1,0 +1,172 @@
+name: Build Multi-Platform Release
+
+on:
+  workflow_dispatch: # Activación manual desde GitHub Actions
+
+jobs:
+  build:
+    name: Build for ${{ matrix.os }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        include:
+          - os: windows
+            runner: windows-latest
+            rid: win-x64
+            extension: .exe
+          - os: linux
+            runner: ubuntu-latest
+            rid: linux-x64
+            extension: ""
+          - os: macos
+            runner: macos-latest
+            rid: osx-x64
+            extension: ""
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Publish self-contained executable
+        run: |
+          dotnet publish N-bodies-sim/N-bodies-sim.csproj \
+            -c Release \
+            -r ${{ matrix.rid }} \
+            --self-contained true \
+            -p:PublishSingleFile=true \
+            -p:IncludeNativeLibrariesForSelfExtract=true \
+            -o output/${{ matrix.os }}
+
+      - name: Copy Data folder
+        shell: bash
+        run: |
+          mkdir -p output/${{ matrix.os }}/Data
+          cp N-bodies-sim/Data/astros.json output/${{ matrix.os }}/Data/
+
+      - name: Create README
+        shell: bash
+        run: |
+          cat > output/${{ matrix.os }}/README.txt << 'EOF'
+          ========================================
+          N-Bodies Simulator - Solar System
+          ========================================
+
+          INSTRUCCIONES:
+
+          1. Asegúrate de que la carpeta "Data" está en el mismo directorio que el ejecutable
+          2. Ejecuta el programa:
+             - Windows: Doble clic en N-bodies-sim.exe
+             - Linux/macOS: ./N-bodies-sim (puede requerir: chmod +x N-bodies-sim)
+
+          CONTROLES:
+
+          - ESPACIO: Vista general del sistema solar
+          - 0-9: Seleccionar planeta/astro
+          - ESC: Salir
+
+          NOTA: El archivo Data/astros.json contiene las posiciones y velocidades iniciales
+          de todos los cuerpos celestes. Puedes editarlo para modificar la simulación.
+
+          Timesteps usados (n = substeps de integración):
+          - Vista general: 1 día, 1000 substeps
+          - Mercurio: 1 hora, 5000 substeps
+          - Venus-Marte: 1 hora, 5000 substeps
+          - Júpiter: 3 horas, 3000 substeps
+          - Saturno-Urano: 6 horas, 2000-1500 substeps
+          - Neptuno: 12 horas, 1000 substeps
+
+          ========================================
+          EOF
+
+      - name: Create ZIP package
+        shell: bash
+        run: |
+          cd output/${{ matrix.os }}
+          if [ "${{ matrix.os }}" = "windows" ]; then
+            7z a -tzip ../../N-bodies-sim-${{ matrix.os }}.zip *
+          else
+            zip -r ../../N-bodies-sim-${{ matrix.os }}.zip *
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: N-bodies-sim-${{ matrix.os }}
+          path: N-bodies-sim-${{ matrix.os }}.zip
+          retention-days: 90
+
+  create-release-info:
+    name: Create Release Information
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create release notes
+        run: |
+          cat > DOWNLOAD_INSTRUCTIONS.md << 'EOF'
+          # N-Bodies Simulator - Descarga e Instalación
+
+          ## Descargar tu plataforma
+
+          Descarga el archivo ZIP correspondiente a tu sistema operativo desde los artifacts de este workflow.
+
+          ## Instalación
+
+          ### Windows
+          1. Descarga `N-bodies-sim-windows.zip`
+          2. Extrae el ZIP en una carpeta
+          3. Ejecuta `N-bodies-sim.exe`
+
+          ### Linux
+          1. Descarga `N-bodies-sim-linux.zip`
+          2. Extrae el ZIP: `unzip N-bodies-sim-linux.zip`
+          3. Da permisos de ejecución: `chmod +x N-bodies-sim`
+          4. Ejecuta: `./N-bodies-sim`
+
+          ### macOS
+          1. Descarga `N-bodies-sim-macos.zip`
+          2. Extrae el ZIP (doble clic)
+          3. Da permisos de ejecución: `chmod +x N-bodies-sim`
+          4. Ejecuta: `./N-bodies-sim`
+          5. Si macOS bloquea la app: Sistema > Privacidad y Seguridad > "Abrir de todas formas"
+
+          ## Contenido del paquete
+
+          Cada ZIP contiene:
+          - Ejecutable del simulador (todo incluido, no necesita .NET instalado)
+          - Carpeta `Data/` con `astros.json` (configuración del sistema solar)
+          - `README.txt` con instrucciones y controles
+
+          ## Requisitos
+
+          - **Windows**: Windows 10/11 (64-bit)
+          - **Linux**: Distribución moderna con GLIBC 2.31+ y OpenGL
+          - **macOS**: macOS 10.15+ (Catalina o superior)
+
+          ## Tamaño aproximado
+
+          - Cada ejecutable pesa ~60-80 MB porque incluye el runtime de .NET
+          - No requiere instalación de .NET ni dependencias adicionales
+
+          ## Problemas conocidos
+
+          - **Linux**: Necesita drivers de OpenGL instalados
+          - **macOS**: Primera ejecución puede requerir "abrir de todas formas" en Preferencias
+          - **Windows**: Puede requerir Visual C++ Redistributable (normalmente ya instalado)
+          EOF
+
+      - name: Upload release instructions
+        uses: actions/upload-artifact@v4
+        with:
+          name: DOWNLOAD_INSTRUCTIONS
+          path: DOWNLOAD_INSTRUCTIONS.md
+          retention-days: 90
