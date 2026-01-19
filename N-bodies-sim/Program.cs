@@ -171,102 +171,39 @@ internal abstract class Program
         }
     }
 
-    private static void Draw(List<Astro> astros, double distanceScale, double radiusScale, Vector2D cameraPos,
-        Astro astroActual, float ladoCruz, double lerpSpeed, int textAlign)
+    private static void DrawAstro(Astro astro, Vector2 posPantalla, Vector2 posSolPantalla,
+        double distanceScale, double radiusScale, Vector2D cameraPos, Astro astroActual, int textAlign)
     {
-        Raylib.BeginDrawing();
-        Raylib.ClearBackground(Color.Black);
+        float radio = (float)(astro.Radius / radiusScale);
 
-        Raylib.DrawText(text: "Simulador de N-cuerpos | Pulsa Escape (Esc) para salir ", posX: 10, posY: 10, fontSize: 20, color: Color.White);
-        Raylib.DrawText(
-            text: "Cámara: 0 - Sol | 1 - Mercurio | 2 - Venus | ··· | 8 - Neptuno | Espacio: Visión completa del sistema",
-            posX: 10,
-            posY: Raylib.GetRenderHeight() - 30,
-            fontSize: 20,
-            color: Color.White);
-        Vector2 center = new Vector2((float)(Width) / 2, (float)(Height) / 2);
+        if (radio < 2.0f) radio = 2.0f;
+        if (radio > 40f) radio = 40.0f;
 
-        // Calcular el radio del Sol en pantalla ANTES del bucle
-        Astro sol = astros.First(a => a.Id == 0);
-        float radioSol = (float)(sol.Radius / radiusScale);
-        if (radioSol < 2.0f) radioSol = 2.0f;
-        if (radioSol > 40f) radioSol = 40.0f;
-        SunRadiusAtScale = radioSol;
+        // Dibujamos la traza solo si hay dos posiciones o más
+        if (astro.Trail.Count > 1) DrawTrail(astro, distanceScale, cameraPos);
 
-        // Calcular la posición del Sol en pantalla (en píxeles)
-        Vector2 posSolPantalla = (sol.Position - cameraPos).ToVector2((float)distanceScale);
-        posSolPantalla.X += (float)Width / 2;
-        posSolPantalla.Y += (float)Height / 2;
+        Raylib.DrawCircleV(center: posPantalla, radius: radio, color: astro.Color);
+        // Opcional: Dibujar el nombre del astro cerca del triángulo
+        Raylib.DrawText(astro.Name, (int)posPantalla.X - textAlign, (int)posPantalla.Y + textAlign, 12, astro.Color);
+    }
 
-        foreach (Astro astro in astros)
-        {
-            // Si es satélite y su planeta padre no está seleccionado, skip
-            if (astro.ParentId != null && astro.ParentId != astroActual.Id)
-            {
-                continue;
-            }
+    private static void DrawRings(Astro astroActual, double distanceScale, Vector2D cameraPos)
+    {
+        // posPantalla del astroActual
+        Vector2 posPantalla = (astroActual.Position - cameraPos).ToVector2((float)distanceScale);
+        posPantalla.X += Width / 2;
+        posPantalla.Y += Height / 2;
 
+        // Factor para que los anillos se vean proporcionalmente correctos
+        double ringScale = distanceScale * 0.8;
+        float innerRadius = (float)(astroActual.InnerRingRadius / ringScale);
+        float outerRadius = (float)(astroActual.OuterRingRadius / ringScale);
 
-            Vector2 posPantalla = (astro.Position - cameraPos).ToVector2((float)distanceScale);
-            posPantalla.X += (float)Width / 2;
-            posPantalla.Y += (float)Height / 2;
+        Raylib.DrawRing(posPantalla, innerRadius, outerRadius, 0, 360, 50, astroActual.RingColor.Value);
+    }
 
-            // 1. Comprobamos si el astro está fuera de los límites de la pantalla
-            bool fueraDePantalla = posPantalla.X < 0 || posPantalla.X > Width || posPantalla.Y < 0 || posPantalla.Y > Height;
-
-            if (fueraDePantalla)
-            {
-                DrawTriangles(posPantalla, center, astro);
-            }
-            else
-            {
-                float radio = (float)(astro.Radius / radiusScale);
-
-                if (radio < 2.0f) radio = 2.0f;
-                if (radio > 40f) radio = 40.0f;
-
-                // Calcular la distancia en pantalla desde el Sol hasta el astro (en píxeles)
-                float distanciaDesdeElSol = Vector2.Distance(posSolPantalla, posPantalla);
-
-                // Si estamos en la vista amplia o viendo el Sol, y el astro está dentro del disco solar, ocultarlo
-                if ((KeyName == "Espacio" || astroActual.Id == 0) && astro.Id != 0 && distanciaDesdeElSol < SunRadiusAtScale)
-                {
-                    continue;
-                }
-
-                // Dibujamos la traza solo si hay dos posiciones o más
-                if (astro.Trail.Count > 1) DrawTrail(astro, distanceScale, cameraPos);
-
-                Raylib.DrawCircleV(center: posPantalla, radius: radio, color: astro.Color);
-                // Opcional: Dibujar el nombre del astro cerca del triángulo
-                Raylib.DrawText(astro.Name, (int)posPantalla.X - textAlign, (int)posPantalla.Y + textAlign, 12, astro.Color);
-
-            }
-
-        }
-
-        // Dibujamos anillos si los tiene
-        if (astroActual.HasRings && astroActual.RingColor.HasValue)
-        {
-            // posPantalla del astroActual
-            Vector2 posPantalla = (astroActual.Position - cameraPos).ToVector2((float)distanceScale);
-            posPantalla.X += Width / 2;
-            posPantalla.Y += Height / 2;
-
-            // Factor para que los anillos se vean proporcionalmente correctos
-            double ringScale = distanceScale * 0.8;
-            float innerRadius = (float)(astroActual.InnerRingRadius / ringScale);
-            float outerRadius = (float)(astroActual.OuterRingRadius / ringScale);
-
-            Raylib.DrawRing(posPantalla, innerRadius, outerRadius, 0, 360, 50, astroActual.RingColor.Value);
-        }
-
-        // Cinturones de asteroides (centrados en el Sol)
-        Vector2D solPos = astros.First(a => a.Id == 0).Position;
-        Vector2 solPantalla = (solPos - cameraPos).ToVector2((float)distanceScale);
-        solPantalla.X += Width / 2;
-        solPantalla.Y += Height / 2;
-
+    private static void DrawAsteroidBelt(Vector2 solPantalla, double distanceScale)
+    {
         // Cinturón de asteroides (entre Marte y Júpiter)
         float asteroidBeltInner = (float)(3.3e11 / distanceScale);
         float asteroidBeltOuter = (float)(4.9e11 / distanceScale);
@@ -278,7 +215,7 @@ internal abstract class Program
 
             // Dibujar asteroides pequeños en el cinturón
             Random rnd = new Random(42); // Semilla fija para que siempre aparezcan en el mismo lugar
-            int numAsteroides = 150; // Número de asteroides a dibujar
+            int numAsteroides = 50; // Número de asteroides a dibujar
             for (int i = 0; i < numAsteroides; i++)
             {
                 double angulo = rnd.NextDouble() * 2 * Math.PI;
@@ -300,8 +237,10 @@ internal abstract class Program
             int textWidth = Raylib.MeasureText("Cinturón de asteroides", 12);
             Raylib.DrawText("Cinturón de asteroides", (int)(solPantalla.X - textWidth / 2), (int)(solPantalla.Y - textRadius), 12, new Color(139, 125, 107, 150));
         }
+    }
 
-        // Cinturón de Kuiper (más allá de Neptuno, desde 35 UA hasta 50 UA)
+    private static void DrawKuiperBelt(Vector2 solPantalla, double distanceScale)
+    {
         float kuiperBeltInner = (float)(5.2e12 / distanceScale);
         float kuiperBeltOuter = (float)(7.5e12 / distanceScale);
         // Solo dibujar si el cinturón puede ser visible en pantalla
@@ -334,8 +273,9 @@ internal abstract class Program
             int textWidth = Raylib.MeasureText("Cinturón de Kuiper", 12);
             Raylib.DrawText("Cinturón de Kuiper", (int)(solPantalla.X - textWidth / 2), (int)(solPantalla.Y - textRadius), 12, new Color(100, 100, 120, 150));
         }
-
-        // Cruz Satelital
+    }
+    private static void DrawCross(Vector2 center, float ladoCruz, Vector2D cameraPos, Astro astroActual)
+    {
         double distCamPlan = Vector2D.Distance(cameraPos, astroActual.Position);
         bool objBloqueado = distCamPlan < 1e7;
 
@@ -375,6 +315,110 @@ internal abstract class Program
         Raylib.EndDrawing();
     }
 
+    private static void DrawStars(double distanceScale, Vector2D cameraPos)
+    {
+        // Dibujar fondo de estrellas transformando posiciones del mundo a pantalla
+        foreach (var star in stars)
+        {
+            // Transformar de coordenadas del mundo a coordenadas de pantalla
+            Vector2 posPantalla = (star.position - cameraPos).ToVector2((float)distanceScale);
+            posPantalla.X += (float)Width / 2;
+            posPantalla.Y += (float)Height / 2;
+
+            // Solo dibujar si está dentro de la pantalla
+            if (posPantalla.X >= -10 && posPantalla.X <= Width + 10 &&
+                posPantalla.Y >= -10 && posPantalla.Y <= Height + 10)
+            {
+                int brightness = (int)(star.brightness * 255);
+                Raylib.DrawCircleV(posPantalla, star.size, new Color(brightness, brightness, brightness, 255));
+            }
+        }
+    }
+
+    private static void Draw(List<Astro> astros, double distanceScale, double radiusScale, Vector2D cameraPos,
+        Astro astroActual, float ladoCruz, double lerpSpeed, int textAlign)
+    {
+        Raylib.BeginDrawing();
+        Raylib.ClearBackground(Color.Black);
+
+        DrawStars(distanceScale, cameraPos);
+
+        Raylib.DrawText(text: "Simulador de N-cuerpos | Pulsa Escape (Esc) para salir ", posX: 10, posY: 10, fontSize: 20, color: Color.White);
+        Raylib.DrawText(
+            text: "Cámara: 0 - Sol | 1 - Mercurio | 2 - Venus | ··· | 8 - Neptuno | Espacio: Visión completa del sistema",
+            posX: 10,
+            posY: Raylib.GetRenderHeight() - 30,
+            fontSize: 20,
+            color: Color.White);
+        Vector2 center = new Vector2((float)(Width) / 2, (float)(Height) / 2);
+
+        // Calcular el radio del Sol en pantalla ANTES del bucle
+        Astro sol = astros.First(a => a.Id == 0);
+        float radioSol = (float)(sol.Radius / radiusScale);
+        if (radioSol < 2.0f) radioSol = 2.0f;
+        if (radioSol > 40f) radioSol = 40.0f;
+        SunRadiusAtScale = radioSol;
+
+        // Calcular la posición del Sol en pantalla (en píxeles)
+        Vector2 posSolPantalla = (sol.Position - cameraPos).ToVector2((float)distanceScale);
+        posSolPantalla.X += (float)Width / 2;
+        posSolPantalla.Y += (float)Height / 2;
+
+        foreach (Astro astro in astros)
+        {
+            // Si es satélite y su planeta padre no está seleccionado, skip
+            if (astro.ParentId != null && astro.ParentId != astroActual.Id)
+            {
+                continue;
+            }
+
+            Vector2 posPantalla = (astro.Position - cameraPos).ToVector2((float)distanceScale);
+            posPantalla.X += (float)Width / 2;
+            posPantalla.Y += (float)Height / 2;
+
+            // Calcular la distancia en pantalla desde el Sol hasta el astro (en píxeles)
+            float distanciaDesdeElSol = Vector2.Distance(posSolPantalla, posPantalla);
+
+            // Si estamos en la vista amplia o viendo el Sol, y el astro está dentro del disco solar, ocultarlo
+            if ((KeyName == "Espacio" || astroActual.Id == 0) && astro.Id != 0 && distanciaDesdeElSol < SunRadiusAtScale)
+            {
+                continue;
+            }
+
+            // 1. Comprobamos si el astro está fuera de los límites de la pantalla
+            bool fueraDePantalla = posPantalla.X < 0 || posPantalla.X > Width || posPantalla.Y < 0 || posPantalla.Y > Height;
+
+            if (fueraDePantalla)
+            {
+                DrawTriangles(posPantalla, center, astro);
+            }
+            else
+            {
+                DrawAstro(astro, posPantalla, posSolPantalla, distanceScale, radiusScale, cameraPos, astroActual, textAlign);
+            }
+
+        }
+
+        // Dibujamos anillos si los tiene
+        if (astroActual.HasRings && astroActual.RingColor.HasValue)
+        {
+            DrawRings(astroActual, distanceScale, cameraPos);
+        }
+
+        // Cinturones de asteroides (centrados en el Sol)
+
+        // Cinturón de asteroides
+
+        DrawAsteroidBelt(posSolPantalla, distanceScale);
+
+        // Cinturón de Kuiper (más allá de Neptuno, desde 35 UA hasta 50 UA)
+
+        DrawKuiperBelt(posSolPantalla, distanceScale);
+        // Cruz Satelital
+
+        DrawCross(center, ladoCruz, cameraPos, astroActual);
+    }
+
     // Dimensiones de la Ventana
     private static int Width = Raylib.GetScreenWidth();
     private static int Height = Raylib.GetScreenHeight();
@@ -383,6 +427,34 @@ internal abstract class Program
     // Condición visibilidad Mercurio
     private static float SunRadiusAtScale = 0;
     private static string KeyName = "Null";
+
+    // Fondo de estrellas (posiciones en el espacio, no en pantalla)
+    private static List<(Vector2D position, float brightness, float size)> stars = new List<(Vector2D, float, float)>();
+
+    private static void GenerateStars()
+    {
+        stars.Clear();
+        Random rndStars = new Random(12345); // Semilla fija para consistencia
+
+        int numStars = 10000; // Número fijo de estrellas
+
+        for (int i = 0; i < numStars; i++)
+        {
+            // Generar ángulo aleatorio
+            double angulo = rndStars.NextDouble() * 2 * Math.PI;
+
+            // Distancia aleatoria muy lejana (más allá del cinturón de Kuiper: 1e13 a 5e13 metros)
+            double distancia = rndStars.NextDouble() * 4e13;
+
+            // Posición en coordenadas del mundo
+            double x = Math.Cos(angulo) * distancia;
+            double y = Math.Sin(angulo) * distancia;
+
+            float brightness = (float)(0.3 + rndStars.NextDouble() * 0.7);
+            float size = (float)(0.5 + rndStars.NextDouble() * 1.5);
+            stars.Add((new Vector2D(x, y), brightness, size));
+        }
+    }
 
     static void Main()
     {
@@ -455,6 +527,15 @@ internal abstract class Program
         Raylib.SetConfigFlags(ConfigFlags.FullscreenMode | ConfigFlags.Msaa4xHint);
         Raylib.InitWindow(Width, Height, "Simulador de N-cuerpos");
         Raylib.SetTargetFPS(Raylib.GetMonitorRefreshRate(0));
+
+        // Actualizar dimensiones después de crear la ventana
+        Width = Raylib.GetScreenWidth();
+        Height = Raylib.GetScreenHeight();
+
+        // Generar estrellas iniciales (solo una vez)
+        GenerateStars();
+
+
         // 2. Creación de la lista de astros. Los valores de cada astro serán introducidos en el Sistema Internacional
         // de Unidades. Se establecerá una relación entre el radio real de cada astro y cómo se verán en pantalla.
 

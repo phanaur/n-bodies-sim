@@ -17,7 +17,7 @@
             "Key": 32,
             "Name": "Vista amplia del sistema",
             "Id": 0,
-            "TargetDistanceScale": 1e10,
+            "TargetDistanceScale": 1.5e10,
             "TargetRadiusScale": 8e7,
             "TargetTimeStep": 86400,
             "TargetN": 1000,
@@ -44,7 +44,7 @@
             "TargetDistanceScale": 2e7,
             "TargetRadiusScale": 8e4,
             "TargetTimeStep": 1800,
-            "TargetN": 2000,
+            "TargetN": 1000,
             "InitialLerpSpeed": 0.08,
             "TextAlign": 30
         },
@@ -68,7 +68,7 @@
             "TargetDistanceScale": 2e6,
             "TargetRadiusScale": 8e4,
             "TargetTimeStep": 3600,
-            "TargetN": 2000,
+            "TargetN": 1000,
             "InitialLerpSpeed": 0.08,
             "TextAlign": 40
         },

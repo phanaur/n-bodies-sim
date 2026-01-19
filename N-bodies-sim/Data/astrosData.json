@@ -297,13 +297,13 @@
     },
     {
       "Id": 201,
-      "Name": "Eris",
-      "Mass": 1.66e22,
-      "Radius": 1.163e6,
-      "Color": [220, 220, 220, 255],
-      "Position": [0, 1.01e13],
-      "Velocity": [-3430, 0],
-      "TrailLength": 203025
+      "Name": "Quaoar",
+      "Mass": 1.2e21,
+      "Radius": 5.55e5,
+      "Color": [180, 190, 200, 255],
+      "Position": [6.44e12, 0],
+      "Velocity": [0, 5556],
+      "TrailLength": 104755
     },
     {
       "Id": 202,
