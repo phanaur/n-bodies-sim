@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Runtime.InteropServices.JavaScript;
 using Raylib_cs;
 using System.Text.Json;
 using N_bodies_sim.lib;
@@ -153,21 +154,64 @@ internal abstract class Program
 
     private static void DrawTrail(Astro astro, double distanceScale, Vector2D cameraPos)
     {
-        for (int i = 0; i < astro.Trail.Count; i++)
-        {
-            // Dibujamos la línea
-            float alpha = (float)i / astro.Trail.Count;
-            Color colorTraza = new Color(astro.Color.R, astro.Color.G, astro.Color.B, (byte)(alpha * 200));
-            Vector2 p1 = Trail2Pixels(astro.Trail.ElementAt(i), distanceScale, cameraPos);
+        // Convertir Queue a array una sola vez para acceso O(1)
+        Vector2D[] trailArray = astro.Trail.ToArray();
+        int trailCount = trailArray.Length;
 
-            if (i < astro.Trail.Count - 1)
+        if (trailCount < 2) return;
+
+        // Pre-calcular límites de pantalla en coordenadas del mundo
+        double worldWidth = _width * distanceScale;
+        double worldHeight = _height * distanceScale;
+        double margin = Math.Max(worldWidth, worldHeight) * 0.5; // Margen generoso para trails
+
+        double minX = cameraPos.GetX() - worldWidth / 2 - margin;
+        double maxX = cameraPos.GetX() + worldWidth / 2 + margin;
+        double minY = cameraPos.GetY() - worldHeight / 2 - margin;
+        double maxY = cameraPos.GetY() + worldHeight / 2 + margin;
+
+        Vector2 p1 = Vector2.Zero;
+        bool p1Valid = false;
+
+        for (int i = 0; i < trailCount; i++)
+        {
+            Vector2D worldPos = trailArray[i];
+
+            // Culling rápido en coordenadas del mundo
+            double wx = worldPos.GetX();
+            double wy = worldPos.GetY();
+            bool inBounds = wx >= minX && wx <= maxX && wy >= minY && wy <= maxY;
+
+            if (!inBounds && i < trailCount - 1)
             {
-                Vector2 p2 = Trail2Pixels(astro.Trail.ElementAt(i + 1), distanceScale, cameraPos);
-                Raylib.DrawLineV(
-                    startPos: p1,
-                    endPos: p2,
-                    color: colorTraza);
+                // Verificar si el siguiente punto también está fuera
+                Vector2D nextWorldPos = trailArray[i + 1];
+                double nwx = nextWorldPos.GetX();
+                double nwy = nextWorldPos.GetY();
+                bool nextInBounds = nwx >= minX && nwx <= maxX && nwy >= minY && nwy <= maxY;
+
+                if (!nextInBounds)
+                {
+                    p1Valid = false;
+                    continue; // Ambos puntos fuera, skip
+                }
             }
+
+            if (!p1Valid)
+            {
+                p1 = Trail2Pixels(worldPos, distanceScale, cameraPos);
+                p1Valid = true;
+                continue;
+            }
+
+            Vector2 p2 = Trail2Pixels(worldPos, distanceScale, cameraPos);
+
+            float alpha = (float)i / trailCount;
+            Color colorTraza = new Color(astro.Color.R, astro.Color.G, astro.Color.B, (byte)(alpha * 200));
+
+            Raylib.DrawLineV(startPos: p1, endPos: p2, color: colorTraza);
+
+            p1 = p2;
         }
     }
 
@@ -316,21 +360,35 @@ internal abstract class Program
 
     private static void DrawStars(double distanceScale, Vector2D cameraPos)
     {
+        // Calcular el área visible en coordenadas del mundo para culling temprano
+        double worldWidth = _width * distanceScale;
+        double worldHeight = _height * distanceScale;
+        double margin = Math.Max(worldWidth, worldHeight) * 0.1; // 10% de margen
+
+        double minX = cameraPos.GetX() - worldWidth / 2 - margin;
+        double maxX = cameraPos.GetX() + worldWidth / 2 + margin;
+        double minY = cameraPos.GetY() - worldHeight / 2 - margin;
+        double maxY = cameraPos.GetY() + worldHeight / 2 + margin;
+
         // Dibujar fondo de estrellas transformando posiciones del mundo a pantalla
         foreach (var star in Stars)
         {
+            // Culling en coordenadas del mundo (mucho más rápido que transformar primero)
+            double starX = star.position.GetX();
+            double starY = star.position.GetY();
+
+            if (starX < minX || starX > maxX || starY < minY || starY > maxY)
+            {
+                continue;
+            }
+
             // Transformar de coordenadas del mundo a coordenadas de pantalla
             Vector2 posPantalla = (star.position - cameraPos).ToVector2((float)distanceScale);
             posPantalla.X += (float)_width / 2;
             posPantalla.Y += (float)_height / 2;
 
-            // Solo dibujar si está dentro de la pantalla
-            if (posPantalla.X >= -10 && posPantalla.X <= _width + 10 &&
-                posPantalla.Y >= -10 && posPantalla.Y <= _height + 10)
-            {
-                int brightness = (int)(star.brightness * 255);
-                Raylib.DrawCircleV(posPantalla, star.size, new Color(brightness, brightness, brightness, 255));
-            }
+            int brightness = (int)(star.brightness * 255);
+            Raylib.DrawCircleV(posPantalla, star.size, new Color(brightness, brightness, brightness, 255));
         }
     }
 
@@ -342,13 +400,25 @@ internal abstract class Program
 
         DrawStars(distanceScale, cameraPos);
 
-        Raylib.DrawText(text: "Simulador de N-cuerpos | Pulsa Escape (Esc) para salir ", posX: 10, posY: 10, fontSize: 20, color: Color.White);
+        Raylib.DrawText(
+            text: "Simulador de N-cuerpos | Pulsa Escape (Esc) para salir ",
+            posX: 10,
+            posY: 10,
+            fontSize: 20,
+            color: Color.White
+            );
         Raylib.DrawText(
             text: "Cámara: 0 - Sol | 1 - Mercurio | 2 - Venus | ··· | 8 - Neptuno | Espacio: Visión completa del sistema",
             posX: 10,
             posY: Raylib.GetRenderHeight() - 30,
             fontSize: 20,
-            color: Color.White);
+            color: Color.White
+            );
+        Raylib.DrawText(
+            text: $"FPS {Raylib.GetFPS()}", posX: _width -200, posY: 30, fontSize: 20, color: Color.Green);
+
+        // Calculamos el vector correspondiente al centro de la pantalla
+
         Vector2 center = new Vector2((float)(_width) / 2, (float)(_height) / 2);
 
         // Calcular el radio del Sol en pantalla ANTES del bucle

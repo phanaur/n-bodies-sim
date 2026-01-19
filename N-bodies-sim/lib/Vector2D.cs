@@ -7,6 +7,10 @@ public struct Vector2D
     private double X { get; set; }
     private double Y { get; set; }
 
+    // Propiedades públicas de solo lectura para acceso externo
+    public readonly double GetX() => X;
+    public readonly double GetY() => Y;
+
     public Vector2D(double x, double y)
     {
         X = x;
