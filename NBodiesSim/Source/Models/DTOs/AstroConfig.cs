@@ -1,6 +1,6 @@
 using Raylib_cs;
 
-namespace N_bodies_sim;
+namespace NBodiesSim.Source.Models.DTOs;
 
 public readonly struct AstroConfig
 {

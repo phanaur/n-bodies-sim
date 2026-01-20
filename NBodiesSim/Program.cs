@@ -1,8 +1,11 @@
-﻿namespace N_bodies_sim;
+﻿namespace NBodiesSim;
 
 using System.Numerics;
 using System.Text.Json;
 using Raylib_cs;
+using Source.Core;
+using Source.Models;
+using Source.Models.DTOs;
 
 internal abstract class Program
 {

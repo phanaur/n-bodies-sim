@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace N_bodies_sim;
+namespace NBodiesSim.Source.Core;
 
 public struct Vector2D
 {
@@ -120,7 +120,7 @@ public struct Vector2D
 
     public static Vector2D Multiply(int escalar, Vector2D vector) => escalar * vector;
 
-    public readonly Vector2D Normalize() => this.Length() < 1e-10 ? Zero : this / this.Length();
+    public readonly Vector2D Normalize() => Length() < 1e-10 ? Zero : this / Length();
 
     public readonly double GetX() => X;
 

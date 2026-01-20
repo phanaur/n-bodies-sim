@@ -1,4 +1,4 @@
-namespace N_bodies_sim;
+namespace NBodiesSim.Source.Models.DTOs;
 
 internal class WrapperAstroConfig
 {

@@ -4,7 +4,7 @@
     <LangVersion>14</LangVersion>
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
-    <RootNamespace>N_bodies_sim</RootNamespace>
+    <RootNamespace>NBodiesSim</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>

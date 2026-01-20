@@ -1,7 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using Raylib_cs;
+using NBodiesSim.Source.Core;
 
-namespace N_bodies_sim;
+namespace NBodiesSim.Source.Models;
 
 public class Astro
 {
