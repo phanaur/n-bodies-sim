@@ -8,26 +8,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c2185b39-c04a-4350-8a5c-e9dbe45d8749" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.N-bodies-sim/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.N-bodies-sim/.idea/.name" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.N-bodies-sim/.idea/copilot.data.migration.ask2agent.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.N-bodies-sim/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.N-bodies-sim/.idea/indexLayout.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.N-bodies-sim/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/N-bodies-sim.sln" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/N-bodies-sim.sln.DotSettings.user" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/N-bodies-sim/Data/astrosConfig.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/N-bodies-sim/Data/astrosData.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/N-bodies-sim/Lib/Astro.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/N-bodies-sim/Lib/AstroConfig.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/N-bodies-sim/Lib/AstroData.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/N-bodies-sim/Lib/Vector2D.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/N-bodies-sim/Lib/wrapper/WrapperAstroConfig.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/N-bodies-sim/Lib/wrapper/WrapperAstroData.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/N-bodies-sim/N-bodies-sim.csproj" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/N-bodies-sim/Program.cs" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/NBodiesSim/Source/Core/Camera.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NBodiesSim/Source/Data/ConfigLoader.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NBodiesSim/Source/Data/DataLoader.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NBodiesSim/Source/Systems/InputSystems.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NBodiesSim/Source/Systems/PhysicsEngine.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NBodiesSim/Source/Systems/RenderSystem.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NBodiesSim/Source/Systems/Stars.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NBodiesSim/NBodiesSim.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/NBodiesSim.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NBodiesSim/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Program.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,6 +27,9 @@
     <persistenceIdMap>
       <entry key="_/home/phanaur/github/n-bodies-sim" value="38UyT9R78aze1vA8Pdw44HqwMn8" />
     </persistenceIdMap>
+  </component>
+  <component name="DpaMonitoringSettings">
+    <option name="firstShow" value="false" />
   </component>
   <component name="EmbeddingIndexingInfo">
     <option name="cachedIndexableFilesCount" value="15" />
@@ -58,12 +50,21 @@
     &quot;accountId&quot;: &quot;21e5f599-7be3-4325-9d7c-0327c409a409&quot;
   }
 }</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/NBodiesSim/Source/Data/ConfigLoader.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/NBodiesSim/Source/Data/DataLoader.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/NBodiesSim/Source/Systems/InputSystems.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/NBodiesSim/Source/Systems/PhysicsEngine.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/NBodiesSim/Source/Systems/RenderSystem.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/NBodiesSim/Source/Systems/Stars.cs" root0="FORCE_HIGHLIGHTING" />
+  </component>
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
   </component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="QODANA_PROBLEMS_VIEW_TAB" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
@@ -75,10 +76,11 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    ".NET Project.NBodiesSim.executor": "Run",
+    ".NET Project.NBodiesSim.executor": "Debug",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.MCP Project settings loaded": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
@@ -127,16 +129,28 @@
       <workItem from="1768868450267" duration="424000" />
       <workItem from="1768869025074" duration="186000" />
       <workItem from="1768869230560" duration="89000" />
-      <workItem from="1768869323641" duration="310000" />
+      <workItem from="1768869323641" duration="14685000" />
     </task>
+    <task id="LOCAL-00001" summary="Changing project structure">
+      <option name="closed" value="true" />
+      <created>1768869792342</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1768869792342</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+    <MESSAGE value="Changing project structure" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changing project structure" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
