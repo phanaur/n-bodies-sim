@@ -35,7 +35,7 @@ jobs:
       - name: Publish self-contained executable
         shell: bash
         run: |
-          dotnet publish N-bodies-sim/N-bodies-sim.csproj \
+          dotnet publish NBodiesSim/NBodiesSim.csproj \
             -c Release \
             -r ${{ matrix.rid }} \
             --self-contained true \
@@ -47,8 +47,8 @@ jobs:
         shell: bash
         run: |
           mkdir -p output/${{ matrix.os }}/Data
-          cp N-bodies-sim/Data/astrosData.json output/${{ matrix.os }}/Data/
-          cp N-bodies-sim/Data/astrosConfig.json output/${{ matrix.os }}/Data/
+          cp NBodiesSim/Data/astrosData.json output/${{ matrix.os }}/Data/
+          cp NBodiesSim/Data/astrosConfig.json output/${{ matrix.os }}/Data/
 
       - name: Create README
         shell: bash
@@ -62,8 +62,8 @@ jobs:
 
           1. Asegúrate de que la carpeta "Data" está en el mismo directorio que el ejecutable
           2. Ejecuta el programa:
-             - Windows: Doble clic en N-bodies-sim.exe
-             - Linux/macOS: ./N-bodies-sim (puede requerir: chmod +x N-bodies-sim)
+             - Windows: Doble clic en NBodiesSim.exe
+             - Linux/macOS: ./NBodiesSim (puede requerir: chmod +x NBodiesSim)
 
           CONTROLES:
 
@@ -90,16 +90,16 @@ jobs:
         run: |
           cd output/${{ matrix.os }}
           if [ "${{ matrix.os }}" = "windows" ]; then
-            7z a -tzip ../../N-bodies-sim-${{ matrix.os }}.zip *
+            7z a -tzip ../../NBodiesSim-${{ matrix.os }}.zip *
           else
-            zip -r ../../N-bodies-sim-${{ matrix.os }}.zip *
+            zip -r ../../NBodiesSim-${{ matrix.os }}.zip *
           fi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: N-bodies-sim-${{ matrix.os }}
-          path: N-bodies-sim-${{ matrix.os }}.zip
+          name: NBodiesSim-${{ matrix.os }}
+          path: NBodiesSim-${{ matrix.os }}.zip
           retention-days: 90
 
   create-release:
@@ -130,25 +130,25 @@ jobs:
 
           Descarga el archivo correspondiente a tu sistema operativo:
 
-          - **Windows**: `N-bodies-sim-windows.zip`
-          - **Linux**: `N-bodies-sim-linux.zip`
-          - **macOS**: `N-bodies-sim-macos.zip`
+          - **Windows**: `NBodiesSim-windows.zip`
+          - **Linux**: `NBodiesSim-linux.zip`
+          - **macOS**: `NBodiesSim-macos.zip`
 
           ## 🚀 Instalación
 
           ### Windows
           1. Descarga y extrae el ZIP
-          2. Ejecuta `N-bodies-sim.exe`
+          2. Ejecuta `NBodiesSim.exe`
 
           ### Linux
-          1. Descarga y extrae: `unzip N-bodies-sim-linux.zip`
-          2. Da permisos: `chmod +x N-bodies-sim`
-          3. Ejecuta: `./N-bodies-sim`
+          1. Descarga y extrae: `unzip NBodiesSim-linux.zip`
+          2. Da permisos: `chmod +x NBodiesSim`
+          3. Ejecuta: `./NBodiesSim`
 
           ### macOS
           1. Descarga y extrae el ZIP
-          2. Da permisos: `chmod +x N-bodies-sim`
-          3. Ejecuta: `./N-bodies-sim`
+          2. Da permisos: `chmod +x NBodiesSim`
+          3. Ejecuta: `./NBodiesSim`
           4. Si macOS bloquea: Preferencias del Sistema > Privacidad y Seguridad > "Abrir de todas formas"
 
           ## 🎮 Controles
@@ -189,8 +189,8 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            artifacts/N-bodies-sim-windows/N-bodies-sim-windows.zip
-            artifacts/N-bodies-sim-linux/N-bodies-sim-linux.zip
-            artifacts/N-bodies-sim-macos/N-bodies-sim-macos.zip
+            artifacts/NBodiesSim-windows/NBodiesSim-windows.zip
+            artifacts/NBodiesSim-linux/NBodiesSim-linux.zip
+            artifacts/NBodiesSim-macos/NBodiesSim-macos.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
