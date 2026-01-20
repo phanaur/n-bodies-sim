@@ -18,6 +18,13 @@ internal abstract class Program
     // Condición visibilidad Mercurio
     private static float _sunRadiusAtScale;
     private static string _keyName = "Null";
+    
+    // Configuramos las opciones del deserializador para que acepte strings como enums
+    private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
+    {
+        Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() },
+        PropertyNameCaseInsensitive = true // Buena práctica
+    };
 
     private static void UpdateAcceleration(List<Astro> astros)
     {
@@ -561,14 +568,8 @@ internal abstract class Program
         // Intento de carga desde archivo JSON
         string jsonAstroConfig = File.ReadAllText("Data/astrosConfig.json");
 
-        // Configuramos las opciones del deserializador para que acepte strings como enums
-        var options = new JsonSerializerOptions
-        {
-            Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() },
-        };
-
         // Le decimos qué tipo debe esperar
-        WrapperAstroConfig? wrapperAstrosConfig = JsonSerializer.Deserialize<WrapperAstroConfig>(jsonAstroConfig, options);
+        WrapperAstroConfig? wrapperAstrosConfig = JsonSerializer.Deserialize<WrapperAstroConfig>(jsonAstroConfig, JsonOptions);
 
         // Ahora recorremos toda la lista deserializada y construimos los objetos
         // Para ello generamos un foreach que recorra cada objeto de la lista wrapper
