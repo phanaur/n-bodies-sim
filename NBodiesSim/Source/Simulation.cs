@@ -78,7 +78,7 @@ public class Simulation
             // Física: Una vez por frame, independiente de FPS
             double scaledTimeStep = _timeStep * dt * 60.0; // Normalizado a 60 FPS
             _physicsEngine.UpdatePhysics(astros, scaledTimeStep, _n);
-            _renderSystem.SaveTrail(astros);
+            RenderSystem.SaveTrail(astros);
 
             // Interpolación visual (suave, basada en dt para ser independiente de FPS)
             double smoothFactor = 1.0 - Math.Pow(1.0 - _camera.LerpSpeed, dt * 60.0);

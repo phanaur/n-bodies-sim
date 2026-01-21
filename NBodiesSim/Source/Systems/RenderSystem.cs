@@ -7,7 +7,7 @@ namespace NBodiesSim.Source.Systems;
 
 public class RenderSystem
 {
-    public static float GetSunRadius(Astro sol, double radiusScale)
+    private static float GetSunRadius(Astro sol, double radiusScale)
     {
         float radioSol = (float)(sol.Radius / radiusScale);
         switch (radioSol)
@@ -21,12 +21,12 @@ public class RenderSystem
 
     }
 
-    public static Vector2 GetSunPositionScreen(Astro sol, Camera camera)
+    private static Vector2 GetSunPositionScreen(Astro sol, Camera camera)
     {
         return camera.WorldToScreen(sol.Position);
     }
 
-    public static (Vector2[], Vector2) GetTriangle(Vector2 posPantalla, Vector2 center, int width, int height)
+    private static (Vector2[], Vector2) GetTriangle(Vector2 posPantalla, Vector2 center, int width, int height)
     {
         Vector2[] triangle = new Vector2[3];
         // 1. Calcular dirección desde el centro de la pantalla hacia el astro
@@ -90,7 +90,7 @@ public class RenderSystem
 
         return (triangle, posTriangulo);
     }
-    public void SaveTrail(List<Astro> astros)
+    public static void SaveTrail(List<Astro> astros)
     {
         foreach (Astro astro in astros)
         {
