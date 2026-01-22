@@ -1,3 +1,6 @@
+/*
+ * Wrapper para el parseado de astrosConfig.json
+ */
 namespace NBodiesSim.Source.Models.DTOs;
 
 internal class WrapperAstroConfig

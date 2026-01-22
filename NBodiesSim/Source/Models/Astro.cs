@@ -1,3 +1,8 @@
+/*
+ * Esta es la clase Astro. Es el corazón de todos los cuerpos implicados en la simulación. Cada cuerpo simulado contine
+ * información real acerca de algunas de sus características, como su nombre, identificación, radio del cuerpo, posición,
+ * velocidad, etc.
+ */
 using System.ComponentModel.DataAnnotations;
 using Raylib_cs;
 using NBodiesSim.Source.Core;

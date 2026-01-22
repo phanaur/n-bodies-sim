@@ -1,3 +1,8 @@
+/*
+ * Esta clase se encarga de cargar la información de todos los cuerpos que se muestran en el Sistema Solar, obteniendo la
+ * información del archivo Data/astrosData.json, situado en la raíz del proyecto. Genera una lista de objetos Astro, con
+ * la información necesaria.
+ */
 using System.Text.Json;
 using NBodiesSim.Source.Core;
 using NBodiesSim.Source.Models;
@@ -8,7 +13,10 @@ namespace NBodiesSim.Source.Data;
 
 public class DataLoader
 {
+    // Lista de astros
     public readonly List<Astro> Astros = new List<Astro>();
+
+    // Constructor
     public DataLoader()
     {
 
@@ -16,11 +24,13 @@ public class DataLoader
         string jsonAstroData = File.ReadAllText("Data/astrosData.json");
         WrapperAstroData? wrapperAstroData = JsonSerializer.Deserialize<WrapperAstroData>(jsonAstroData);
 
+        // Comprobación de la deserialización.
         if (wrapperAstroData?.Astros == null)
         {
             throw new Exception("Error al cargar el archivo JSON o está vacío");
         }
 
+        // Iteración sobre la lista de astros deserializados
         foreach (AstroData data in wrapperAstroData.Astros)
         {
             int trailLength = data.TrailLength;
@@ -39,6 +49,7 @@ public class DataLoader
                 ringColor = new Color(data.RingColor[0], data.RingColor[1], data.RingColor[2], data.RingColor[3]);
             }
 
+            // Creación del objeto Astro para cada cuerpo
             var astro = new Astro
             {
                 Id = data.Id,
@@ -57,7 +68,7 @@ public class DataLoader
                 OuterRingRadius = data.OuterRingRadius,
                 RingColor = ringColor,
             };
-            Astros.Add(astro);
+            Astros.Add(astro); // se añade a la lista de astros
         }
     }
 }

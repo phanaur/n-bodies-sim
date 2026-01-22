@@ -1,3 +1,7 @@
+/*
+ * Esta clase contiene la información para la generación de los objetos de tipo AstroConfig, con todos los parámetros
+ * necesarios para ajustar la cámara, el cálculo del renderizado y el número de cálculos que realiza el motor de físicas.
+ */
 using Raylib_cs;
 
 namespace NBodiesSim.Source.Models.DTOs;

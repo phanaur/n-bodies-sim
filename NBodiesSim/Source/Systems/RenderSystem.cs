@@ -1,3 +1,9 @@
+/*
+ * Esta clase contiene el motor de renderizado de la simulación. Calcula las conversiones de escala para las posiciones
+ * de cada cuerpo, establece si el cuerpo debe aparecer en pantalla o no, dibuja el fondo de estrellas, los anillos del
+ * planeta (si tiene). También establece una condición en función de los factores de escala distanceScale y radiusScale,
+ * para que aquel planeta cuya órbita esté cerca del radio externo del Sol, o dentro, no se dibuje.
+ */
 using System.Numerics;
 using NBodiesSim.Source.Core;
 using NBodiesSim.Source.Models;
@@ -7,9 +13,12 @@ namespace NBodiesSim.Source.Systems;
 
 public class RenderSystem
 {
+    // Obtención del radio del Sol en pantalla (en píxeles)
     private static float GetSunRadius(Astro sol, double radiusScale)
     {
         float radioSol = (float)(sol.Radius / radiusScale);
+
+        // Establece condiciones para el tamaño máximo y mínimo del Sol.
         switch (radioSol)
         {
             case < 2.0f:
@@ -21,11 +30,13 @@ public class RenderSystem
 
     }
 
+    // Obtención de la posición del Sol en pantalla (en píxeles)
     private static Vector2 GetSunPositionScreen(Astro sol, Camera camera)
     {
         return camera.WorldToScreen(sol.Position);
     }
 
+    // Generación de las coordenadas para posicionar el triángulo que representa un planeta que no se vea en pantalla.
     private static (Vector2[], Vector2) GetTriangle(Vector2 posPantalla, Vector2 center, int width, int height)
     {
         Vector2[] triangle = new Vector2[3];
@@ -107,7 +118,7 @@ public class RenderSystem
     private static void DrawTriangles(Vector2 posPantalla, Vector2 center, Astro astro, int width, int height)
     {
 
-        (Vector2[], Vector2) triangle = RenderSystem.GetTriangle(posPantalla, center, width, height);
+        (Vector2[], Vector2) triangle = GetTriangle(posPantalla, center, width, height);
         // Debug: Dibujar un círculo donde debería estar el triángulo
         // Raylib.DrawCircleV(posTriangulo, 5, Color.Red);
 
@@ -325,10 +336,10 @@ public class RenderSystem
         double worldHeight = camera.Height * camera.DistanceScale;
         double margin = Math.Max(worldWidth, worldHeight) * 0.1; // 10% de margen
 
-        double minX = camera.Position.GetX() - (worldWidth / 2) - margin;
-        double maxX = camera.Position.GetX() + (worldWidth / 2) + margin;
-        double minY = camera.Position.GetY() - (worldHeight / 2) - margin;
-        double maxY = camera.Position.GetY() + (worldHeight / 2) + margin;
+        double minX = camera.Position.X - (worldWidth / 2) - margin;
+        double maxX = camera.Position.X + (worldWidth / 2) + margin;
+        double minY = camera.Position.Y - (worldHeight / 2) - margin;
+        double maxY = camera.Position.Y + (worldHeight / 2) + margin;
 
         // Usamos Rlgl para dibujar todas las estrellas en un solo lote (Batching)
         Rlgl.Begin(DrawMode.Quads);
@@ -337,8 +348,8 @@ public class RenderSystem
         foreach (var star in stars.Stars)
         {
             // Culling en coordenadas del mundo
-            double starX = star.Position.GetX();
-            double starY = star.Position.GetY();
+            double starX = star.Position.X;
+            double starY = star.Position.Y;
 
             if (starX < minX || starX > maxX || starY < minY || starY > maxY)
             {

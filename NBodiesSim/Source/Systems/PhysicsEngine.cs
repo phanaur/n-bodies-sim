@@ -1,3 +1,10 @@
+/*
+ * Esta clase se encarga de los cálculos de la física de la simulación. De momento utiliza la integración numérica mediante
+ * el método de Euler, pero se espera su actualización al uso del algoritmo Runge-Kuta 4.
+ *
+ * Consiste en tres métodos de cálculo: para la aceleración, para la velocidad y para la posición. Posteriormente existe
+ * un método al que accede la simulación que engloba todo el cálculo de la física.
+ */
 using NBodiesSim.Source.Core;
 using NBodiesSim.Source.Models;
 
@@ -10,11 +17,14 @@ public class PhysicsEngine
 
     private void UpdateAcceleration(List<Astro> astros)
     {
+        // Reset acceleration
         foreach (Astro astro in astros)
         {
             astro.Acceleration = Vector2D.Zero;
         }
 
+        // Cálculo de la aceleración para cada par de cuerpos. La aceleración que ejerce i sobre j tiene la misma dirección
+        // y sentido opuesto que la que j have sobre i. Estas interacciones se acumulan en las respectivas aceleraciones.
         for (int i = 0; i < astros.Count - 1; i++)
         {
             for (int j = i + 1; j < astros.Count; j++)

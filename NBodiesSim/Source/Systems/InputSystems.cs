@@ -1,5 +1,9 @@
-using NBodiesSim.Source.Core;
-using NBodiesSim.Source.Data;
+/*
+ * Esta clase genera un objeto encargado de leer las intrucciones del usuario, procesarlas y ajustar los valores de la
+ * cámara y la configuración de la simulación. En función de la tecla que el usuario presione, se devuelve una configuración
+ * del diccionario que contiene las configuraciones de cada cuerpo con su tecla de teclado correspondiente.
+ */
+
 using NBodiesSim.Source.Models.DTOs;
 using Raylib_cs;
 

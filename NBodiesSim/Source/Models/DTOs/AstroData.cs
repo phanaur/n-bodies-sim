@@ -1,3 +1,7 @@
+/*
+ * Esta clase contiene la información para la generación de los objetos de tipo AstroData, con todos los parámetros. A
+ * partir de los objetos generados con esta clase se construyen los objetos Astro, que se utilizarán en la simulación.
+ */
 namespace NBodiesSim.Source.Models.DTOs;
 
 internal class AstroData

@@ -1,3 +1,7 @@
+/*
+ * Esta clase se encarga de cargar la configuración de la cámara desde el archivo Data/astrosConfig.json, ubicado en la
+ * raíz del proyecto.
+ */
 using System.Text.Json;
 using NBodiesSim.Source.Models.DTOs;
 using Raylib_cs;
@@ -6,8 +10,10 @@ namespace NBodiesSim.Source.Data;
 
 public class ConfigLoader
 {
+    // Diccionario de configuración. Cada key tiene asociado un objeto AstroConfig
     public Dictionary<KeyboardKey, AstroConfig> CameraConf { get; } = new Dictionary<KeyboardKey, AstroConfig>();
 
+    // Parámetros para la deserialización del archivo .json
     private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
     {
         Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() },
