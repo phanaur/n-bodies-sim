@@ -57,6 +57,7 @@ public class Camera
         }
     }
 
+    public Vector2 Center => new Vector2((float)Width / 2, (float)Height / 2);
     public void ResetLerp()
     {
         LerpSpeed = InitialLerpSpeed; // Reseteo de la variable cuando se realizan transiciones nuevas

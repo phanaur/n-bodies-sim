@@ -89,7 +89,7 @@ public class Simulation
             _camera.Update(dt, _astroActual.Position);
 
             // Dibujo del frame
-            _renderSystem.Draw(
+            RenderSystem.Draw(
                 astros,
                 _camera,
                 _astroActual,

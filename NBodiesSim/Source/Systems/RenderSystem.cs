@@ -115,10 +115,10 @@ public class RenderSystem
         }
     }
 
-    private static void DrawTriangles(Vector2 posPantalla, Vector2 center, Astro astro, int width, int height)
+    private static void DrawTriangles(Vector2 posPantalla, Camera camera, Astro astro)
     {
 
-        (Vector2[], Vector2) triangle = GetTriangle(posPantalla, center, width, height);
+        (Vector2[], Vector2) triangle = GetTriangle(posPantalla, camera.Center, camera.Width, camera.Height);
         // Debug: Dibujar un círculo donde debería estar el triángulo
         // Raylib.DrawCircleV(posTriangulo, 5, Color.Red);
 
@@ -200,25 +200,29 @@ public class RenderSystem
 
     private static void DrawRings(Astro astroActual, Camera camera)
     {
-        // posPantalla del astroActual
-        Vector2 posPantalla = camera.WorldToScreen(astroActual.Position);
-
-        // Factor para que los anillos se vean proporcionalmente correctos
-        double ringScale = camera.DistanceScale * 0.8;
-        float innerRadius = (float)(astroActual.InnerRingRadius / ringScale);
-        float outerRadius = (float)(astroActual.OuterRingRadius / ringScale);
-
-        if (astroActual.RingColor != null)
+        if (astroActual is { HasRings: true, RingColor: not null })
         {
-            Raylib.DrawRing(
-                center: posPantalla,
-                innerRadius,
-                outerRadius,
-                startAngle: 0,
-                endAngle: 360,
-                segments: 50,
-                astroActual.RingColor.Value);
+            // posPantalla del astroActual
+            Vector2 posPantalla = camera.WorldToScreen(astroActual.Position);
+
+            // Factor para que los anillos se vean proporcionalmente correctos
+            double ringScale = camera.DistanceScale * 0.8;
+            float innerRadius = (float)(astroActual.InnerRingRadius / ringScale);
+            float outerRadius = (float)(astroActual.OuterRingRadius / ringScale);
+
+            if (astroActual.RingColor != null)
+            {
+                Raylib.DrawRing(
+                    center: posPantalla,
+                    innerRadius,
+                    outerRadius,
+                    startAngle: 0,
+                    endAngle: 360,
+                    segments: 50,
+                    astroActual.RingColor.Value);
+            }
         }
+
     }
 
     private static void DrawAsteroidBelt(Vector2 solPantalla, Camera camera, string keyName)
@@ -290,12 +294,15 @@ public class RenderSystem
         Raylib.DrawText("Cinturón de Kuiper", (int)(solPantalla.X - ((float)textWidth / 2)), (int)(solPantalla.Y - textRadius), 12, new Color(100, 100, 120, 150));
     }
 
-    private static void DrawCross(Vector2 center, float ladoCruz, Vector2D cameraPos, Astro astroActual)
+    private static void DrawCross(float ladoCruz, Astro astroActual, Camera camera)
     {
-        double distCamPlan = Vector2D.Distance(cameraPos, astroActual.Position);
+
+        double distCamPlan = Vector2D.Distance(camera.Position, astroActual.Position);
         bool objBloqueado = distCamPlan < 1e7;
 
         Color colorCruz;
+        // Obtenemos el centro de la pantalla
+        Vector2 center = camera.Center;
 
         if (objBloqueado)
         {
@@ -309,6 +316,8 @@ public class RenderSystem
 
             // 2. Convertimos el rango [-1, 1] a [0.2, 1.0] para que nunca desaparezca del todo
             float factorOpacidad = (oscilacion * 0.4f) + 0.6f;
+            
+            
 
             // 3. Aplicamos la opacidad al color original del astro
             colorCruz = new Color(
@@ -374,20 +383,8 @@ public class RenderSystem
         Rlgl.End();
     }
 
-    public void Draw(
-        List<Astro> astros,
-        Camera camera,
-        Astro astroActual,
-        float ladoCruz,
-        int textAlign,
-        StarList stars,
-        string keyName)
+    private static void DrawInfoText(Camera camera)
     {
-        Raylib.BeginDrawing();
-        Raylib.ClearBackground(Color.Black);
-
-        DrawStars(camera, stars);
-
         Raylib.DrawText(
             text: "Simulador de N-cuerpos | Pulsa Escape (Esc) para salir ",
             posX: 10,
@@ -402,20 +399,17 @@ public class RenderSystem
             color: Color.White);
         Raylib.DrawText(
             text: $"FPS {Raylib.GetFPS()}", posX: camera.Width - 200, posY: 30, fontSize: 20, color: Color.Green);
+    }
 
-        // Calculamos el vector correspondiente al centro de la pantalla
-        Vector2 center = new Vector2((float)camera.Width / 2, (float)camera.Height / 2);
-
-        // Calcular el radio del Sol en pantalla ANTES del bucle
-        Astro sol = astros.First(a => a.Id == 0);
-
-
-        float sunRadiusAtScale = RenderSystem.GetSunRadius(sol, camera.RadiusScale);
-
-        // Calcular la posición del Sol en pantalla (en píxeles)
-        Vector2 posSolPantalla = RenderSystem.GetSunPositionScreen(sol, camera);
-
-
+    private static void DrawBodies(
+        List<Astro> astros,
+        Camera camera,
+        Astro astroActual,
+        string keyName,
+        float sunRadiusAtScale,
+        Vector2 posSolPantalla,
+        int textAlign)
+    {
         foreach (Astro astro in astros)
         {
             // Si es satélite y su planeta padre no está seleccionado, skip
@@ -436,21 +430,31 @@ public class RenderSystem
             }
 
             // 1. Comprobamos si el astro está fuera de los límites de la pantalla
-            bool fueraDePantalla = posPantalla.X < 0 || posPantalla.X > camera.Width || posPantalla.Y < 0 || posPantalla.Y > camera.Height;
+            // Creamos un rectángulo con las dimensiones de la pantalla y comprobamos si el cuerpo colisiona con él
 
-            if (fueraDePantalla)
+            Rectangle screenBounds = new Rectangle(0, 0, camera.Width,
+                camera.Height);
+            bool enPantalla =
+                Raylib.CheckCollisionPointRec(posPantalla, screenBounds);
+
+            if (!enPantalla)
+                DrawTriangles(posPantalla, camera, astro);
+            else
+                DrawAstro(astro, posPantalla, camera, textAlign);
+
+            if (!enPantalla)
             {
-                DrawTriangles(posPantalla, center, astro, camera.Width, camera.Height);
+                DrawTriangles(posPantalla, camera, astro);
             }
             else
             {
                 DrawAstro(astro, posPantalla, camera, textAlign);
             }
         }
+    }
 
-        // Dibujamos anillos si los tiene
-        if (astroActual is { HasRings: true, RingColor: not null }) DrawRings(astroActual, camera);
-
+    private static void DrawAsteroids(Camera camera, string keyName, Vector2 posSolPantalla)
+    {
         // Cinturones de asteroides (centrados en el Sol)
 
         // Cinturón de asteroides
@@ -458,8 +462,51 @@ public class RenderSystem
 
         // Cinturón de Kuiper (más allá de Neptuno, desde 35 UA hasta 50 UA)
         DrawKuiperBelt(posSolPantalla, camera);
+    }
+
+    private static (float sunRadiusAtScale, Vector2 posSolPantalla) GetSun(List<Astro> astros, Camera camera)
+    {
+        Astro sol = astros.First(a => a.Id == 0);
+
+        float sunRadiusAtScale = RenderSystem.GetSunRadius(sol, camera.RadiusScale);
+
+        // Calcular la posición del Sol en pantalla (en píxeles)
+        Vector2 posSolPantalla = RenderSystem.GetSunPositionScreen(sol, camera);
+
+        return (sunRadiusAtScale, posSolPantalla);
+    }
+
+    public static void Draw(
+        List<Astro> astros,
+        Camera camera,
+        Astro astroActual,
+        float ladoCruz,
+        int textAlign,
+        StarList stars,
+        string keyName)
+    {
+        Raylib.BeginDrawing();
+        Raylib.ClearBackground(Color.Black);
+
+        //Background: stars
+        DrawStars(camera, stars);
+
+        // Draw Text info
+        DrawInfoText(camera);
+
+        // Calculate sun radius and position in Screen before drawing objects
+        (float sunRadiusAtScale, Vector2 posSolPantalla) = GetSun(astros, camera);
+
+        // Asteroid belts
+        DrawAsteroids(camera, keyName, posSolPantalla);
+
+        // Drawing the different bodies of the Solar System
+        DrawBodies(astros, camera, astroActual, keyName, sunRadiusAtScale, posSolPantalla, textAlign);
+
+        // Dibujamos anillos si los tiene
+        DrawRings(astroActual, camera);
 
         // Cruz Satelital
-        DrawCross(center, ladoCruz, camera.Position, astroActual);
+        DrawCross(ladoCruz, astroActual, camera);
     }
 }
