@@ -8,6 +8,7 @@
  * más característicos de cada planeta, así como sus anillos, en caso de tenerlos.
  *
  * **Mejoras pendientes del simulador**
+ * - Cálculo de físicas con independencia de los FPS: el método actual diagonaliza las órbitas a bajos FPS
  * - Guía de uso inicial, con aparición pulsando la tecla F1
  * - Hud personalizado para cada planeta, con información sobre sus características, satélites, velocidades, etc.
  * - Adición del baricentro del Sistema Solar, para establecer con respecto a él el cálculo de las órbitas.

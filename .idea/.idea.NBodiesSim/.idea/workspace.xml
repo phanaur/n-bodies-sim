@@ -8,21 +8,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c2185b39-c04a-4350-8a5c-e9dbe45d8749" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.NBodiesSim/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.NBodiesSim/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NBodiesSim/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Core/Camera.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Core/Camera.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Core/Vector2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Core/Vector2D.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Data/ConfigLoader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Data/ConfigLoader.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Data/DataLoader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Data/DataLoader.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Models/Astro.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Models/Astro.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Models/DTOs/AstroConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Models/DTOs/AstroConfig.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Models/DTOs/AstroData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Models/DTOs/AstroData.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Models/DTOs/WrapperAstroConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Models/DTOs/WrapperAstroConfig.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Models/DTOs/WrapperAstroData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Models/DTOs/WrapperAstroData.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Systems/InputSystems.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Systems/InputSystems.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Systems/PhysicsEngine.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Systems/PhysicsEngine.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Systems/RenderSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Systems/RenderSystem.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -142,7 +129,6 @@
       <workItem from="1768935748053" duration="373000" />
       <workItem from="1768936234241" duration="105000" />
       <workItem from="1768936364033" duration="2792000" />
-      <workItem from="1769074916170" duration="4024000" />
     </task>
     <task id="LOCAL-00001" summary="Changing project structure">
       <option name="closed" value="true" />
@@ -184,6 +170,17 @@
   </component>
   <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="Changing project structure" />
