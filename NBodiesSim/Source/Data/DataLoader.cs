@@ -59,6 +59,8 @@ public class DataLoader
                 Radius = data.Radius,
                 Color = new Color(data.Color[0], data.Color[1], data.Color[2], data.Color[3]),
                 Position = new Vector2D(data.Position[0], data.Position[1]),
+                PastPosition = new Vector2D(data.Position[0], data.Position[1]),
+                RenderPosition = new Vector2D(data.Position[0], data.Position[1]),
                 Velocity = new Vector2D(data.Velocity[0], data.Velocity[1]),
                 Acceleration = Vector2D.Zero,
                 TrailLength = trailLength,

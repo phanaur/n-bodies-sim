@@ -6,7 +6,7 @@
         <entry key="e00774f7-33f8-4119-a0e1-19a0a070ae2a">
           <value>
             <LanguageServerDefinitionSettings>
-              <option name="errorReportingKind" value="none" />
+              <option name="errorReportingKind" value="in_log" />
             </LanguageServerDefinitionSettings>
           </value>
         </entry>

@@ -56,6 +56,11 @@ public class Simulation
         List<Astro> astros = _dataLoader.Astros;
         _astroActual = astros.First(a => (a.Id - _camera.TargetId) == 0);
 
+        // Variables for the independent physics calculations
+        double accumulator = 0;
+        double alpha = 0;
+        double FIXED_DT = 1 / 60.0; // Fixed time for physics calculations
+
         // 5. Bucle principal
         while (!Raylib.WindowShouldClose())
         {
@@ -75,18 +80,37 @@ public class Simulation
                 // Actualizar el astro actual solo cuando cambia el objetivo
                 _astroActual = astros.First(a => (a.Id - _camera.TargetId) == 0);
             }
+
+
             // Física: Una vez por frame, independiente de FPS
-            double scaledTimeStep = _timeStep * dt * 60.0; // Normalizado a 60 FPS
-            _physicsEngine.UpdatePhysics(astros, scaledTimeStep, _n);
+            accumulator += dt;
+
+            while (accumulator >= FIXED_DT)
+            {
+                // Guardar posiciones anteriores
+                foreach (Astro astro in _dataLoader.Astros)
+                {
+                    astro.PastPosition = astro.Position;
+                }
+
+                for (int i = 0; i < _n; i++)
+                {
+                    _physicsEngine.UpdatePhysics(_dataLoader.Astros, _targetTimeStep / _n);
+                }
+
+                accumulator -= FIXED_DT;
+            }
+
+            alpha = accumulator / FIXED_DT;
+
+            foreach (Astro astro in _dataLoader.Astros)
+            {
+                astro.RenderPosition = (astro.PastPosition * (1 - alpha) + astro.Position * alpha);
+            }
+
             RenderSystem.SaveTrail(astros);
 
-            // Interpolación visual (suave, basada en dt para ser independiente de FPS)
-            double smoothFactor = 1.0 - Math.Pow(1.0 - _camera.LerpSpeed, dt * 60.0);
-
-            _timeStep += (_targetTimeStep - _timeStep) * smoothFactor;
-            _n += (int)((_targetN - _n) * smoothFactor);
-
-            _camera.Update(dt, _astroActual.Position);
+            _camera.Update(dt, _astroActual.RenderPosition);
 
             // Dibujo del frame
             RenderSystem.Draw(

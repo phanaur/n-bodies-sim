@@ -106,7 +106,7 @@ public class RenderSystem
         foreach (Astro astro in astros)
         {
             // Guardamos la posición en la traza
-            astro.Trail.Enqueue(astro.Position);
+            astro.Trail.Enqueue(astro.RenderPosition);
 
             if (astro.Trail.Count > astro.TrailLength)
             {
@@ -297,7 +297,7 @@ public class RenderSystem
     private static void DrawCross(float ladoCruz, Astro astroActual, Camera camera)
     {
 
-        double distCamPlan = Vector2D.Distance(camera.Position, astroActual.Position);
+        double distCamPlan = Vector2D.Distance(camera.Position, astroActual.RenderPosition);
         bool objBloqueado = distCamPlan < 1e7;
 
         Color colorCruz;
@@ -418,7 +418,7 @@ public class RenderSystem
                 continue;
             }
 
-            Vector2 posPantalla = camera.WorldToScreen(astro.Position);
+            Vector2 posPantalla = camera.WorldToScreen(astro.RenderPosition);
 
             // Calcular la distancia en pantalla desde el Sol hasta el astro (en píxeles)
             float distanciaDesdeElSol = Vector2.Distance(posSolPantalla, posPantalla);
@@ -441,15 +441,6 @@ public class RenderSystem
                 DrawTriangles(posPantalla, camera, astro);
             else
                 DrawAstro(astro, posPantalla, camera, textAlign);
-
-            if (!enPantalla)
-            {
-                DrawTriangles(posPantalla, camera, astro);
-            }
-            else
-            {
-                DrawAstro(astro, posPantalla, camera, textAlign);
-            }
         }
     }
 

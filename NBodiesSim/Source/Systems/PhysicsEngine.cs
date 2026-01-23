@@ -52,13 +52,10 @@ public class PhysicsEngine
             astro.Position += astro.Velocity * deltaTime;
         }
     }
-    public void UpdatePhysics(List<Astro> astros, double timeStep, double n)
+    public void UpdatePhysics(List<Astro> astros, double timestep)
     {
-        for (int i = 0; i < n; i++)
-        {
             UpdateAcceleration(astros);
-            UpdateVelocity(astros, timeStep / n);
-            UpdatePosition(astros, timeStep / n);
-        }
+            UpdateVelocity(astros, timestep);
+            UpdatePosition(astros, timestep);
     }
 }

@@ -44,6 +44,10 @@ public class Astro
     // Non-fixed variables
     public required Vector2D Position { get; set; }
 
+    public required Vector2D PastPosition { get; set; }
+
+    public required Vector2D RenderPosition { get; set; } = new Vector2D();
+
     public required Vector2D Velocity { get; set; }
 
     public required Vector2D Acceleration { get; set; }
