@@ -8,11 +8,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c2185b39-c04a-4350-8a5c-e9dbe45d8749" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.NBodiesSim/.idea/LanguageServersSettings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.NBodiesSim/.idea/LanguageServersSettings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.NBodiesSim/.idea/indexLayout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.NBodiesSim/.idea/indexLayout.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.NBodiesSim/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.NBodiesSim/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NBodiesSim/Data/astrosConfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Data/astrosConfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NBodiesSim/Data/astrosData.json" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Data/astrosData.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Core/Vector2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Core/Vector2D.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Data/DataLoader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Data/DataLoader.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Models/Astro.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Models/Astro.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Models/DTOs/AstroData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Models/DTOs/AstroData.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Simulation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Simulation.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Systems/PhysicsEngine.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Systems/PhysicsEngine.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Systems/RenderSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Systems/RenderSystem.cs" afterDir="false" />
@@ -150,7 +152,7 @@
       <workItem from="1769182377172" duration="1189000" />
       <workItem from="1769183772708" duration="656000" />
       <workItem from="1769184455121" duration="4046000" />
-      <workItem from="1769188566368" duration="1476000" />
+      <workItem from="1769188566368" duration="8949000" />
     </task>
     <task id="LOCAL-00001" summary="Changing project structure">
       <option name="closed" value="true" />
@@ -200,7 +202,15 @@
       <option name="project" value="LOCAL" />
       <updated>1769166079264</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="&quot;adding independent physics calculation system. No the physics is completely independen of the FPS&quot;">
+      <option name="closed" value="true" />
+      <created>1769190093941</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1769190093941</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -227,7 +237,8 @@
     <MESSAGE value="Solving a problem with solution name" />
     <MESSAGE value="workspace.xml change" />
     <MESSAGE value="&quot;adding agent guidelines&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="&quot;adding agent guidelines&quot;" />
+    <MESSAGE value="&quot;adding independent physics calculation system. No the physics is completely independen of the FPS&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="&quot;adding independent physics calculation system. No the physics is completely independen of the FPS&quot;" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

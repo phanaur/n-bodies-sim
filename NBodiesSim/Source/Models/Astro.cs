@@ -39,7 +39,7 @@ public class Astro
     // Traza de la órbita
     public required Queue<Vector2D> Trail { get; init; } = new Queue<Vector2D>();
 
-    public int? TrailLength { get; init; } = 100;
+    public double DesiredTrailTime { get; init; } = 86400 * 30; // Tiempo en segundos que queremos ver (ej: 30 días)
 
     // Non-fixed variables
     public required Vector2D Position { get; set; }

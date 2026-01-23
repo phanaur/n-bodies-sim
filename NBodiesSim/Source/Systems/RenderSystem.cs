@@ -33,7 +33,7 @@ public class RenderSystem
     // Obtención de la posición del Sol en pantalla (en píxeles)
     private static Vector2 GetSunPositionScreen(Astro sol, Camera camera)
     {
-        return camera.WorldToScreen(sol.Position);
+        return camera.WorldToScreen(sol.RenderPosition);
     }
 
     // Generación de las coordenadas para posicionar el triángulo que representa un planeta que no se vea en pantalla.
@@ -101,14 +101,20 @@ public class RenderSystem
 
         return (triangle, posTriangulo);
     }
-    public static void SaveTrail(List<Astro> astros)
+    public static void SaveTrail(List<Astro> astros, double timeStep)
     {
         foreach (Astro astro in astros)
         {
             // Guardamos la posición en la traza
             astro.Trail.Enqueue(astro.RenderPosition);
 
-            if (astro.Trail.Count > astro.TrailLength)
+            // Calcular cuántos puntos necesitamos según el timeStep actual
+            int effectiveTrailLength = (int)(astro.DesiredTrailTime / timeStep);
+
+            // Asegurar un mínimo razonable
+            if (effectiveTrailLength < 10) effectiveTrailLength = 10;
+
+            if (astro.Trail.Count > effectiveTrailLength)
             {
                 astro.Trail.Dequeue();
             }
@@ -154,7 +160,7 @@ public class RenderSystem
             {
                 // Calculamos el alpha basado en la posición en la cola
                 float alpha = (float)i / totalPoints;
-                byte alphaByte = (byte)(alpha * 200);
+                byte alphaByte = (byte)(50 + alpha * 200);
 
                 // Asignamos color al vértice actual
                 Rlgl.Color4ub(astro.Color.R, astro.Color.G, astro.Color.B, alphaByte);
@@ -203,7 +209,7 @@ public class RenderSystem
         if (astroActual is { HasRings: true, RingColor: not null })
         {
             // posPantalla del astroActual
-            Vector2 posPantalla = camera.WorldToScreen(astroActual.Position);
+            Vector2 posPantalla = camera.WorldToScreen(astroActual.RenderPosition);
 
             // Factor para que los anillos se vean proporcionalmente correctos
             double ringScale = camera.DistanceScale * 0.8;
@@ -438,9 +444,13 @@ public class RenderSystem
                 Raylib.CheckCollisionPointRec(posPantalla, screenBounds);
 
             if (!enPantalla)
+            {
                 DrawTriangles(posPantalla, camera, astro);
+            }
             else
+            {
                 DrawAstro(astro, posPantalla, camera, textAlign);
+            }
         }
     }
 

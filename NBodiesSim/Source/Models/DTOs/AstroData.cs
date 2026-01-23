@@ -22,7 +22,7 @@ internal class AstroData
 
     public required double[] Velocity { get; set; } // [x, y]
 
-    public required int TrailLength { get; set; }
+    public double DesiredTrailTime { get; set; } = 86400 * 30; // Tiempo en segundos (default: 30 días)
 
     // En caso de tener anillos (hecho entero por la IA):
     public bool HasRings { get; set; } = false;

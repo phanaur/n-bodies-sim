@@ -33,13 +33,13 @@ public class DataLoader
         // Iteración sobre la lista de astros deserializados
         foreach (AstroData data in wrapperAstroData.Astros)
         {
-            int trailLength = data.TrailLength;
+            double desiredTrailTime = data.DesiredTrailTime;
 
-            // Si es satélite, heredará el TrailLength de su planeta padre
+            // Si es satélite, heredará el DesiredTrailTime de su planeta padre
             if (data.ParentId != null)
             {
                 AstroData? parentData = wrapperAstroData.Astros.FirstOrDefault(p => (p.Id - data.ParentId) == 0);
-                if (parentData != null) trailLength = parentData.TrailLength;
+                if (parentData != null) desiredTrailTime = parentData.DesiredTrailTime;
             }
 
             // Comprobamos si tiene anillos
@@ -63,7 +63,7 @@ public class DataLoader
                 RenderPosition = new Vector2D(data.Position[0], data.Position[1]),
                 Velocity = new Vector2D(data.Velocity[0], data.Velocity[1]),
                 Acceleration = Vector2D.Zero,
-                TrailLength = trailLength,
+                DesiredTrailTime = desiredTrailTime,
                 Trail = new Queue<Vector2D>(),
                 HasRings = data.HasRings,
                 InnerRingRadius = data.InnerRingRadius,

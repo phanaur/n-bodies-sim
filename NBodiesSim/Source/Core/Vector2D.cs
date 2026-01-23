@@ -63,6 +63,7 @@ public struct Vector2D
     public static Vector2D operator *(int escalar, Vector2D vector) =>
         new Vector2D(vector.X * (double)escalar, vector.Y * (double)escalar);
 
+
     public static Vector2D operator *(Vector2D vector, float escalar) =>
         new Vector2D(vector.X * (double)escalar, vector.Y * (double)escalar);
 

@@ -13,10 +13,7 @@ public class Simulation
 
     // 4. Establecimiento de la configuración inicial
     private double _timeStep = 86400; // Cada frame de la simulación significa un día terrestre en tiempo real.
-    private int _n = 1000; // Número de cálculos en los que se dividirá timeStep. Cuanto mayor sea, mejor precisión.
-
-    private double _targetTimeStep = 86400; // Objetivo de timeStep
-    private double _targetN = 1000; // Objetivo de n
+    private double _n = 100; // Número de cálculos en los que se dividirá timeStep. Cuanto mayor sea, mejor precisión.
 
     private int _textAlign = 40;
     private const float LadoCruz = 10;
@@ -61,6 +58,13 @@ public class Simulation
         double alpha = 0;
         double FIXED_DT = 1 / 60.0; // Fixed time for physics calculations
 
+        // Calentamiento: ejecutar física una vez para inicializar PastPosition
+        foreach (Astro astro in astros)
+        {
+            astro.PastPosition = astro.Position;
+        }
+        _physicsEngine.UpdateRK4(astros, _timeStep / _n);
+
         // 5. Bucle principal
         while (!Raylib.WindowShouldClose())
         {
@@ -71,14 +75,18 @@ public class Simulation
                 _camera.TargetId = newConfig.Value.Id;
                 _camera.TargetDistanceScale = newConfig.Value.TargetDistanceScale;
                 _camera.TargetRadiusScale = newConfig.Value.TargetRadiusScale;
-                _targetTimeStep = newConfig.Value.TargetTimeStep;
-                _targetN = newConfig.Value.TargetN;
+                _timeStep = newConfig.Value.TargetTimeStep;
+                _n = newConfig.Value.TargetN;
                 _camera.ResetLerp();
                 _textAlign = newConfig.Value.TextAlign;
                 _keyName = newConfig.Value.KeyName;
                 
                 // Actualizar el astro actual solo cuando cambia el objetivo
                 _astroActual = astros.First(a => (a.Id - _camera.TargetId) == 0);
+                foreach (Astro astro in _dataLoader.Astros)
+                {
+                    astro.RenderPosition = (astro.PastPosition * (1 - alpha) + astro.Position * alpha);
+                }
             }
 
 
@@ -95,7 +103,8 @@ public class Simulation
 
                 for (int i = 0; i < _n; i++)
                 {
-                    _physicsEngine.UpdatePhysics(_dataLoader.Astros, _targetTimeStep / _n);
+                    //_physicsEngine.UpdatePhysics(_dataLoader.Astros, _targetTimeStep / _n);
+                    _physicsEngine.UpdateRK4(_dataLoader.Astros, _timeStep / _n);
                 }
 
                 accumulator -= FIXED_DT;
@@ -108,7 +117,9 @@ public class Simulation
                 astro.RenderPosition = (astro.PastPosition * (1 - alpha) + astro.Position * alpha);
             }
 
-            RenderSystem.SaveTrail(astros);
+            RenderSystem.SaveTrail(astros, _timeStep);
+
+
 
             _camera.Update(dt, _astroActual.RenderPosition);
 

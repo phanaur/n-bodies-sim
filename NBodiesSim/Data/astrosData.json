@@ -8,7 +8,7 @@
       "Color": [253, 249, 0, 255],
       "Position": [0, 0],
       "Velocity": [0, 0],
-      "TrailLength": 100
+      "DesiredTrailTime": 17280000
     },
     {
       "Id": 1,
@@ -18,7 +18,7 @@
       "Color": [255, 0, 0, 255],
       "Position": [5.79e10, 0],
       "Velocity": [0, 4.79e4],
-      "TrailLength": 188
+      "DesiredTrailTime": 16243200
     },
     {
       "Id": 2,
@@ -28,7 +28,7 @@
       "Color": [255, 161, 0, 255],
       "Position": [1.082e11, 0],
       "Velocity": [0, 3.5e4],
-      "TrailLength": 325
+      "DesiredTrailTime": 27734400
     },
     {
       "Id": 3,
@@ -38,7 +38,7 @@
       "Color": [0, 121, 241, 255],
       "Position": [1.5e11, 0],
       "Velocity": [0, 3e4],
-      "TrailLength": 465
+      "DesiredTrailTime": 40176000
     },
     {
       "Id": 3.1,
@@ -49,7 +49,7 @@
       "Color": [200, 200, 200, 255],
       "Position": [1.50384e11, 0],
       "Velocity": [0, 31022],
-      "TrailLength": 0
+      "DesiredTrailTime": 0
     },
     {
       "Id": 4,
@@ -59,7 +59,7 @@
       "Color": [255, 0, 0, 255],
       "Position": [2.279e11, 0],
       "Velocity": [0, 2.41e4],
-      "TrailLength": 787
+      "DesiredTrailTime": 67996800
     },
     {
       "Id": 4.1,
@@ -70,7 +70,7 @@
       "Color": [160, 160, 160, 255],
       "Position": [2.279094e11, 0],
       "Velocity": [0, 26229],
-      "TrailLength": 0
+      "DesiredTrailTime": 0
     },
     {
       "Id": 4.2,
@@ -81,7 +81,7 @@
       "Color": [180, 180, 180, 255],
       "Position": [2.279234e11, 0],
       "Velocity": [0, 25450],
-      "TrailLength": 0
+      "DesiredTrailTime": 0
     },
     {
       "Id": 5,
@@ -91,7 +91,7 @@
       "Color": [165, 42, 42, 255],
       "Position": [7.785e11, 0],
       "Velocity": [0, 1.31e4],
-      "TrailLength": 4433
+      "DesiredTrailTime": 382924800
     },
     {
       "Id": 5.1,
@@ -102,7 +102,7 @@
       "Color": [255, 215, 0, 255],
       "Position": [7.789217e11, 0],
       "Velocity": [0, 30421],
-      "TrailLength": 0
+      "DesiredTrailTime": 0
     },
     {
       "Id": 5.2,
@@ -113,7 +113,7 @@
       "Color": [245, 245, 220, 255],
       "Position": [7.791711e11, 0],
       "Velocity": [0, 26838],
-      "TrailLength": 0
+      "DesiredTrailTime": 0
     },
     {
       "Id": 5.3,
@@ -124,7 +124,7 @@
       "Color": [190, 190, 190, 255],
       "Position": [7.795704e11, 0],
       "Velocity": [0, 23979],
-      "TrailLength": 0
+      "DesiredTrailTime": 0
     },
     {
       "Id": 5.4,
@@ -135,7 +135,7 @@
       "Color": [139, 137, 137, 255],
       "Position": [7.803827e11, 0],
       "Velocity": [0, 21288],
-      "TrailLength": 0
+      "DesiredTrailTime": 0
     },
     {
       "Id": 6,
@@ -145,7 +145,7 @@
       "Color": [255, 203, 0, 255],
       "Position": [1.432e12, 0],
       "Velocity": [0, 9.7e3],
-      "TrailLength": 10859,
+      "DesiredTrailTime": 938476800,
       "HasRings": true,
       "InnerRingRadius": 7.47e7,
       "OuterRingRadius": 1.402e8,
@@ -160,7 +160,7 @@
       "Color": [255, 165, 79, 255],
       "Position": [1.433222e12, 0],
       "Velocity": [0, 15268],
-      "TrailLength": 0
+      "DesiredTrailTime": 0
     },
     {
       "Id": 6.2,
@@ -171,7 +171,7 @@
       "Color": [200, 200, 200, 255],
       "Position": [1.432527e12, 0],
       "Velocity": [0, 18185],
-      "TrailLength": 0
+      "DesiredTrailTime": 0
     },
     {
       "Id": 6.3,
@@ -182,7 +182,7 @@
       "Color": [240, 248, 255, 255],
       "Position": [1.432238e12, 0],
       "Velocity": [0, 22328],
-      "TrailLength": 0
+      "DesiredTrailTime": 0
     },
     {
       "Id": 7,
@@ -192,7 +192,7 @@
       "Color": [135, 206, 235, 255],
       "Position": [2.867e12, 0],
       "Velocity": [0, 6.8e3],
-      "TrailLength": 30787,
+      "DesiredTrailTime": 2658268800,
       "HasRings": true,
       "InnerRingRadius": 3.8e7,
       "OuterRingRadius": 5.115e7,
@@ -207,7 +207,7 @@
       "Color": [210, 210, 210, 255],
       "Position": [2.867436e12, 0],
       "Velocity": [0, 10446],
-      "TrailLength": 0
+      "DesiredTrailTime": 0
     },
     {
       "Id": 7.2,
@@ -218,7 +218,7 @@
       "Color": [190, 190, 190, 255],
       "Position": [2.867584e12, 0],
       "Velocity": [0, 9951],
-      "TrailLength": 0
+      "DesiredTrailTime": 0
     },
     {
       "Id": 8,
@@ -228,7 +228,7 @@
       "Color": [0, 121, 241, 255],
       "Position": [4.515e12, 0],
       "Velocity": [0, 5.4e3],
-      "TrailLength": 60290,
+      "DesiredTrailTime": 5217696000,
       "HasRings": true,
       "InnerRingRadius": 4.1e7,
       "OuterRingRadius": 6.3e7,
@@ -243,7 +243,7 @@
       "Color": [255, 192, 203, 255],
       "Position": [4.515355e12, 0],
       "Velocity": [0, 1011],
-      "TrailLength": 0
+      "DesiredTrailTime": 0
     },
     {
       "Id": 100,
@@ -253,7 +253,7 @@
       "Color": [139, 125, 107, 255],
       "Position": [4.14e11, 0],
       "Velocity": [0, 17900],
-      "TrailLength": 1681
+      "DesiredTrailTime": 145756800
     },
     {
       "Id": 101,
@@ -263,7 +263,7 @@
       "Color": [150, 140, 120, 255],
       "Position": [0, 3.53e11],
       "Velocity": [-19340, 0],
-      "TrailLength": 1325
+      "DesiredTrailTime": 114480000
     },
     {
       "Id": 102,
@@ -273,7 +273,7 @@
       "Color": [130, 120, 100, 255],
       "Position": [-4.15e11, 0],
       "Velocity": [0, -17880],
-      "TrailLength": 1686
+      "DesiredTrailTime": 145756800
     },
     {
       "Id": 103,
@@ -283,7 +283,7 @@
       "Color": [120, 110, 95, 255],
       "Position": [0, -4.70e11],
       "Velocity": [16780, 0],
-      "TrailLength": 2036
+      "DesiredTrailTime": 176515200
     },
     {
       "Id": 200,
@@ -293,7 +293,7 @@
       "Color": [200, 180, 160, 255],
       "Position": [5.906e12, 0],
       "Velocity": [0, 4670],
-      "TrailLength": 90560
+      "DesiredTrailTime": 7838044800
     },
     {
       "Id": 201,
@@ -303,7 +303,7 @@
       "Color": [180, 190, 200, 255],
       "Position": [6.44e12, 0],
       "Velocity": [0, 5556],
-      "TrailLength": 104755
+      "DesiredTrailTime": 9071884800
     },
     {
       "Id": 202,
@@ -313,7 +313,7 @@
       "Color": [180, 150, 130, 255],
       "Position": [-6.85e12, 0],
       "Velocity": [0, -4160],
-      "TrailLength": 111687
+      "DesiredTrailTime": 9667795200
     },
     {
       "Id": 203,
@@ -323,7 +323,7 @@
       "Color": [200, 190, 180, 255],
       "Position": [0, -6.45e12],
       "Velocity": [4290, 0],
-      "TrailLength": 103468
+      "DesiredTrailTime": 8957875200
     }
   ]
 }
