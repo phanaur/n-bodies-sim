@@ -1,7 +1,7 @@
 /*
- * Este es el motor de cámara de la simulación. Se encarga de actualizar las posiciones de los cuerpos del Sistema Solar
- * en función de qué cuerpo se ha seleccionado. También se encarga de realizar la transición suave en los cambios del
- * cuerpo escogido.
+ * This is the simulation camera engine. It updates the positions of the Solar System bodies
+ * depending on which body is selected. It also handles smooth transitions when changing
+ * the chosen body.
  */
 using System.Numerics;
 using Raylib_cs;
@@ -10,23 +10,23 @@ namespace NBodiesSim.Source.Core;
 
 public class Camera
 {
-    // Propiedades de estado actual
+    // Current state properties
     public Vector2D Position { get; private set; } = Vector2D.Zero;
-    public double DistanceScale { get; private set; } = 1e9; // Parámetro de escala para las distancias orbitales
-    public double RadiusScale { get; private set; } = 1e6; // Parámetro de escala para los radios de los cuerpos
+    public double DistanceScale { get; private set; } = 1e9; // Scale parameter for orbital distances
+    public double RadiusScale { get; private set; } = 1e6; // Scale parameter for body radii
     
-    // Dimensiones del viewport
+    // Viewport dimensions
     public int Width { get; set; }
     public int Height { get; set; }
 
-    // Propiedades "objetivo" para interpolación: establece cambios en las escalas, para proceder a una transición suave
-    // así como cambios en el cuerpo escogido.
+    // "Target" properties for interpolation: set changes in scales for a smooth transition
+    // as well as changes in the chosen body.
     public double TargetDistanceScale { get; set; } = 1e9;
     public double TargetRadiusScale { get; set; } = 1e6;
-    public float TargetId { get; set; } = 0; // ID del astro a seguir
+    public float TargetId { get; set; } = 0; // ID of the body to follow
 
-    // Configuración de interpolación
-    public double LerpSpeed { get; set; } = 0.08;
+    // Interpolation configuration
+    private double LerpSpeed { get; set; } = 0.08;
     private const double InitialLerpSpeed = 0.08;
 
     public Camera()
@@ -37,33 +37,33 @@ public class Camera
 
     public void Update(double dt, Vector2D targetPosition)
     {
-        // Actualizar dimensiones si la ventana cambia
+        // Update dimensions if the window changes
         Width = Raylib.GetScreenWidth();
         Height = Raylib.GetScreenHeight();
 
-        // Interpolación visual (suave, basada en dt para ser independiente de FPS)
+        // Visual interpolation (smooth, based on dt to be FPS-independent)
         double smoothFactor = 1.0 - Math.Pow(1.0 - LerpSpeed, dt * 60.0);
 
         RadiusScale += (TargetRadiusScale - RadiusScale) * smoothFactor;
         DistanceScale += (TargetDistanceScale - DistanceScale) * smoothFactor;
         
-        // Mover la cámara hacia la posición del objetivo
+        // Move the camera toward the target position
         Position += (targetPosition - Position) * smoothFactor;
 
-        // Actualizar LerpSpeed gradualmente (efecto de aceleración en la transición)
+        // Update LerpSpeed gradually (acceleration effect in the transition)
         if (LerpSpeed < 1)
         {
             LerpSpeed = Math.Min(1.0, LerpSpeed * (1.0 + dt));
         }
     }
 
-    public Vector2 Center => new Vector2((float)Width / 2, (float)Height / 2);
+    public Vector2 Center => new Vector2((float)Width / 2, (float)Height / 2); // Returns the center of the screen
     public void ResetLerp()
     {
-        LerpSpeed = InitialLerpSpeed; // Reseteo de la variable cuando se realizan transiciones nuevas
+        LerpSpeed = InitialLerpSpeed; // Reset the variable when new transitions happen
     }
     
-    // Método helper para convertir coordenadas del mundo a pantalla
+    // Helper method to convert world coordinates to the screen
     public Vector2 WorldToScreen(Vector2D worldPos)
     {
         Vector2 p = (worldPos - Position).ToVector2((float)DistanceScale);

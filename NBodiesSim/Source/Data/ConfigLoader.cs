@@ -1,6 +1,6 @@
 /*
- * Esta clase se encarga de cargar la configuración de la cámara desde el archivo Data/astrosConfig.json, ubicado en la
- * raíz del proyecto.
+ * This class loads the camera configuration from the Data/astrosConfig.json file located at the
+ * project root.
  */
 using System.Text.Json;
 using NBodiesSim.Source.Models.DTOs;
@@ -10,31 +10,39 @@ namespace NBodiesSim.Source.Data;
 
 public class ConfigLoader
 {
-    // Diccionario de configuración. Cada key tiene asociado un objeto AstroConfig
+    // Configuration dictionary. Each key has an associated AstroConfig object
     public Dictionary<KeyboardKey, AstroConfig> CameraConf { get; } = new Dictionary<KeyboardKey, AstroConfig>();
 
-    // Parámetros para la deserialización del archivo .json
+    // Parameters for deserializing the .json file
     private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
     {
         Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() },
-        PropertyNameCaseInsensitive = true // Buena práctica
+        PropertyNameCaseInsensitive = true // Best practice
     };
 
     public ConfigLoader()
     {
-        // Intento de carga desde archivo JSON
-        string jsonAstroConfig = File.ReadAllText("Data/astrosConfig.json");
+        const string filePath = "Data/astrosConfig.json";
 
-        // Le decimos qué tipo debe esperar
-        WrapperAstroConfig? wrapperAstrosConfig = JsonSerializer.Deserialize<WrapperAstroConfig>(jsonAstroConfig, JsonOptions);
-
-        // Ahora recorremos toda la lista deserializada y construimos los objetos
-        if (wrapperAstrosConfig?.AstrosConfig == null)
+        // Check if the file exists
+        if (!File.Exists(filePath))
         {
-            throw new Exception("Error al cargar el archivo JSON o está vacío");
+            throw new FileNotFoundException($"File not found: {filePath}");
         }
 
-        // Iteramos sobre cada configuración de la lista que viene del JSON
+        // Attempt to load from a JSON file
+        string jsonAstroConfig = File.ReadAllText(filePath);
+
+        // Tell it which type to expect
+        WrapperAstroConfig? wrapperAstrosConfig = JsonSerializer.Deserialize<WrapperAstroConfig>(jsonAstroConfig, JsonOptions);
+
+        // Now walk the deserialized list and build the objects
+        if (wrapperAstrosConfig?.AstrosConfig == null)
+        {
+            throw new Exception("Error loading JSON file or it is empty");
+        }
+
+        // Iterate over each configuration from the JSON list
         foreach (AstroConfig config in wrapperAstrosConfig.AstrosConfig)
         {
             CameraConf[config.Key] = config;

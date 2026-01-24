@@ -1,7 +1,7 @@
 /*
- * Esta clase genera un objeto encargado de leer las intrucciones del usuario, procesarlas y ajustar los valores de la
- * cámara y la configuración de la simulación. En función de la tecla que el usuario presione, se devuelve una configuración
- * del diccionario que contiene las configuraciones de cada cuerpo con su tecla de teclado correspondiente.
+ * This class generates an object responsible for reading user instructions, processing them, and adjusting the camera
+ * values and simulation configuration. Depending on the key the user presses, it returns a configuration from the
+ * dictionary containing the settings for each body with its corresponding keyboard key.
  */
 
 using NBodiesSim.Source.Models.DTOs;

@@ -1,7 +1,7 @@
 /*
- * Esta clase se encarga de cargar la información de todos los cuerpos que se muestran en el Sistema Solar, obteniendo la
- * información del archivo Data/astrosData.json, situado en la raíz del proyecto. Genera una lista de objetos Astro, con
- * la información necesaria.
+ * This class is responsible for loading the information of all bodies displayed in the Solar System, obtaining the
+ * information from the Data/astrosData.json file, located at the project root. It generates a list of Astro objects with
+ * the necessary information.
  */
 using System.Text.Json;
 using NBodiesSim.Source.Core;
@@ -13,43 +13,50 @@ namespace NBodiesSim.Source.Data;
 
 public class DataLoader
 {
-    // Lista de astros
+    // List of astros
     public readonly List<Astro> Astros = new List<Astro>();
 
     // Constructor
     public DataLoader()
     {
+        const string filePath = "Data/astrosData.json";
 
-        // Generación de astros
-        string jsonAstroData = File.ReadAllText("Data/astrosData.json");
-        WrapperAstroData? wrapperAstroData = JsonSerializer.Deserialize<WrapperAstroData>(jsonAstroData);
-
-        // Comprobación de la deserialización.
-        if (wrapperAstroData?.Astros == null)
+        // Check if the file exists
+        if (!File.Exists(filePath))
         {
-            throw new Exception("Error al cargar el archivo JSON o está vacío");
+            throw new FileNotFoundException($"File not found: {filePath}");
         }
 
-        // Iteración sobre la lista de astros deserializados
+        // Generate astros
+        string jsonAstroData = File.ReadAllText(filePath);
+        WrapperAstroData? wrapperAstroData = JsonSerializer.Deserialize<WrapperAstroData>(jsonAstroData);
+
+        // Check deserialization
+        if (wrapperAstroData?.Astros == null)
+        {
+            throw new Exception("Error loading JSON file or it is empty");
+        }
+
+        // Iterate over the deserialized astro list
         foreach (AstroData data in wrapperAstroData.Astros)
         {
             double desiredTrailTime = data.DesiredTrailTime;
 
-            // Si es satélite, heredará el DesiredTrailTime de su planeta padre
+            // If it's a satellite, inherit DesiredTrailTime from its parent planet
             if (data.ParentId != null)
             {
                 AstroData? parentData = wrapperAstroData.Astros.FirstOrDefault(p => (p.Id - data.ParentId) == 0);
                 if (parentData != null) desiredTrailTime = parentData.DesiredTrailTime;
             }
 
-            // Comprobamos si tiene anillos
+            // Check if it has rings
             Color? ringColor = null;
             if (data is { HasRings: true, RingColor: not null })
             {
                 ringColor = new Color(data.RingColor[0], data.RingColor[1], data.RingColor[2], data.RingColor[3]);
             }
 
-            // Creación del objeto Astro para cada cuerpo
+            // Create the Astro object for each body
             var astro = new Astro
             {
                 Id = data.Id,
@@ -70,7 +77,7 @@ public class DataLoader
                 OuterRingRadius = data.OuterRingRadius,
                 RingColor = ringColor,
             };
-            Astros.Add(astro); // se añade a la lista de astros
+            Astros.Add(astro); // Add to astro list
         }
     }
 }

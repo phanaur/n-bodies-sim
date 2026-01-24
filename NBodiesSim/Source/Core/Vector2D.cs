@@ -1,7 +1,6 @@
 /*
- * Esta es la estructura de datos Vector2D, un vector de dos dimensiones con precisión double. Tiene incluidas las sobrecargas
- * de los operadores, así como operaciones básicas de vectores, como la obtención de su módulo, la distancia entre dos
- * vectores, etc.
+ * This is the Vector2D data structure, a two-dimensional vector with double precision. It includes operator overloads
+ * as well as basic vector operations, such as obtaining its magnitude, the distance between two vectors, etc.
  */
 using System.Numerics;
 
@@ -15,13 +14,13 @@ public struct Vector2D
         Y = y;
     }
 
-    public static Vector2D Zero => new Vector2D(0, 0); // Establece un Vector2D con las componentes (0,0)
+    public static Vector2D Zero => new Vector2D(0, 0); // Defines a Vector2D with components (0,0)
 
     public double X { get; set; }
 
     public double Y { get; set; }
 
-    // Sobrecarga de operadores
+    // Operator overloads
     
     public static Vector2D operator +(Vector2D operand) => operand;
 
@@ -33,25 +32,25 @@ public struct Vector2D
 
     public static Vector2D operator /(Vector2D vector, int escalar)
     {
-        return escalar == 0 ? throw new ArgumentException("No se puede dividir entre 0", nameof(escalar)) :
+        return escalar == 0 ? throw new ArgumentException("Cannot divide by 0", nameof(escalar)) :
             new Vector2D(vector.X / (double)escalar, vector.Y / (double)escalar);
     }
 
     public static Vector2D operator /(Vector2D vector, float escalar)
     {
-        return escalar == 0 ? throw new ArgumentException("No se puede dividir entre 0", nameof(escalar)) :
+        return escalar == 0 ? throw new ArgumentException("Cannot divide by 0", nameof(escalar)) :
             new Vector2D(vector.X / (double)escalar, vector.Y / (double)escalar);
     }
 
     public static Vector2D operator /(Vector2D vector, decimal escalar)
     {
-        return escalar == 0 ? throw new ArgumentException("No se puede dividir entre 0", nameof(escalar)) :
+        return escalar == 0 ? throw new ArgumentException("Cannot divide by 0", nameof(escalar)) :
             new Vector2D(vector.X / (double)escalar, vector.Y / (double)escalar);
     }
 
     public static Vector2D operator /(Vector2D vector, double escalar)
     {
-        return escalar == 0 ? throw new ArgumentException("No se puede dividir entre 0", nameof(escalar)) :
+        return escalar == 0 ? throw new ArgumentException("Cannot divide by 0", nameof(escalar)) :
             new Vector2D(vector.X / escalar, vector.Y / escalar);
     }
 
@@ -84,38 +83,38 @@ public struct Vector2D
 
     public static Vector2D operator *(Vector2D left, Vector2D right) => new Vector2D(left.X * right.X, left.Y * right.Y);
 
-    // Producto escalar de dos vectores Vector2D
+    // Dot product of two Vector2D vectors
     public static double Dot(Vector2D left, Vector2D right) => (left.X * right.X) + (left.Y * right.Y);
     
-    // Devolución de Vector2D con componentes (1,1)
+    // Returns a Vector2D with components (1,1)
 
     public static Vector2D One => new Vector2D(1, 1);
 
-    // Vector unitario en el eje X
+    // Unit vector on the X axis
     public static Vector2D UnitX => new Vector2D(1, 0);
     
-    // Vector unitario en el eje Y
+    // Unit vector on the Y axis
     public static Vector2D UnitY => new Vector2D(0, 1);
 
-    // Adición de dos vectores Vector2D
+    // Addition of two Vector2D vectors
     public static Vector2D Add(Vector2D left, Vector2D right) => new Vector2D(left.X + right.X, left.Y + right.Y);
 
-    // Resta de dos vectores Vector2D
+    // Subtraction of two Vector2D vectors
     public static Vector2D Subtract(Vector2D left, Vector2D right) => new Vector2D(left.X - right.X, left.Y - right.Y);
 
-    // Normalización de un vector Vector2D
+    // Normalization of a Vector2D vector
     public static Vector2D Normalize(Vector2D vector) => vector.Length() < 1e-10 ? Zero :
         new Vector2D(vector.X, vector.Y) / vector.Length();
 
-    // Obtención de la distancia entre dos vectores Vector2D
+    // Distance between two Vector2D vectors
     public static double Distance(Vector2D left, Vector2D right) =>
         Math.Sqrt(((left.X - right.X) * (left.X - right.X)) + ((left.Y - right.Y) * (left.Y - right.Y)));
 
-    // Obtención de la distancia al cuadrado entre dos vectores Vector2D
+    // Squared distance between two Vector2D vectors
     public static double DistanceSquared(Vector2D left, Vector2D right) =>
         ((left.X - right.X) * (left.X - right.X)) + ((left.Y - right.Y) * (left.Y - right.Y));
 
-    // División de las componentes de un vector Vector2D por un escalar
+    // Division of Vector2D components by a scalar
     public static Vector2D Divide(Vector2D vector, double escalar) =>
         escalar == 0
             ? throw new ArgumentException("No se puede dividir entre 0", nameof(escalar))
@@ -125,12 +124,12 @@ public struct Vector2D
             ? throw new ArgumentException("No se puede dividir entre 0", nameof(escalar))
             : new Vector2D(vector.X / escalar, vector.Y / escalar);
 
-    // Obtención del vector negado
+    // Negated vector
     public static Vector2D Negate(Vector2D vector) => -vector;
 
     public Vector2D Negate() => new Vector2D(-X, -Y);
 
-    // Multiplicación de las componentes de un vector Vector2D por un escalar
+    // Multiplication of Vector2D components by a scalar
     public static Vector2D Multiply(Vector2D vector, double escalar) => vector * escalar;
 
     public static Vector2D Multiply(Vector2D vector, float escalar) => vector * escalar;
@@ -147,7 +146,7 @@ public struct Vector2D
 
     public static Vector2D Multiply(int escalar, Vector2D vector) => escalar * vector;
     
-    // Normalización del vector
+    // Vector normalization
     public readonly Vector2D Normalize() => Length() < 1e-10 ? Zero : this / Length();
 
     public readonly double Length() => Math.Sqrt((X * X) + (Y * Y));
@@ -158,7 +157,7 @@ public struct Vector2D
 
     public readonly double LengthSquared(Vector2D vector) => (vector.X * vector.X) + (vector.Y * vector.Y);
 
-    // Conversión de Vector2D a Vector2 con un factor de escala. Pensado para su implementación en el simulador
+    // Conversion from Vector2D to Vector2 with a scale factor. Intended for use in the simulator
     public Vector2 ToVector2(float scale) => new Vector2((float)X / scale, (float)Y / scale);
 
     public Vector2 ToVector2(Vector2D vector, float scale) => new Vector2((float)vector.X / scale, (float)vector.Y / scale);

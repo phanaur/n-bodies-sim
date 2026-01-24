@@ -4,7 +4,7 @@
  */
 namespace NBodiesSim.Source.Models.DTOs;
 
-internal class AstroData
+internal abstract class AstroData
 {
     public required float Id { get; set; }
 

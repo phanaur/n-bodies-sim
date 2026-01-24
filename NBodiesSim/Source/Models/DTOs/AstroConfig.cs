@@ -1,6 +1,6 @@
 /*
- * Esta clase contiene la información para la generación de los objetos de tipo AstroConfig, con todos los parámetros
- * necesarios para ajustar la cámara, el cálculo del renderizado y el número de cálculos que realiza el motor de físicas.
+ * This class contains the information used to generate `AstroConfig` objects, with all the parameters needed to adjust
+ * the camera, rendering calculations, and the number of calculations performed by the physics engine.
  */
 using Raylib_cs;
 

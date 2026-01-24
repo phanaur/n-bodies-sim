@@ -1,7 +1,7 @@
 /*
- * Esta es la clase Astro. Es el corazón de todos los cuerpos implicados en la simulación. Cada cuerpo simulado contine
- * información real acerca de algunas de sus características, como su nombre, identificación, radio del cuerpo, posición,
- * velocidad, etc.
+ * This is the Astro class. It is the heart of all bodies involved in the simulation. Each simulated body contains
+ * real information about some of its characteristics, such as its name, identification, body radius, position,
+ * velocity, etc.
  */
 using System.ComponentModel.DataAnnotations;
 using Raylib_cs;
@@ -27,26 +27,26 @@ public class Astro
     // Color
     public required Color Color { get; init; }
 
-    // En caso de tener anillos (hecho entero por la IA)
+    // In the case of having rings (entirely done by AI)
     public bool HasRings { get; init; }
 
-    public double InnerRingRadius { get; init; } // en metros
+    public double InnerRingRadius { get; init; } // in meters
 
-    public double OuterRingRadius { get; init; } // en metros
+    public double OuterRingRadius { get; init; } // in meters
 
     public Color? RingColor { get; init; } // [r, g, b, a]
 
-    // Traza de la órbita
+    // Orbit trail
     public required Queue<Vector2D> Trail { get; init; } = new Queue<Vector2D>();
 
-    public double DesiredTrailTime { get; init; } = 86400 * 30; // Tiempo en segundos que queremos ver (ej: 30 días)
+    public double DesiredTrailTime { get; init; } = 86400 * 30; // Time in seconds we want to see (e.g., 30 days)
 
     // Non-fixed variables
     public required Vector2D Position { get; set; }
 
     public required Vector2D PastPosition { get; set; }
 
-    public required Vector2D RenderPosition { get; set; } = new Vector2D();
+    public required Vector2D RenderPosition { get; set; }
 
     public required Vector2D Velocity { get; set; }
 

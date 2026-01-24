@@ -12,19 +12,19 @@ public class StarList
 
     public void GenerateStars()
     {
-        Random rndStars = new Random(12345); // Semilla fija para consistencia
+        Random rndStars = new Random(12345); // Fixed seed for consistency
 
-        const int numStars = 10000; // Número fijo de estrellas
+        const int numStars = 10000; // Fixed the number of stars
 
         for (int i = 0; i < numStars; i++)
         {
-            // Generar ángulo aleatorio
+            // Generate random angle
             double angulo = rndStars.NextDouble() * 2 * Math.PI;
 
-            // Distancia aleatoria muy lejana (más allá del cinturón de Kuiper: 1e13 a 5e13 metros)
+            // Random distance very far away (beyond the Kuiper belt: 1e13 to 5e13 meters)
             double distancia = rndStars.NextDouble() * 4e13;
 
-            // Posición en coordenadas del mundo
+            // Position in world coordinates
             double x = Math.Cos(angulo) * distancia;
             double y = Math.Sin(angulo) * distancia;
 

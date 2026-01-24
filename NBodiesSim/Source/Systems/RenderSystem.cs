@@ -1,8 +1,8 @@
 /*
- * Esta clase contiene el motor de renderizado de la simulación. Calcula las conversiones de escala para las posiciones
- * de cada cuerpo, establece si el cuerpo debe aparecer en pantalla o no, dibuja el fondo de estrellas, los anillos del
- * planeta (si tiene). También establece una condición en función de los factores de escala distanceScale y radiusScale,
- * para que aquel planeta cuya órbita esté cerca del radio externo del Sol, o dentro, no se dibuje.
+ * This class contains the simulation rendering engine. It calculates scale conversions for each body's positions,
+ * determines whether the body should appear on screen or not, draws the star background, and the planet's rings (if any).
+ * It also sets a condition based on the distanceScale and radiusScale factors so that any planet whose orbit is near
+ * or inside the Sun's outer radius is not drawn.
  */
 using System.Numerics;
 using NBodiesSim.Source.Core;
@@ -13,12 +13,12 @@ namespace NBodiesSim.Source.Systems;
 
 public class RenderSystem
 {
-    // Obtención del radio del Sol en pantalla (en píxeles)
-    private static float GetSunRadius(Astro sol, double radiusScale)
+    // Get the Sun's radius on screen (in pixels)
+    private static float GetSunRadius(Astro sun, double radiusScale)
     {
-        float radioSol = (float)(sol.Radius / radiusScale);
+        float radioSol = (float)(sun.Radius / radiusScale);
 
-        // Establece condiciones para el tamaño máximo y mínimo del Sol.
+        // Set conditions for the maximum and minimum size of the Sun.
         switch (radioSol)
         {
             case < 2.0f:
@@ -30,88 +30,88 @@ public class RenderSystem
 
     }
 
-    // Obtención de la posición del Sol en pantalla (en píxeles)
-    private static Vector2 GetSunPositionScreen(Astro sol, Camera camera)
+    // Get the Sun's position on screen (in pixels)
+    private static Vector2 GetSunPositionScreen(Astro sun, Camera camera)
     {
-        return camera.WorldToScreen(sol.RenderPosition);
+        return camera.WorldToScreen(sun.RenderPosition);
     }
 
-    // Generación de las coordenadas para posicionar el triángulo que representa un planeta que no se vea en pantalla.
-    private static (Vector2[], Vector2) GetTriangle(Vector2 posPantalla, Vector2 center, int width, int height)
+    // Generate coordinates to position the triangle representing a planet that is not visible on screen.
+    private static (Vector2[], Vector2) GetTriangle(Vector2 screenPos, Vector2 center, int width, int height)
     {
         Vector2[] triangle = new Vector2[3];
-        // 1. Calcular dirección desde el centro de la pantalla hacia el astro
-        Vector2 direccion = posPantalla - center;
+        // 1. Calculate the direction from the center of the screen toward the body
+        Vector2 direction = screenPos - center;
 
-        // 2. Normalizar la dirección
-        float longitud = (float)Math.Sqrt((direccion.X * direccion.X) + (direccion.Y * direccion.Y));
-        if (longitud > 0)
+        // 2. Normalize the direction
+        float length = (float)Math.Sqrt((direction.X * direction.X) + (direction.Y * direction.Y));
+        if (length > 0)
         {
-            direccion.X /= longitud;
-            direccion.Y /= longitud;
+            direction.X /= length;
+            direction.Y /= length;
         }
 
-        // 3. Calcular el ángulo de la dirección
-        float angulo = (float)Math.Atan2(direccion.Y, direccion.X);
+        // 3. Calculate the angle of the direction
+        float angle = (float)Math.Atan2(direction.Y, direction.X);
 
-        // 4. Colocar el triángulo en el borde de la pantalla
-        const float margen = 30; // Distancia desde el borde
-        Vector2 posTriangulo = center;
+        // 4. Place the triangle at the edge of the screen
+        const float margin = 30; // Distance from the edge
+        Vector2 trianPos = center;
 
-        // Calcular qué borde toca primero
-        float distanciaX = float.MaxValue;
-        float distanciaY = float.MaxValue;
+        // Calculate which edge it touches first
+        float xDist = float.MaxValue;
+        float yDist = float.MaxValue;
 
-        if (Math.Abs(direccion.X) > 0.001f)
+        if (Math.Abs(direction.X) > 0.001f)
         {
-            float bordeX = direccion.X > 0 ? width - margen : margen;
-            distanciaX = Math.Abs((bordeX - center.X) / direccion.X);
+            float sideX = direction.X > 0 ? width - margin : margin;
+            xDist = Math.Abs((sideX - center.X) / direction.X);
         }
 
-        if (Math.Abs(direccion.Y) > 0.001f)
+        if (Math.Abs(direction.Y) > 0.001f)
         {
-            float bordeY = direccion.Y > 0 ? height - margen : margen;
-            distanciaY = Math.Abs((bordeY - center.Y) / direccion.Y);
+            float sideY = direction.Y > 0 ? height - margin : margin;
+            yDist = Math.Abs((sideY - center.Y) / direction.Y);
         }
 
-        float distancia = Math.Min(distanciaX, distanciaY);
-        posTriangulo.X = center.X + (direccion.X * distancia);
-        posTriangulo.Y = center.Y + (direccion.Y * distancia);
+        float distance = Math.Min(xDist, yDist);
+        trianPos.X = center.X + (direction.X * distance);
+        trianPos.Y = center.Y + (direction.Y * distance);
 
-        // 5. Dibujar el triángulo apuntando hacia el astro
-        const float tamañoTriangulo = 10.0f;
+        // 5. Draw the triangle pointing toward the body
+        const float triangleSize = 10.0f;
 
-        // Vértice principal (punta) - apunta en la dirección del astro
-        triangle[0] = posTriangulo + new Vector2(
-            (float)Math.Cos(angulo) * tamañoTriangulo,
-            (float)Math.Sin(angulo) * tamañoTriangulo);
+        // Main vertex (tip) - points in the direction of the body
+        triangle[0] = trianPos + new Vector2(
+            (float)Math.Cos(angle) * triangleSize,
+            (float)Math.Sin(angle) * triangleSize);
 
-        // Base del triángulo (dos vértices perpendiculares)
-        float anguloBase1 = angulo + (MathF.PI / 2); // 90 grados a la derecha
-        float anguloBase2 = angulo - (MathF.PI / 2); // 90 grados a la izquierda
-        float anchoBase = tamañoTriangulo * 0.5f;
+        // Triangle base (two perpendicular vertices)
+        float baseAngle1 = angle + (MathF.PI / 2); // 90 degrees to the right
+        float baseAngle2 = angle - (MathF.PI / 2); // 90 degrees to the left
+        float baseWidth = triangleSize * 0.5f;
 
-        triangle[1] = posTriangulo + new Vector2(
-            (float)Math.Cos(anguloBase1) * anchoBase,
-            (float)Math.Sin(anguloBase1) * anchoBase);
+        triangle[1] = trianPos + new Vector2(
+            (float)Math.Cos(baseAngle1) * baseWidth,
+            (float)Math.Sin(baseAngle1) * baseWidth);
 
-        triangle[2] = posTriangulo + new Vector2(
-            (float)Math.Cos(anguloBase2) * anchoBase,
-            (float)Math.Sin(anguloBase2) * anchoBase);
+        triangle[2] = trianPos + new Vector2(
+            (float)Math.Cos(baseAngle2) * baseWidth,
+            (float)Math.Sin(baseAngle2) * baseWidth);
 
-        return (triangle, posTriangulo);
+        return (triangle, trianPos);
     }
-    public static void SaveTrail(List<Astro> astros, double timeStep)
+    public void SaveTrail(List<Astro> astros, double timeStep)
     {
         foreach (Astro astro in astros)
         {
-            // Guardamos la posición en la traza
+            // Save the position in the trail
             astro.Trail.Enqueue(astro.RenderPosition);
 
-            // Calcular cuántos puntos necesitamos según el timeStep actual
+            // Calculate how many points we need based on the current timeStep
             int effectiveTrailLength = (int)(astro.DesiredTrailTime / timeStep);
 
-            // Asegurar un mínimo razonable
+            // Ensure a reasonable minimum
             if (effectiveTrailLength < 10) effectiveTrailLength = 10;
 
             if (astro.Trail.Count > effectiveTrailLength)
@@ -121,17 +121,15 @@ public class RenderSystem
         }
     }
 
-    private static void DrawTriangles(Vector2 posPantalla, Camera camera, Astro astro)
+    private static void DrawTriangles(Vector2 screenPos, Camera camera, Astro astro)
     {
 
-        (Vector2[], Vector2) triangle = GetTriangle(posPantalla, camera.Center, camera.Width, camera.Height);
-        // Debug: Dibujar un círculo donde debería estar el triángulo
-        // Raylib.DrawCircleV(posTriangulo, 5, Color.Red);
+        (Vector2[], Vector2) triangle = GetTriangle(screenPos, camera.Center, camera.Width, camera.Height); ;
 
-        // Dibujar el triángulo (asegurándote de que esté en orden correcto)
+        // Draw the triangle (ensuring correct order)
         Raylib.DrawTriangle(triangle.Item1[0], triangle.Item1[2], triangle.Item1[1], astro.Color);
 
-        // Opcional: Dibujar el nombre del astro cerca del triángulo
+        // Optional: Draw the body's name near the triangle
         Raylib.DrawText(astro.Name, (int)triangle.Item2.X - 15, (int)triangle.Item2.Y + 15, 12, astro.Color);
     }
 
@@ -142,30 +140,30 @@ public class RenderSystem
             return;
         }
 
-        // Usamos Rlgl para dibujar todas las líneas en una sola llamada (Batching)
-        // Esto es mucho más rápido que llamar a DrawLineV miles de veces
+        // Use Rlgl to draw all lines in a single call (Batching)
+        // This is much faster than calling DrawLineV thousands of times
         Rlgl.Begin(DrawMode.Lines);
-        Rlgl.SetTexture(0); // Usar textura blanca por defecto
+        Rlgl.SetTexture(0); // Use the default white texture
 
         Vector2? p1 = null;
         int i = 0;
         int totalPoints = astro.Trail.Count;
 
-        // Iteramos directamente sobre la Queue sin convertir a Array (evita asignación de memoria)
+        // Iterate directly over the Queue without converting to Array (avoids memory allocation)
         foreach (var worldPos in astro.Trail)
         {
             Vector2 p2 = camera.WorldToScreen(worldPos);
 
             if (p1.HasValue)
             {
-                // Calculamos el alpha basado en la posición en la cola
+                // Calculate alpha based on position in the queue
                 float alpha = (float)i / totalPoints;
                 byte alphaByte = (byte)(50 + alpha * 200);
 
-                // Asignamos color al vértice actual
+                // Assign color to the current vertex
                 Rlgl.Color4ub(astro.Color.R, astro.Color.G, astro.Color.B, alphaByte);
 
-                // Dibujamos el segmento p1 -> p2
+                // Draw the segment p1 -> p2
                 Rlgl.Vertex2f(p1.Value.X, p1.Value.Y);
                 Rlgl.Vertex2f(p2.X, p2.Y);
             }
@@ -179,7 +177,7 @@ public class RenderSystem
 
     private static void DrawAstro(
         Astro astro,
-        Vector2 posPantalla,
+        Vector2 screenPos,
         Camera camera,
         int textAlign)
     {
@@ -195,137 +193,137 @@ public class RenderSystem
             radio = 40.0f;
         }
 
-        // Dibujamos la traza solo si hay dos posiciones o más
+        // Draw the trail only if there are two or more positions
         if (astro.Trail.Count > 1) DrawTrail(astro, camera);
 
-        Raylib.DrawCircleV(center: posPantalla, radius: radio, color: astro.Color);
+        Raylib.DrawCircleV(center: screenPos, radius: radio, color: astro.Color);
 
-        // Opcional: Dibujar el nombre del astro cerca del triángulo
-        Raylib.DrawText(astro.Name, (int)posPantalla.X - textAlign, (int)posPantalla.Y + textAlign, 12, astro.Color);
+        // Optional: Draw the body's name near the triangle
+        Raylib.DrawText(astro.Name, (int)screenPos.X - textAlign, (int)screenPos.Y + textAlign, 12, astro.Color);
     }
 
-    private static void DrawRings(Astro astroActual, Camera camera)
+    private static void DrawRings(Astro selectedAstro, Camera camera)
     {
-        if (astroActual is { HasRings: true, RingColor: not null })
+        if (selectedAstro is { HasRings: true, RingColor: not null })
         {
-            // posPantalla del astroActual
-            Vector2 posPantalla = camera.WorldToScreen(astroActual.RenderPosition);
+            // posPantalla of the current body
+            Vector2 screenPos = camera.WorldToScreen(selectedAstro.RenderPosition);
 
-            // Factor para que los anillos se vean proporcionalmente correctos
+            // Factor to make rings look proportionally correct
             double ringScale = camera.DistanceScale * 0.8;
-            float innerRadius = (float)(astroActual.InnerRingRadius / ringScale);
-            float outerRadius = (float)(astroActual.OuterRingRadius / ringScale);
+            float innerRadius = (float)(selectedAstro.InnerRingRadius / ringScale);
+            float outerRadius = (float)(selectedAstro.OuterRingRadius / ringScale);
 
-            if (astroActual.RingColor != null)
+            if (selectedAstro.RingColor != null)
             {
                 Raylib.DrawRing(
-                    center: posPantalla,
+                    center: screenPos,
                     innerRadius,
                     outerRadius,
                     startAngle: 0,
                     endAngle: 360,
                     segments: 50,
-                    astroActual.RingColor.Value);
+                    selectedAstro.RingColor.Value);
             }
         }
 
     }
 
-    private static void DrawAsteroidBelt(Vector2 solPantalla, Camera camera, string keyName)
+    private static void DrawAsteroidBelt(Vector2 sunScreenPos, Camera camera, string keyName)
     {
-        // Cinturón de asteroides (entre Marte y Júpiter)
+        // Asteroid belt (between Mars and Jupiter)
         float asteroidBeltInner = (float)(3.3e11 / camera.DistanceScale);
         float asteroidBeltOuter = (float)(4.9e11 / camera.DistanceScale);
 
-        // Solo dibujar si el cinturón puede ser visible en pantalla
-        if (!(solPantalla.X + asteroidBeltOuter > 0) || !(solPantalla.X - asteroidBeltOuter < camera.Width) ||
-            !(solPantalla.Y + asteroidBeltOuter > 0) || !(solPantalla.Y - asteroidBeltOuter < camera.Height)) return;
-        Raylib.DrawRing(solPantalla, asteroidBeltInner, asteroidBeltOuter, 0, 360, 100, new Color(139, 125, 107, 15));
+        // Only draw if the belt can be visible on screen
+        if (!(sunScreenPos.X + asteroidBeltOuter > 0) || !(sunScreenPos.X - asteroidBeltOuter < camera.Width) ||
+            !(sunScreenPos.Y + asteroidBeltOuter > 0) || !(sunScreenPos.Y - asteroidBeltOuter < camera.Height)) return;
+        Raylib.DrawRing(sunScreenPos, asteroidBeltInner, asteroidBeltOuter, 0, 360, 100, new Color(139, 125, 107, 15));
 
-        // Dibujar asteroides pequeños en el cinturón
-        Random rnd = new Random(42); // Semilla fija para que siempre aparezcan en el mismo lugar
-        const int numAsteroides = 50; // Número de asteroides a dibujar
-        for (int i = 0; i < numAsteroides; i++)
+        // Draw small asteroids in the belt
+        Random rnd = new Random(42); // Fixed seed so they always appear in the same place
+        const int asteroidNum = 50; // Number of asteroids to draw
+        for (int i = 0; i < asteroidNum; i++)
         {
-            double angulo = rnd.NextDouble() * 2 * Math.PI;
-            double radioAsteroide = asteroidBeltInner + (rnd.NextDouble() * (asteroidBeltOuter - asteroidBeltInner));
+            double angle = rnd.NextDouble() * 2 * Math.PI;
+            double asteroidRadius = asteroidBeltInner + (rnd.NextDouble() * (asteroidBeltOuter - asteroidBeltInner));
 
-            float xAsteroide = solPantalla.X + (float)(Math.Cos(angulo) * radioAsteroide);
-            float yAsteroide = solPantalla.Y + (float)(Math.Sin(angulo) * radioAsteroide);
+            float xAsteroid = sunScreenPos.X + (float)(Math.Cos(angle) * asteroidRadius);
+            float yAsteroid = sunScreenPos.Y + (float)(Math.Sin(angle) * asteroidRadius);
 
-            // Solo dibujar si está dentro de la pantalla
-            if (!(xAsteroide >= 0) || !(xAsteroide <= camera.Width) || !(yAsteroide >= 0) ||
-                !(yAsteroide <= camera.Height)) continue;
+            // Only draw if inside the screen
+            if (!(xAsteroid >= 0) || !(xAsteroid <= camera.Width) || !(yAsteroid >= 0) ||
+                !(yAsteroid <= camera.Height)) continue;
             float size = 1.0f + ((float)rnd.NextDouble() * 1.5f);
-            Raylib.DrawCircleV(new Vector2(xAsteroide, yAsteroide), size, new Color(139, 125, 107, 180));
+            Raylib.DrawCircleV(new Vector2(xAsteroid, yAsteroid), size, new Color(139, 125, 107, 180));
         }
 
-        // Texto: si es vista ampliada, fuera del cinturón; si no, entre el Sol y el anillo
-        float textRadius = keyName == "Espacio" ? asteroidBeltOuter * 1.15f : asteroidBeltInner * 0.7f;
-        int textWidth = Raylib.MeasureText("Cinturón de asteroides", 12);
-        Raylib.DrawText("Cinturón de asteroides", (int)(solPantalla.X - ((float)textWidth / 2)), (int)(solPantalla.Y - textRadius), 12, new Color(139, 125, 107, 150));
+        // Text: if zoomed out, outside the belt; otherwise, between the Sun and the ring
+        float textRadius = keyName == "Space" ? asteroidBeltOuter * 1.15f : asteroidBeltInner * 0.7f;
+        int textWidth = Raylib.MeasureText("Asteroid belt", 12);
+        Raylib.DrawText("Asteroid belt", (int)(sunScreenPos.X - ((float)textWidth / 2)), (int)(sunScreenPos.Y - textRadius), 12, new Color(139, 125, 107, 150));
     }
 
-    private static void DrawKuiperBelt(Vector2 solPantalla, Camera camera)
+    private static void DrawKuiperBelt(Vector2 sunPosScreen, Camera camera)
     {
         float kuiperBeltInner = (float)(5.2e12 / camera.DistanceScale);
         float kuiperBeltOuter = (float)(7.5e12 / camera.DistanceScale);
 
-        // Solo dibujar si el cinturón puede ser visible en pantalla
-        if (!(solPantalla.X + kuiperBeltOuter > 0) || !(solPantalla.X - kuiperBeltOuter < camera.Width) ||
-            !(solPantalla.Y + kuiperBeltOuter > 0) || !(solPantalla.Y - kuiperBeltOuter < camera.Height)) return;
-        Raylib.DrawRing(solPantalla, kuiperBeltInner, kuiperBeltOuter, 0, 360, 100, new Color(100, 100, 120, 10));
+        // Only draw if the belt can be visible on screen
+        if (!(sunPosScreen.X + kuiperBeltOuter > 0) || !(sunPosScreen.X - kuiperBeltOuter < camera.Width) ||
+            !(sunPosScreen.Y + kuiperBeltOuter > 0) || !(sunPosScreen.Y - kuiperBeltOuter < camera.Height)) return;
+        Raylib.DrawRing(sunPosScreen, kuiperBeltInner, kuiperBeltOuter, 0, 360, 100, new Color(100, 100, 120, 10));
 
-        // Dibujar objetos pequeños en el cinturón de Kuiper
-        Random rnd = new Random(123); // Semilla diferente para distribución diferente
-        const int numObjetos = 200; // Más objetos porque es un cinturón más grande
-        for (int i = 0; i < numObjetos; i++)
+        // Draw small objects in the Kuiper belt
+        Random rnd = new Random(123); // Different seed for different distribution
+        const int numObjects = 200; // More objects because it's a larger belt
+        for (int i = 0; i < numObjects; i++)
         {
-            double angulo = rnd.NextDouble() * 2 * Math.PI;
-            double radioObjeto = kuiperBeltInner + (rnd.NextDouble() * (kuiperBeltOuter - kuiperBeltInner));
+            double angle = rnd.NextDouble() * 2 * Math.PI;
+            double objRadius = kuiperBeltInner + (rnd.NextDouble() * (kuiperBeltOuter - kuiperBeltInner));
 
-            float xObjeto = solPantalla.X + (float)(Math.Cos(angulo) * radioObjeto);
-            float yObjeto = solPantalla.Y + (float)(Math.Sin(angulo) * radioObjeto);
+            float xObjeto = sunPosScreen.X + (float)(Math.Cos(angle) * objRadius);
+            float yObjeto = sunPosScreen.Y + (float)(Math.Sin(angle) * objRadius);
 
-            // Solo dibujar si está dentro de la pantalla
+            // Only draw if inside the screen
             if (!(xObjeto >= 0) || !(xObjeto <= camera.Width) || !(yObjeto >= 0) || !(yObjeto <= camera.Height)) continue;
 
             float size = 1.0f + ((float)rnd.NextDouble() * 1.5f);
             Raylib.DrawCircleV(new Vector2(xObjeto, yObjeto), size, new Color(100, 100, 120, 150));
         }
 
-        // Texto dentro del anillo, entre el Sol y el borde interior
-        float textRadius = kuiperBeltInner * 0.7f; // 70% del radio interior
-        int textWidth = Raylib.MeasureText("Cinturón de Kuiper", 12);
-        Raylib.DrawText("Cinturón de Kuiper", (int)(solPantalla.X - ((float)textWidth / 2)), (int)(solPantalla.Y - textRadius), 12, new Color(100, 100, 120, 150));
+        // Text inside the ring, between the Sun and the inner edge
+        float textRadius = kuiperBeltInner * 0.7f; // 70% of the inner radius
+        int textWidth = Raylib.MeasureText("Kuiper belt", 12);
+        Raylib.DrawText("Kuiper belt", (int)(sunPosScreen.X - ((float)textWidth / 2)), (int)(sunPosScreen.Y - textRadius), 12, new Color(100, 100, 120, 150));
     }
 
-    private static void DrawCross(float ladoCruz, Astro astroActual, Camera camera)
+    private static void DrawCross(float crossSide, Astro selectedAstro, Camera camera)
     {
 
-        double distCamPlan = Vector2D.Distance(camera.Position, astroActual.RenderPosition);
-        bool objBloqueado = distCamPlan < 1e7;
+        double distCamAstro = Vector2D.Distance(camera.Position, selectedAstro.RenderPosition);
+        bool fixedObj = distCamAstro < 1e7;
 
         Color colorCruz;
-        // Obtenemos el centro de la pantalla
+        // Get the center of the screen
         Vector2 center = camera.Center;
 
-        if (objBloqueado)
+        if (fixedObj)
         {
-            // 1. Calculamos la oscilación suave (Seno da valores entre -1 y 1)
-            // Bajamos a * 3 para que sea un "respirar" lento
+            // 1. Calculate smooth oscillation (Sine gives values between -1 and 1)
+            // Lower to * 3 so it's slow "breathing"
             float oscilacion = (float)Math.Sin(Raylib.GetTime() * 3);
 
-            // En la función Draw, cuando objBloqueado es true:
-            float expansion = (float)Math.Sin(Raylib.GetTime() * 3) * 2; // Oscila +- 2 píxeles
-            float ladoFinal = ladoCruz + expansion;
+            // In the Draw function, when objBloqueado is true:
+            float expansion = (float)Math.Sin(Raylib.GetTime() * 3) * 2; // Oscillates +- 2 pixels
+            float ladoFinal = crossSide + expansion;
 
-            // 2. Convertimos el rango [-1, 1] a [0.2, 1.0] para que nunca desaparezca del todo
+            // 2. Convert range [-1, 1] to [0.2, 1.0] so it never fully disappears
             float factorOpacidad = (oscilacion * 0.4f) + 0.6f;
             
             
 
-            // 3. Aplicamos la opacidad al color original del astro
+            // 3. Apply opacity to the body's original color
             colorCruz = new Color(
                 Color.DarkGray.R,
                 Color.DarkGray.G,
@@ -337,8 +335,8 @@ public class RenderSystem
         else
         {
             colorCruz = Color.DarkGray;
-            Raylib.DrawLineV(center + new Vector2(ladoCruz, 0), center + new Vector2(-ladoCruz, 0), colorCruz);
-            Raylib.DrawLineV(center + new Vector2(0, ladoCruz), center + new Vector2(0, -ladoCruz), colorCruz);
+            Raylib.DrawLineV(center + new Vector2(crossSide, 0), center + new Vector2(-crossSide, 0), colorCruz);
+            Raylib.DrawLineV(center + new Vector2(0, crossSide), center + new Vector2(0, -crossSide), colorCruz);
         }
 
         Raylib.EndDrawing();
@@ -346,23 +344,23 @@ public class RenderSystem
 
     private static void DrawStars(Camera camera, StarList stars)
     {
-        // Calcular el área visible en coordenadas del mundo para culling temprano
+        // Calculate visible area in world coordinates for early culling
         double worldWidth = camera.Width * camera.DistanceScale;
         double worldHeight = camera.Height * camera.DistanceScale;
-        double margin = Math.Max(worldWidth, worldHeight) * 0.1; // 10% de margen
+        double margin = Math.Max(worldWidth, worldHeight) * 0.1; // 10% margin
 
         double minX = camera.Position.X - (worldWidth / 2) - margin;
         double maxX = camera.Position.X + (worldWidth / 2) + margin;
         double minY = camera.Position.Y - (worldHeight / 2) - margin;
         double maxY = camera.Position.Y + (worldHeight / 2) + margin;
 
-        // Usamos Rlgl para dibujar todas las estrellas en un solo lote (Batching)
+        // Use Rlgl to draw all stars in a single batch (Batching)
         Rlgl.Begin(DrawMode.Quads);
-        Rlgl.SetTexture(0); // Textura blanca por defecto
+        Rlgl.SetTexture(0); // Default white texture
 
         foreach (var star in stars.Stars)
         {
-            // Culling en coordenadas del mundo
+            // Culling in world coordinates
             double starX = star.Position.X;
             double starY = star.Position.Y;
 
@@ -371,7 +369,7 @@ public class RenderSystem
                 continue;
             }
 
-            // Transformar de coordenadas del mundo a coordenadas de pantalla
+            // Transform from world coordinates to screen coordinates
             Vector2 posPantalla = camera.WorldToScreen(star.Position);
 
             byte brightness = (byte)(star.Brightness * 255);
@@ -379,7 +377,7 @@ public class RenderSystem
 
             float r = star.Size;
 
-            // Dibujamos un Quad (cuadrado) centrado en la posición
+            // Draw a Quad (square) centered at the position
             Rlgl.Vertex2f(posPantalla.X - r, posPantalla.Y - r);
             Rlgl.Vertex2f(posPantalla.X - r, posPantalla.Y + r);
             Rlgl.Vertex2f(posPantalla.X + r, posPantalla.Y + r);
@@ -392,13 +390,13 @@ public class RenderSystem
     private static void DrawInfoText(Camera camera)
     {
         Raylib.DrawText(
-            text: "Simulador de N-cuerpos | Pulsa Escape (Esc) para salir ",
+            text: "N-Bodies Simulator | Press Escape (Esc) to exit ",
             posX: 10,
             posY: 10,
             fontSize: 20,
             color: Color.White);
         Raylib.DrawText(
-            text: "Cámara: 0 - Sol | 1 - Mercurio | 2 - Venus | ··· | 8 - Neptuno | Espacio: Visión completa del sistema",
+            text: "Camera: 0 - Sun | 1 - Mercury | 2 - Venus | ··· | 8 - Neptune | Space: Full system view",
             posX: 10,
             posY: Raylib.GetRenderHeight() - 30,
             fontSize: 20,
@@ -410,78 +408,78 @@ public class RenderSystem
     private static void DrawBodies(
         List<Astro> astros,
         Camera camera,
-        Astro astroActual,
+        Astro selectedAstro,
         string keyName,
         float sunRadiusAtScale,
-        Vector2 posSolPantalla,
+        Vector2 sunPosScreen,
         int textAlign)
     {
         foreach (Astro astro in astros)
         {
-            // Si es satélite y su planeta padre no está seleccionado, skip
-            if (astro.ParentId.HasValue && (astro.ParentId.Value - astroActual.Id) != 0)
+            // If it's a satellite and its parent planet is not selected, skip
+            if (astro.ParentId.HasValue && (astro.ParentId.Value - selectedAstro.Id) != 0)
             {
                 continue;
             }
 
-            Vector2 posPantalla = camera.WorldToScreen(astro.RenderPosition);
+            Vector2 screenPos = camera.WorldToScreen(astro.RenderPosition);
 
-            // Calcular la distancia en pantalla desde el Sol hasta el astro (en píxeles)
-            float distanciaDesdeElSol = Vector2.Distance(posSolPantalla, posPantalla);
+            // Calculate distance on screen from the Sun to the body (in pixels)
+            float distFromSun = Vector2.Distance(sunPosScreen, screenPos);
 
-            // Si estamos en la vista amplia o viendo el Sol, y el astro está dentro del disco solar, ocultarlo
-            if ((keyName == "Espacio" || astroActual.Id == 0) && astro.Id != 0 && distanciaDesdeElSol < sunRadiusAtScale)
+            // If we are in wide view or viewing the Sun, and the body is inside the solar disk, hide it
+            if ((keyName == "Space" || selectedAstro.Id == 0) && astro.Id != 0 && distFromSun < sunRadiusAtScale)
             {
                 continue;
             }
 
-            // 1. Comprobamos si el astro está fuera de los límites de la pantalla
-            // Creamos un rectángulo con las dimensiones de la pantalla y comprobamos si el cuerpo colisiona con él
+            // 1. Check if the body is outside the screen limits
+            // Create a rectangle with screen dimensions and check if the body collides with it
 
             Rectangle screenBounds = new Rectangle(0, 0, camera.Width,
                 camera.Height);
             bool enPantalla =
-                Raylib.CheckCollisionPointRec(posPantalla, screenBounds);
+                Raylib.CheckCollisionPointRec(screenPos, screenBounds);
 
             if (!enPantalla)
             {
-                DrawTriangles(posPantalla, camera, astro);
+                DrawTriangles(screenPos, camera, astro);
             }
             else
             {
-                DrawAstro(astro, posPantalla, camera, textAlign);
+                DrawAstro(astro, screenPos, camera, textAlign);
             }
         }
     }
 
-    private static void DrawAsteroids(Camera camera, string keyName, Vector2 posSolPantalla)
+    private static void DrawAsteroids(Camera camera, string keyName, Vector2 sunPosScreen)
     {
-        // Cinturones de asteroides (centrados en el Sol)
+        // Asteroid belts (centered on the Sun)
 
-        // Cinturón de asteroides
-        DrawAsteroidBelt(posSolPantalla, camera, keyName);
+        // Asteroid belt
+        DrawAsteroidBelt(sunPosScreen, camera, keyName);
 
-        // Cinturón de Kuiper (más allá de Neptuno, desde 35 UA hasta 50 UA)
-        DrawKuiperBelt(posSolPantalla, camera);
+        // Kuiper belt (beyond Neptune, from 35 AU to 50 AU)
+        DrawKuiperBelt(sunPosScreen, camera);
     }
 
-    private static (float sunRadiusAtScale, Vector2 posSolPantalla) GetSun(List<Astro> astros, Camera camera)
+    private static (float sunRadiusAtScale, Vector2 sunPosScreen) GetSun(List<Astro> astros, Camera camera)
     {
         Astro sol = astros.First(a => a.Id == 0);
 
         float sunRadiusAtScale = RenderSystem.GetSunRadius(sol, camera.RadiusScale);
 
-        // Calcular la posición del Sol en pantalla (en píxeles)
-        Vector2 posSolPantalla = RenderSystem.GetSunPositionScreen(sol, camera);
+        // Calculate Sun's position on screen (in pixels)
+        Vector2 sunPosScreen = RenderSystem.GetSunPositionScreen(sol, camera);
 
-        return (sunRadiusAtScale, posSolPantalla);
+        return (sunRadiusAtScale, sunPosScreen);
     }
 
-    public static void Draw(
+    public void Draw(
         List<Astro> astros,
         Camera camera,
-        Astro astroActual,
-        float ladoCruz,
+        Astro selectedAstro,
+        float crossSideLength,
         int textAlign,
         StarList stars,
         string keyName)
@@ -496,18 +494,18 @@ public class RenderSystem
         DrawInfoText(camera);
 
         // Calculate sun radius and position in Screen before drawing objects
-        (float sunRadiusAtScale, Vector2 posSolPantalla) = GetSun(astros, camera);
+        (float sunRadiusAtScale, Vector2 sunPosScreen) = GetSun(astros, camera);
 
         // Asteroid belts
-        DrawAsteroids(camera, keyName, posSolPantalla);
+        DrawAsteroids(camera, keyName, sunPosScreen);
 
         // Drawing the different bodies of the Solar System
-        DrawBodies(astros, camera, astroActual, keyName, sunRadiusAtScale, posSolPantalla, textAlign);
+        DrawBodies(astros, camera, selectedAstro, keyName, sunRadiusAtScale, sunPosScreen, textAlign);
 
-        // Dibujamos anillos si los tiene
-        DrawRings(astroActual, camera);
+        // Draw rings if it has them
+        DrawRings(selectedAstro, camera);
 
-        // Cruz Satelital
-        DrawCross(ladoCruz, astroActual, camera);
+        // Satellite Cross
+        DrawCross(crossSideLength, selectedAstro, camera);
     }
 }
