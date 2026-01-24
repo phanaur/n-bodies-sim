@@ -11,7 +11,7 @@ using NBodiesSim.Source.Models;
 namespace NBodiesSim.Source.Systems;
 
 
-public class PhysicsEngine
+public class PhysicsEngineRK4
 {
     private const double G = 6.674e-11; // Universal gravitational constant in m^3 kg^-1 s^-2
 
@@ -34,22 +34,6 @@ public class PhysicsEngine
                 astros[i].Acceleration += acji * astros[j].Mass;
                 astros[j].Acceleration -= acji * astros[i].Mass;
             }
-        }
-    }
-
-    private void UpdateVelocity(List<Astro> astros, double dt)
-    {
-        foreach (Astro astro in astros)
-        {
-            astro.Velocity += astro.Acceleration * dt;
-        }
-    }
-
-    private void UpdatePosition(List<Astro> astros, double dt)
-    {
-        foreach (Astro astro in astros)
-        {
-            astro.Position += astro.Velocity * dt;
         }
     }
 
@@ -162,12 +146,5 @@ public class PhysicsEngine
             astros[i].Velocity += (k1.acck1[i] + 2 * k2.acck2[i] + 2 * k3.acck3[i] + k4.acck4[i]) * dt / 6;
             astros[i].Position += (k1.velk1[i] + 2 * k2.velk2[i] + 2 * k3.velk3[i] + k4.velk4[i]) * dt / 6;
         }
-    }
-
-    public void UpdatePhysics(List<Astro> astros, double timestep)
-    {
-            UpdateAcceleration(astros);
-            UpdateVelocity(astros, timestep);
-            UpdatePosition(astros, timestep);
     }
 }

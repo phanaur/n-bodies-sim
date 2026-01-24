@@ -13,8 +13,7 @@
  * - Add the Solar System barycenter to base orbit calculations on it.
  * - Ability to load positions and velocities for a chosen date using NASA's API.
  * - Ability to save position states.
- * - Ability to generate a data cache to save time obtaining positions and velocities of
- *      each body
+ * - Ability to generate a data cache to save time obtaining positions and velocities of each body
  * - Possible simulation of the Voyager 1 and 2 journeys.
  * - Possible visualization of the heliopause.
  * - Interaction between the different components via interfaces.
@@ -31,7 +30,7 @@ internal static class Program
     private static void Main()
     {
         // 1. Create dependencies
-        PhysicsEngine physics = new PhysicsEngine();
+        PhysicsEngineRK4 physics = new PhysicsEngineRK4();
         RenderSystem render = new RenderSystem();
         DataLoader data = new DataLoader();
         ConfigLoader config = new ConfigLoader();

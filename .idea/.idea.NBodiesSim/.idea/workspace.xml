@@ -8,24 +8,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c2185b39-c04a-4350-8a5c-e9dbe45d8749" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/NBodiesSim/Source/Systems/PhysicsEngineRK4.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NBodiesSim/Source/Systems/RenderSystemEuler.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.NBodiesSim/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.NBodiesSim/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim.sln.DotSettings.user" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Data/astrosConfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Data/astrosConfig.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NBodiesSim/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Core/Camera.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Core/Camera.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Core/Vector2D.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Core/Vector2D.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Data/ConfigLoader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Data/ConfigLoader.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Data/DataLoader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Data/DataLoader.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Models/Astro.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Models/Astro.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Models/DTOs/AstroConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Models/DTOs/AstroConfig.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Models/DTOs/AstroData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Models/DTOs/AstroData.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Models/DTOs/WrapperAstroConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Models/DTOs/WrapperAstroConfig.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Models/DTOs/WrapperAstroData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Models/DTOs/WrapperAstroData.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Simulation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Simulation.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Systems/InputSystems.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Systems/InputSystems.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Systems/PhysicsEngine.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Systems/PhysicsEngine.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Systems/RenderSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Systems/RenderSystem.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Systems/Stars.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Systems/Stars.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Systems/RenderSystem.cs" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,7 +55,8 @@
     <setting file="file://$PROJECT_DIR$/NBodiesSim/Source/Data/DataLoader.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/NBodiesSim/Source/Systems/InputSystems.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/NBodiesSim/Source/Systems/PhysicsEngine.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/NBodiesSim/Source/Systems/RenderSystem.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/NBodiesSim/Source/Systems/PhysicsEngineRK4.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/NBodiesSim/Source/Systems/RenderSystemEuler.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/NBodiesSim/Source/Systems/Stars.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="McpProjectServerCommands">
@@ -86,7 +77,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    ".NET Project.NBodiesSim.executor": "Debug",
+    ".NET Project.NBodiesSim.executor": "Run",
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.MCP Project settings loaded": "true",
@@ -157,7 +148,7 @@
       <workItem from="1769159757428" duration="160000" />
       <workItem from="1769164020636" duration="1917000" />
       <workItem from="1769276701196" duration="504000" />
-      <workItem from="1769277219789" duration="4379000" />
+      <workItem from="1769277219789" duration="5148000" />
     </task>
     <task id="LOCAL-00001" summary="Changing project structure">
       <option name="closed" value="true" />
@@ -199,7 +190,15 @@
       <option name="project" value="LOCAL" />
       <updated>1769157372552</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="&quot;solving mixed of languages&quot;">
+      <option name="closed" value="true" />
+      <created>1769281623515</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1769281623515</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -225,7 +224,8 @@
     <MESSAGE value="cosas" />
     <MESSAGE value="Solving a problem with solution name" />
     <MESSAGE value="workspace.xml change" />
-    <option name="LAST_COMMIT_MESSAGE" value="workspace.xml change" />
+    <MESSAGE value="&quot;solving mixed of languages&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="&quot;solving mixed of languages&quot;" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -1,10 +1,10 @@
 /*
- * Esta clase contiene la información para la generación de los objetos de tipo AstroData, con todos los parámetros. A
- * partir de los objetos generados con esta clase se construyen los objetos Astro, que se utilizarán en la simulación.
+ * This class contains the information for the generation of AstroData objects with all parameters. From objects generated
+ * with this class, Astro objects are constructed, which will be used in the simulation.
  */
 namespace NBodiesSim.Source.Models.DTOs;
 
-internal abstract class AstroData
+internal class AstroData
 {
     public required float Id { get; set; }
 
@@ -22,14 +22,14 @@ internal abstract class AstroData
 
     public required double[] Velocity { get; set; } // [x, y]
 
-    public double DesiredTrailTime { get; set; } = 86400 * 30; // Tiempo en segundos (default: 30 días)
+    public double DesiredTrailTime { get; set; } = 86400 * 30; // Time in seconds (default: 30 days)
 
-    // En caso de tener anillos (hecho entero por la IA):
+    // If the body has rings:
     public bool HasRings { get; set; } = false;
 
-    public double InnerRingRadius { get; set; } // en metros
+    public double InnerRingRadius { get; set; } // in meters
 
-    public double OuterRingRadius { get; set; } // en metros
+    public double OuterRingRadius { get; set; } // in meters
 
     public int[]? RingColor { get; set; } // [r, g, b, a]
 }

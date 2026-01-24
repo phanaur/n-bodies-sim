@@ -23,13 +23,13 @@ public class Simulation
     private Astro? _selectedAstro;
 
 
-    private readonly PhysicsEngine _physicsEngine;
+    private readonly PhysicsEngineRK4 _physicsEngine;
     private readonly RenderSystem _renderSystem;
     private readonly DataLoader _dataLoader;
     private readonly InputSystems _inputSystems;
 
     public Simulation(
-        PhysicsEngine physicsEngine,
+        PhysicsEngineRK4 physicsEngine,
         RenderSystem renderSystem,
         DataLoader dataLoader,
         InputSystems inputSystems)
