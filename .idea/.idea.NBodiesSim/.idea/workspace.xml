@@ -8,17 +8,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c2185b39-c04a-4350-8a5c-e9dbe45d8749" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/NBodiesSim/Source/Models/CameraConstants.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/NBodiesSim/Source/Models/RenderConstants.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/NBodiesSim/Source/Models/SimulationConstants.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/NBodiesSim/Source/Models/StarsConstants.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/NBodiesSim/Source/Models/PhysicsConstants.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.NBodiesSim/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.NBodiesSim/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Core/Camera.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Core/Camera.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Data/ConfigLoader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Data/ConfigLoader.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Data/DataLoader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Data/DataLoader.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Simulation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Simulation.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Systems/PhysicsEngineRK4.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Systems/PhysicsEngineRK4.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Systems/RenderSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Systems/RenderSystem.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NBodiesSim/Source/Systems/Stars.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NBodiesSim/Source/Systems/Stars.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conversacion_historial.txt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,6 +53,7 @@
     <setting file="file://$PROJECT_DIR$/NBodiesSim/Source/Data/ConfigLoader.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/NBodiesSim/Source/Data/DataLoader.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/NBodiesSim/Source/Models/CameraConstants.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/NBodiesSim/Source/Models/PhysicsConstants.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/NBodiesSim/Source/Models/RenderConstants.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/NBodiesSim/Source/Models/SimulationConstants.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/NBodiesSim/Source/Models/StarsConstants.cs" root0="FORCE_HIGHLIGHTING" />
@@ -101,13 +98,13 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "settings.editor.selected.configurable": "ml.llm.LLMConfigurable",
     "to.speed.mode.migration.done": "true",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RecapUselessUpdatesCounter">
-    <option name="suspendCountdown" value="9" />
+    <option name="suspendCountdown" value="8" />
   </component>
   <component name="RunManager">
     <configuration name="NBodiesSim" type="DotNetProject" factoryName=".NET Project">
@@ -154,7 +151,7 @@
       <workItem from="1769159757428" duration="160000" />
       <workItem from="1769164020636" duration="1917000" />
       <workItem from="1769276701196" duration="504000" />
-      <workItem from="1769277219789" duration="8377000" />
+      <workItem from="1769277219789" duration="16388000" />
     </task>
     <task id="LOCAL-00001" summary="Changing project structure">
       <option name="closed" value="true" />
@@ -212,7 +209,15 @@
       <option name="project" value="LOCAL" />
       <updated>1769282466847</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="&quot;Solving magic numbers problem. Now every magic number is fixed, except the Universal Gravity Constant&quot;">
+      <option name="closed" value="true" />
+      <created>1769285666560</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1769285666560</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -240,7 +245,8 @@
     <MESSAGE value="workspace.xml change" />
     <MESSAGE value="&quot;solving mixed of languages&quot;" />
     <MESSAGE value="&quot;Separating both physics engines&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="&quot;Separating both physics engines&quot;" />
+    <MESSAGE value="&quot;Solving magic numbers problem. Now every magic number is fixed, except the Universal Gravity Constant&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="&quot;Solving magic numbers problem. Now every magic number is fixed, except the Universal Gravity Constant&quot;" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

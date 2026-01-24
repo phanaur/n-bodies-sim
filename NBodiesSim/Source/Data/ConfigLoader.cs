@@ -22,30 +22,49 @@ public class ConfigLoader
 
     public ConfigLoader()
     {
-        const string filePath = "Data/astrosConfig.json";
-
-        // Check if the file exists
-        if (!File.Exists(filePath))
+        try
         {
-            throw new FileNotFoundException($"File not found: {filePath}");
+            const string filePath = "Data/astrosConfig.json";
+
+            // Check if the file exists
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException($"File not found: {filePath}");
+            }
+
+            // Attempt to load from a JSON file
+            string jsonAstroConfig = File.ReadAllText(filePath);
+
+            WrapperAstroConfig? wrapperAstrosConfig =
+                JsonSerializer.Deserialize<WrapperAstroConfig>(jsonAstroConfig, JsonOptions);
+
+            // Now walk the deserialized list and build the objects
+            if (wrapperAstrosConfig?.AstrosConfig == null)
+            {
+                throw new Exception("Error loading JSON file or it is empty");
+            }
+
+            // Iterate over each configuration from the JSON list
+            foreach (AstroConfig config in wrapperAstrosConfig.AstrosConfig)
+            {
+                CameraConf[config.Key] = config;
+            }
+        }
+        catch (FileNotFoundException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        catch (JsonException e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        catch (IOException e)
+        {
+            Console.WriteLine(e);
+            throw;
         }
 
-        // Attempt to load from a JSON file
-        string jsonAstroConfig = File.ReadAllText(filePath);
-
-        // Tell it which type to expect
-        WrapperAstroConfig? wrapperAstrosConfig = JsonSerializer.Deserialize<WrapperAstroConfig>(jsonAstroConfig, JsonOptions);
-
-        // Now walk the deserialized list and build the objects
-        if (wrapperAstrosConfig?.AstrosConfig == null)
-        {
-            throw new Exception("Error loading JSON file or it is empty");
-        }
-
-        // Iterate over each configuration from the JSON list
-        foreach (AstroConfig config in wrapperAstrosConfig.AstrosConfig)
-        {
-            CameraConf[config.Key] = config;
-        }
     }
 }

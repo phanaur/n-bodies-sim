@@ -60,7 +60,7 @@ public class Simulation
         {
             astro.PastPosition = astro.Position;
         }
-        _physicsEngine.UpdateRk4(astros, _timeStep / _n);
+        PhysicsEngineRk4.UpdateRk4(astros, _timeStep / _n);
 
         // 5. Main loop
         while (!Raylib.WindowShouldClose())
@@ -101,7 +101,7 @@ public class Simulation
                 for (int i = 0; i < _n; i++)
                 {
                     //_physicsEngine.UpdatePhysics(_dataLoader.Astros, _targetTimeStep / _n);
-                    _physicsEngine.UpdateRk4(_dataLoader.Astros, _timeStep / _n);
+                    PhysicsEngineRk4.UpdateRk4(_dataLoader.Astros, _timeStep / _n);
                 }
 
                 accumulator -= SimulationConstants.FixedDt;

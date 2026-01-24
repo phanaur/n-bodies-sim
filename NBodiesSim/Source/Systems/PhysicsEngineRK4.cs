@@ -20,9 +20,7 @@ namespace NBodiesSim.Source.Systems;
 
 public class PhysicsEngineRk4
 {
-    private const double G = 6.674e-11; // Universal gravitational constant in m^3 kg^-1 s^-2
-
-    private void UpdateAcceleration(List<Astro> astros)
+    private static void UpdateAcceleration(List<Astro> astros)
     {
         // Reset acceleration
         foreach (Astro astro in astros)
@@ -37,14 +35,14 @@ public class PhysicsEngineRk4
             for (int j = i + 1; j < astros.Count; j++)
             {
                 Vector2D rij = astros[j].Position - astros[i].Position;
-                Vector2D acji = G * (1 / rij.LengthSquared()) * Vector2D.Normalize(rij); // Does not include the other planet's mass
+                Vector2D acji = PhysicsConstants.G * (1 / rij.LengthSquared()) * Vector2D.Normalize(rij); // Does not include the other planet's mass
                 astros[i].Acceleration += acji * astros[j].Mass;
                 astros[j].Acceleration -= acji * astros[i].Mass;
             }
         }
     }
 
-    private Vector2D[] CalcAccelerations(List<Astro> astros, Vector2D[] hypotheticalPos)
+    private static Vector2D[] CalcAccelerations(List<Astro> astros, Vector2D[] hypotheticalPos)
     {
         // Calculation of acceleration for each pair of bodies. The acceleration exerted by i on j has the same direction
         // and opposite sense as the one j exerts on i. These interactions accumulate in the respective accelerations.
@@ -58,14 +56,14 @@ public class PhysicsEngineRk4
             for (int j = i + 1; j < astros.Count; j++)
             {
                 Vector2D rij = hypotheticalPos[j] - hypotheticalPos[i];
-                Vector2D acji = G * (1 / rij.LengthSquared()) * Vector2D.Normalize(rij); // Does not include the other planet's mass
+                Vector2D acji = PhysicsConstants.G * (1 / rij.LengthSquared()) * Vector2D.Normalize(rij); // Does not include the other planet's mass
                 acc[i] += acji * astros[j].Mass;
                 acc[j] -= acji * astros[i].Mass;
             }
         }
         return acc;
     }
-    private (Vector2D[] acck1, Vector2D[] velk1) CalculateK1(List<Astro> astros)
+    private static (Vector2D[] acck1, Vector2D[] velk1) CalculateK1(List<Astro> astros)
     {
         UpdateAcceleration(astros);
 
@@ -73,7 +71,7 @@ public class PhysicsEngineRk4
             acck1: astros.Select(a => a.Acceleration).ToArray(),
             velk1: astros.Select(a => a.Velocity).ToArray());
     }
-    private (Vector2D[] accK2, Vector2D[] velK2) CalculateK2(
+    private static (Vector2D[] accK2, Vector2D[] velK2) CalculateK2(
         List<Astro> astros,
         double dt,
         Vector2D[] velK1,  // position slopes of k1
@@ -95,7 +93,7 @@ public class PhysicsEngineRk4
         // 3. The slopes of k2 are calculated: accelerations and hypothetical velocities
         return (accK2, hypotheticalVel);
     }
-    private (Vector2D[] accK3, Vector2D[] velK3) CalculateK3(
+    private static (Vector2D[] accK3, Vector2D[] velK3) CalculateK3(
         List<Astro> astros,
         double dt,
         Vector2D[] velK2,  // position slopes of k2
@@ -118,7 +116,7 @@ public class PhysicsEngineRk4
         return (accK3, hypotheticalVel);
     }
 
-    private (Vector2D[] accK4, Vector2D[] velK4) CalculateK4(
+    private static (Vector2D[] accK4, Vector2D[] velK4) CalculateK4(
         List<Astro> astros,
         double dt,
         Vector2D[] velK3,  // position slopes of k3
@@ -141,7 +139,7 @@ public class PhysicsEngineRk4
         return (accK4, velHipoteticas);
     }
 
-    public void UpdateRk4(List<Astro> astros, double dt)
+    public static void UpdateRk4(List<Astro> astros, double dt)
     {
         (Vector2D[] acck1, Vector2D[] velk1) k1 = CalculateK1(astros);
         (Vector2D[] acck2, Vector2D[] velk2) k2 = CalculateK2(astros, dt, k1.velk1, k1.acck1);
