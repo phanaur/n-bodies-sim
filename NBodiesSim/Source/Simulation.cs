@@ -14,22 +14,20 @@ public class Simulation
     // 4. Initial configuration setup
     private double _timeStep = 86400; // Each simulation frame represents one Earth day in real time.
     private double _n = 100; // Number of calculations into which timeStep will be divided. Higher means better precision.
-
-    private int _textAlign = 40;
-    private const float CrossSideLength = 10;
+    private int _textAlign = SimulationConstants.DefaultTextAlign;
 
     private readonly StarList _stars = new StarList();
     private readonly Camera _camera = new Camera();
     private Astro? _selectedAstro;
 
 
-    private readonly PhysicsEngineRK4 _physicsEngine;
+    private readonly PhysicsEngineRk4 _physicsEngine;
     private readonly RenderSystem _renderSystem;
     private readonly DataLoader _dataLoader;
     private readonly InputSystems _inputSystems;
 
     public Simulation(
-        PhysicsEngineRK4 physicsEngine,
+        PhysicsEngineRk4 physicsEngine,
         RenderSystem renderSystem,
         DataLoader dataLoader,
         InputSystems inputSystems)
@@ -56,7 +54,6 @@ public class Simulation
         // Variables for the independent physics calculations
         double accumulator = 0;
         double alpha = 0;
-        const double fixedDt = 1 / 60.0; // Fixed time for physics calculations
 
         // Warm-up: run physics once to initialize PastPosition
         foreach (Astro astro in astros)
@@ -93,7 +90,7 @@ public class Simulation
             // Physics: Once per frame, independent of FPS
             accumulator += dt;
 
-            while (accumulator >= fixedDt)
+            while (accumulator >= SimulationConstants.FixedDt)
             {
                 // Save previous positions
                 foreach (Astro astro in _dataLoader.Astros)
@@ -107,10 +104,10 @@ public class Simulation
                     _physicsEngine.UpdateRk4(_dataLoader.Astros, _timeStep / _n);
                 }
 
-                accumulator -= fixedDt;
+                accumulator -= SimulationConstants.FixedDt;
             }
 
-            alpha = accumulator / fixedDt;
+            alpha = accumulator / SimulationConstants.FixedDt;
 
             foreach (Astro astro in _dataLoader.Astros)
             {
@@ -128,7 +125,7 @@ public class Simulation
                 astros,
                 _camera,
                 _selectedAstro,
-                CrossSideLength,
+                SimulationConstants.CrossSideLength,
                 _textAlign,
                 _stars,
                 _keyName);

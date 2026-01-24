@@ -21,10 +21,10 @@ public class RenderSystem
         // Set conditions for the maximum and minimum size of the Sun.
         switch (radioSol)
         {
-            case < 2.0f:
-                return 2.0f;
-            case > 40f:
-                return 40.0f;
+            case < RenderConstants.MinBodyRadius:
+                return RenderConstants.MinBodyRadius;
+            case > RenderConstants.MaxBodyRadius:
+                return RenderConstants.MaxBodyRadius;
         }
         return radioSol;
 
@@ -55,7 +55,6 @@ public class RenderSystem
         float angle = (float)Math.Atan2(direction.Y, direction.X);
 
         // 4. Place the triangle at the edge of the screen
-        const float margin = 30; // Distance from the edge
         Vector2 trianPos = center;
 
         // Calculate which edge it touches first
@@ -64,13 +63,13 @@ public class RenderSystem
 
         if (Math.Abs(direction.X) > 0.001f)
         {
-            float sideX = direction.X > 0 ? width - margin : margin;
+            float sideX = direction.X > 0 ? width - RenderConstants.Margin : RenderConstants.Margin;
             xDist = Math.Abs((sideX - center.X) / direction.X);
         }
 
         if (Math.Abs(direction.Y) > 0.001f)
         {
-            float sideY = direction.Y > 0 ? height - margin : margin;
+            float sideY = direction.Y > 0 ? height - RenderConstants.Margin : RenderConstants.Margin;
             yDist = Math.Abs((sideY - center.Y) / direction.Y);
         }
 
@@ -79,17 +78,15 @@ public class RenderSystem
         trianPos.Y = center.Y + (direction.Y * distance);
 
         // 5. Draw the triangle pointing toward the body
-        const float triangleSize = 10.0f;
-
         // Main vertex (tip) - points in the direction of the body
         triangle[0] = trianPos + new Vector2(
-            (float)Math.Cos(angle) * triangleSize,
-            (float)Math.Sin(angle) * triangleSize);
+            (float)Math.Cos(angle) * RenderConstants.TriangleSize,
+            (float)Math.Sin(angle) * RenderConstants.TriangleSize);
 
         // Triangle base (two perpendicular vertices)
         float baseAngle1 = angle + (MathF.PI / 2); // 90 degrees to the right
         float baseAngle2 = angle - (MathF.PI / 2); // 90 degrees to the left
-        float baseWidth = triangleSize * 0.5f;
+        float baseWidth = RenderConstants.TriangleSize * 0.5f;
 
         triangle[1] = trianPos + new Vector2(
             (float)Math.Cos(baseAngle1) * baseWidth,
@@ -124,7 +121,7 @@ public class RenderSystem
     private static void DrawTriangles(Vector2 screenPos, Camera camera, Astro astro)
     {
 
-        (Vector2[], Vector2) triangle = GetTriangle(screenPos, camera.Center, camera.Width, camera.Height); ;
+        (Vector2[], Vector2) triangle = GetTriangle(screenPos, camera.Center, camera.Width, camera.Height);
 
         // Draw the triangle (ensuring correct order)
         Raylib.DrawTriangle(triangle.Item1[0], triangle.Item1[2], triangle.Item1[1], astro.Color);
@@ -163,7 +160,7 @@ public class RenderSystem
                 // Assign color to the current vertex
                 Rlgl.Color4ub(astro.Color.R, astro.Color.G, astro.Color.B, alphaByte);
 
-                // Draw the segment p1 -> p2
+                // Draw the segment p.1 -> p.2
                 Rlgl.Vertex2f(p1.Value.X, p1.Value.Y);
                 Rlgl.Vertex2f(p2.X, p2.Y);
             }
@@ -183,14 +180,14 @@ public class RenderSystem
     {
         float radio = (float)(astro.Radius / camera.RadiusScale);
 
-        if (radio < 2.0f)
+        if (radio < RenderConstants.MinBodyRadius)
         {
-            radio = 2.0f;
+            radio = RenderConstants.MinBodyRadius;
         }
 
-        if (radio > 40f)
+        if (radio > RenderConstants.MaxBodyRadius)
         {
-            radio = 40.0f;
+            radio = RenderConstants.MaxBodyRadius;
         }
 
         // Draw the trail only if there are two or more positions
@@ -199,7 +196,7 @@ public class RenderSystem
         Raylib.DrawCircleV(center: screenPos, radius: radio, color: astro.Color);
 
         // Optional: Draw the body's name near the triangle
-        Raylib.DrawText(astro.Name, (int)screenPos.X - textAlign, (int)screenPos.Y + textAlign, 12, astro.Color);
+        Raylib.DrawText(astro.Name, (int)screenPos.X - textAlign, (int)screenPos.Y + textAlign, RenderConstants.BodyNameFontSize, astro.Color);
     }
 
     private static void DrawRings(Astro selectedAstro, Camera camera)
@@ -238,12 +235,11 @@ public class RenderSystem
         // Only draw if the belt can be visible on screen
         if (!(sunScreenPos.X + asteroidBeltOuter > 0) || !(sunScreenPos.X - asteroidBeltOuter < camera.Width) ||
             !(sunScreenPos.Y + asteroidBeltOuter > 0) || !(sunScreenPos.Y - asteroidBeltOuter < camera.Height)) return;
-        Raylib.DrawRing(sunScreenPos, asteroidBeltInner, asteroidBeltOuter, 0, 360, 100, new Color(139, 125, 107, 15));
+        Raylib.DrawRing(sunScreenPos, asteroidBeltInner, asteroidBeltOuter, 0, 360, RenderConstants.BeltRingSegments, RenderConstants.AsteroidBeltColor);
 
         // Draw small asteroids in the belt
         Random rnd = new Random(42); // Fixed seed so they always appear in the same place
-        const int asteroidNum = 50; // Number of asteroids to draw
-        for (int i = 0; i < asteroidNum; i++)
+        for (int i = 0; i < RenderConstants.AsteroidNum; i++)
         {
             double angle = rnd.NextDouble() * 2 * Math.PI;
             double asteroidRadius = asteroidBeltInner + (rnd.NextDouble() * (asteroidBeltOuter - asteroidBeltInner));
@@ -255,7 +251,7 @@ public class RenderSystem
             if (!(xAsteroid >= 0) || !(xAsteroid <= camera.Width) || !(yAsteroid >= 0) ||
                 !(yAsteroid <= camera.Height)) continue;
             float size = 1.0f + ((float)rnd.NextDouble() * 1.5f);
-            Raylib.DrawCircleV(new Vector2(xAsteroid, yAsteroid), size, new Color(139, 125, 107, 180));
+            Raylib.DrawCircleV(new Vector2(xAsteroid, yAsteroid), size, RenderConstants.AsteroidColor);
         }
 
         // Text: if zoomed out, outside the belt; otherwise, between the Sun and the ring
@@ -272,12 +268,11 @@ public class RenderSystem
         // Only draw if the belt can be visible on screen
         if (!(sunPosScreen.X + kuiperBeltOuter > 0) || !(sunPosScreen.X - kuiperBeltOuter < camera.Width) ||
             !(sunPosScreen.Y + kuiperBeltOuter > 0) || !(sunPosScreen.Y - kuiperBeltOuter < camera.Height)) return;
-        Raylib.DrawRing(sunPosScreen, kuiperBeltInner, kuiperBeltOuter, 0, 360, 100, new Color(100, 100, 120, 10));
+        Raylib.DrawRing(sunPosScreen, kuiperBeltInner, kuiperBeltOuter, 0, 360, RenderConstants.BeltRingSegments, RenderConstants.KuiperBeltColor);
 
         // Draw small objects in the Kuiper belt
         Random rnd = new Random(123); // Different seed for different distribution
-        const int numObjects = 200; // More objects because it's a larger belt
-        for (int i = 0; i < numObjects; i++)
+        for (int i = 0; i < RenderConstants.NumObjectsKuiper; i++)
         {
             double angle = rnd.NextDouble() * 2 * Math.PI;
             double objRadius = kuiperBeltInner + (rnd.NextDouble() * (kuiperBeltOuter - kuiperBeltInner));
@@ -289,7 +284,7 @@ public class RenderSystem
             if (!(xObjeto >= 0) || !(xObjeto <= camera.Width) || !(yObjeto >= 0) || !(yObjeto <= camera.Height)) continue;
 
             float size = 1.0f + ((float)rnd.NextDouble() * 1.5f);
-            Raylib.DrawCircleV(new Vector2(xObjeto, yObjeto), size, new Color(100, 100, 120, 150));
+            Raylib.DrawCircleV(new Vector2(xObjeto, yObjeto), size, RenderConstants.KuiperObjectColor);
         }
 
         // Text inside the ring, between the Sun and the inner edge
@@ -312,10 +307,10 @@ public class RenderSystem
         {
             // 1. Calculate smooth oscillation (Sine gives values between -1 and 1)
             // Lower to * 3 so it's slow "breathing"
-            float oscilacion = (float)Math.Sin(Raylib.GetTime() * 3);
+            float oscilacion = (float)Math.Sin(Raylib.GetTime() * RenderConstants.CrossPulseSpeed);
 
             // In the Draw function, when objBloqueado is true:
-            float expansion = (float)Math.Sin(Raylib.GetTime() * 3) * 2; // Oscillates +- 2 pixels
+            float expansion = (float)Math.Sin(Raylib.GetTime() * RenderConstants.CrossPulseSpeed) * RenderConstants.CrossExpansionAmplitude; // Oscillates +- 2 pixels
             float ladoFinal = crossSide + expansion;
 
             // 2. Convert range [-1, 1] to [0.2, 1.0] so it never fully disappears

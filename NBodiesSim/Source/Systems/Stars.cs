@@ -1,4 +1,5 @@
 using NBodiesSim.Source.Core;
+using NBodiesSim.Source.Models;
 
 namespace NBodiesSim.Source.Systems;
 
@@ -14,9 +15,7 @@ public class StarList
     {
         Random rndStars = new Random(12345); // Fixed seed for consistency
 
-        const int numStars = 10000; // Fixed the number of stars
-
-        for (int i = 0; i < numStars; i++)
+        for (int i = 0; i < StarsConstants.NumStars; i++)
         {
             // Generate random angle
             double angulo = rndStars.NextDouble() * 2 * Math.PI;

@@ -30,7 +30,7 @@ internal static class Program
     private static void Main()
     {
         // 1. Create dependencies
-        PhysicsEngineRK4 physics = new PhysicsEngineRK4();
+        PhysicsEngineRk4 physics = new PhysicsEngineRk4();
         RenderSystem render = new RenderSystem();
         DataLoader data = new DataLoader();
         ConfigLoader config = new ConfigLoader();

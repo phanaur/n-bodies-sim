@@ -1,9 +1,16 @@
 /*
- * This class handles the simulation's physics calculations. Currently, it uses numerical integration via
- * the Euler method, but an update to use the Runge-Kutta 4 algorithm is expected.
+ * This class handles the simulation's physics calculations using the RUnge-Kuta 4 algorithm
  *
- * It consists of three calculation methods: for acceleration, for velocity, and for position. Subsequently, there is
- * a method accessed by the simulation that encompasses the entire physics calculation.
+ * It consists of three four main calculation methods: CalculateK1, CalculateK2, CalculateK3 and CalculateK4. Each one
+ * of them calculates the hypothetical velocity and acceleration of the bodies for fractions of a given time, dt:
+ * 
+ * - CalculateK1: Updates the astros acceleration parameters and returns the current values of velocity and position in t = 0
+ * - CalculateK2: Calculates the acceleration and velocity of the bodies for t = dt / 2, using the results of K1
+ * - CalculateK3: Calculates the acceleration and velocity of the bodies for t = dt / 2, using the results of K2
+ * - CalculateK4: Calculates the acceleration and velocity of the bodies for t = dt, using the results of K3
+ * 
+ * Subsequently, there is a method accessed by the simulation that encompasses the entire physics calculation. For that,
+ * it calculates a weighted average of the results of K1, K2, K3 and K4 to update the position and velocity of the bodies.
  */
 using NBodiesSim.Source.Core;
 using NBodiesSim.Source.Models;
@@ -11,7 +18,7 @@ using NBodiesSim.Source.Models;
 namespace NBodiesSim.Source.Systems;
 
 
-public class PhysicsEngineRK4
+public class PhysicsEngineRk4
 {
     private const double G = 6.674e-11; // Universal gravitational constant in m^3 kg^-1 s^-2
 
