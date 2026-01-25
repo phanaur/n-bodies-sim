@@ -1,5 +1,5 @@
 /*
- * This class handles the simulation's physics calculations using the RUnge-Kuta 4 algorithm
+ * This class handles the simulation's physics calculations using the RUnge-Kutta 4 algorithm
  *
  * It consists of three four main calculation methods: CalculateK1, CalculateK2, CalculateK3 and CalculateK4. Each one
  * of them calculates the hypothetical velocity and acceleration of the bodies for fractions of a given time, dt:
