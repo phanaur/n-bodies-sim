@@ -19,7 +19,7 @@
  *          velK2, velK3 and velK4 were references to hypotheticalVel and so, they had the same value when updating the
  *          position and velocity of each body.
  *
- *          Now, each method returns hypotheticalVel.ToArray() to create a copi of that array status into a new variable,
+ *          Now, each method returns hypotheticalVel.ToArray() to create a copy of that array status into a new variable,
  *          solving the problem. In the case of hypotheticalPos, there was no problem. Each index of the array
  *          was updated with the astro[i].Position + velKN * (dt / 2) --or just dt, in the case of CalculateK4--, so no
  *          error "reference problem" happened there.
