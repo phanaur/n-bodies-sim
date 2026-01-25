@@ -296,6 +296,17 @@
       "DesiredTrailTime": 7838044800
     },
     {
+      "Id": 200.1,
+      "ParentId": 200,
+      "Name": "Caronte",
+      "Mass": 1.586e21,
+      "Radius": 6.06e5,
+      "Color": [180, 180, 190, 255],
+      "Position": [5.9060196e12, 0],
+      "Velocity": [0, 4870],
+      "DesiredTrailTime": 0
+    },
+    {
       "Id": 201,
       "Name": "Quaoar",
       "Mass": 1.2e21,

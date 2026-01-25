@@ -8,7 +8,22 @@
  * - CalculateK2: Calculates the acceleration and velocity of the bodies for t = dt / 2, using the results of K1
  * - CalculateK3: Calculates the acceleration and velocity of the bodies for t = dt / 2, using the results of K2
  * - CalculateK4: Calculates the acceleration and velocity of the bodies for t = dt, using the results of K3
- * 
+ *
+ * WARNING: Vector2D arrays hypotheticalPos and HypotheticalVel are used in CalculateK2, CalculateK3 and CalculateK4.
+ *          Before this iteration of the RK4 implementation, those variables were created inside each method, separately.
+ *          To reduce the CPU time in case of calculating thousands of body-to-body interactions, the variables were
+ *          created in UpdateRk4 and passed to the different methods.
+ *
+ *          The first iteration of RK4 that included this feature didn't take into account what pass by reference and
+ *          pass by value was, so every method returned hypotheticalVel after modifying the array. That implied that
+ *          velK2, velK3 and velK4 were references to hypotheticalVel and so, they had the same value when updating the
+ *          position and velocity of each body.
+ *
+ *          Now, each method returns hypotheticalVel.ToArray() to create a copi of that array status into a new variable,
+ *          solving the problem. In the case of hypotheticalPos, there was no problem. Each index of the array
+ *          was updated with the astro[i].Position + velKN * (dt / 2) --or just dt, in the case of CalculateK4--, so no
+ *          error "reference problem" happened there.
+ *
  * Subsequently, there is a method accessed by the simulation that encompasses the entire physics calculation. For that,
  * it calculates a weighted average of the results of K1, K2, K3 and K4 to update the position and velocity of the bodies.
  */
@@ -69,7 +84,8 @@ public class PhysicsEngineRk4
         Vector2D[] accK2 = CalcAccelerations(astros, hypotheticalPos);
 
         // 3. The slopes of k2 are calculated: accelerations and hypothetical velocities
-        return (accK2, hypotheticalVel);
+        // Return a copy to avoid array aliasing
+        return (accK2, hypotheticalVel.ToArray());
     }
     private static (Vector2D[] accK3, Vector2D[] velK3) CalculateK3(
         List<Astro> astros,
@@ -91,7 +107,8 @@ public class PhysicsEngineRk4
         Vector2D[] accK3 = CalcAccelerations(astros, hypotheticalPos);
 
         // 3. The slopes of k3 are calculated: accelerations and hypothetical velocities
-        return (accK3, hypotheticalVel);
+        // Return a copy to avoid array aliasing
+        return (accK3, hypotheticalVel.ToArray());
     }
 
     private static (Vector2D[] accK4, Vector2D[] velK4) CalculateK4(
@@ -115,17 +132,18 @@ public class PhysicsEngineRk4
         Vector2D[] accK4 = CalcAccelerations(astros, hypotheticalPos);
 
         // 3. The slopes of k4 are calculated: accelerations and hypothetical velocities
-        return (accK4, hypotheticalVel);
+        // Return a copy to avoid array aliasing
+        return (accK4, hypotheticalVel.ToArray());
     }
 
-    public static void UpdateRk4(List<Astro> astros, double dt)
+    public void UpdateRk4(List<Astro> astros, double dt)
     {
         Vector2D[] initialPos = astros.Select(a => a.Position).ToArray();
 
         Vector2D[] hypotheticalPos = new Vector2D[astros.Count];
         Vector2D[] hypotheticalVel = new Vector2D[astros.Count];
 
-        (Vector2D[] accK1, Vector2D[]velK1) = CalculateK1(astros, initialPos);
+        (Vector2D[] accK1, Vector2D[] velK1) = CalculateK1(astros, initialPos);
 
         (Vector2D[] accK2, Vector2D[] velK2) = CalculateK2(astros, dt, velK1, accK1, hypotheticalPos, hypotheticalVel);
 
