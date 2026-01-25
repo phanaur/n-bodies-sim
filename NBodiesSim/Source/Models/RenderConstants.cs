@@ -25,8 +25,8 @@ public static class RenderConstants
     public const float CrossExpansionAmplitude = 2f;
 
     // Belt colors
-    public static readonly Color AsteroidBeltColor = new(139, 125, 107, 15);
+    public static readonly Color AsteroidBeltColor = new(139, 125, 107, 80);
     public static readonly Color AsteroidColor = new(139, 125, 107, 180);
-    public static readonly Color KuiperBeltColor = new(100, 100, 120, 10);
+    public static readonly Color KuiperBeltColor = new(100, 100, 120, 80);
     public static readonly Color KuiperObjectColor = new(100, 100, 120, 150);
 }

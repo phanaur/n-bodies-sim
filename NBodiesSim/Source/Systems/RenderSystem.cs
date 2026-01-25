@@ -255,9 +255,9 @@ public class RenderSystem
         }
 
         // Text: if zoomed out, outside the belt; otherwise, between the Sun and the ring
-        float textRadius = keyName == "Space" ? asteroidBeltOuter * 1.15f : asteroidBeltInner * 0.7f;
-        int textWidth = Raylib.MeasureText("Asteroid belt", 12);
-        Raylib.DrawText("Asteroid belt", (int)(sunScreenPos.X - ((float)textWidth / 2)), (int)(sunScreenPos.Y - textRadius), 12, new Color(139, 125, 107, 150));
+        float textRadius = keyName == "Space" ? asteroidBeltOuter * 2f : asteroidBeltInner * 0.9f;
+        int textWidth = Raylib.MeasureText("Asteroid belt", 20);
+        Raylib.DrawText("Asteroid belt", (int)(sunScreenPos.X - ((float)textWidth / 2)), (int)(sunScreenPos.Y - textRadius), 20, new Color(139, 125, 107, 150));
     }
 
     private static void DrawKuiperBelt(Vector2 sunPosScreen, Camera camera)
@@ -288,9 +288,9 @@ public class RenderSystem
         }
 
         // Text inside the ring, between the Sun and the inner edge
-        float textRadius = kuiperBeltInner * 0.7f; // 70% of the inner radius
-        int textWidth = Raylib.MeasureText("Kuiper belt", 12);
-        Raylib.DrawText("Kuiper belt", (int)(sunPosScreen.X - ((float)textWidth / 2)), (int)(sunPosScreen.Y - textRadius), 12, new Color(100, 100, 120, 150));
+        float textRadius = kuiperBeltInner * 0.9f; // 70% of the inner radius
+        int textWidth = Raylib.MeasureText("Kuiper belt", 20);
+        Raylib.DrawText("Kuiper belt", (int)(sunPosScreen.X - ((float)textWidth / 2)), (int)(sunPosScreen.Y - textRadius), 20, new Color(100, 100, 120, 150));
     }
 
     private static void DrawCross(float crossSide, Astro selectedAstro, Camera camera)
