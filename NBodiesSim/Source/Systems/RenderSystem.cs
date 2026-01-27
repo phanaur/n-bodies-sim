@@ -19,15 +19,12 @@ public class RenderSystem
         float radioSol = (float)(sun.Radius / radiusScale);
 
         // Set conditions for the maximum and minimum size of the Sun.
-        switch (radioSol)
+        return radioSol switch
         {
-            case < RenderConstants.MinBodyRadius:
-                return RenderConstants.MinBodyRadius;
-            case > RenderConstants.MaxBodyRadius:
-                return RenderConstants.MaxBodyRadius;
-        }
-        return radioSol;
-
+            < RenderConstants.MinBodyRadius => RenderConstants.MinBodyRadius,
+            > RenderConstants.MaxBodyRadius => RenderConstants.MaxBodyRadius,
+            _ => radioSol,
+        };
     }
 
     // Get the Sun's position on screen (in pixels)
@@ -315,8 +312,8 @@ public class RenderSystem
 
             // 2. Convert range [-1, 1] to [0.2, 1.0] so it never fully disappears
             float factorOpacidad = (oscilacion * 0.4f) + 0.6f;
-            
-            
+
+
 
             // 3. Apply opacity to the body's original color
             colorCruz = new Color(
