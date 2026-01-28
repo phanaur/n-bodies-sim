@@ -110,9 +110,10 @@ internal class RenderSystem
             if (effectiveTrailLength < 10)
                 effectiveTrailLength = 10;
 
-            if (astro.Trail.Count > effectiveTrailLength)
+            // Remove ALL excess points, not just one per frame
+            while (astro.Trail.Count > effectiveTrailLength)
             {
-                _ = astro.Trail.Dequeue();
+                astro.Trail.Dequeue();
             }
         }
     }
