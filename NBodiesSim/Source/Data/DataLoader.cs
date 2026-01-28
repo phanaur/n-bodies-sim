@@ -11,7 +11,7 @@ using Raylib_cs;
 
 namespace NBodiesSim.Source.Data;
 
-public class DataLoader
+internal class DataLoader
 {
     // List of astros
     public readonly List<Astro> Astros = new List<Astro>();
@@ -21,16 +21,16 @@ public class DataLoader
     {
         try
         {
-            const string filePath = "Data/astrosData.json";
+            const string FilePath = "Data/astrosData.json";
 
             // Check if the file exists
-            if (!File.Exists(filePath))
+            if (!File.Exists(FilePath))
             {
-                throw new FileNotFoundException($"File not found: {filePath}");
+                throw new FileNotFoundException($"File not found: {FilePath}");
             }
 
             // Generate astros
-            string jsonAstroData = File.ReadAllText(filePath);
+            string jsonAstroData = File.ReadAllText(FilePath);
             WrapperAstroData? wrapperAstroData = JsonSerializer.Deserialize<WrapperAstroData>(jsonAstroData);
 
             // Check deserialization
@@ -58,20 +58,25 @@ public class DataLoader
                     throw new Exception($"El radio del cuerpo {data.Name} es negativo: {data.Radius}");
 
                 if (data.Position.Length != 2)
+                {
                     throw new Exception(
                         $"Los datos de la posición del cuerpo {data.Name} no son correctos: {data.Position}");
+                }
+
                 if (data.Velocity.Length != 2)
+                {
                     throw new Exception(
                         $"Los datos de la velocidad del cuerpo {data.Name} no son correctos: {data.Velocity}");
+                }
 
                 if (data.Color.Length != 4)
                     throw new Exception($"Los datos de color del cuerpo {data.Name} no son correctos: {data.Color}");
 
-                const int colorLength = 4;
+                const int ColorLength = 4;
 
-                for (int i = 0; i < colorLength; i++)
+                for (int i = 0; i < ColorLength; i++)
                 {
-                    if (data.Color[i] < 0 || data.Color[i] > 255)
+                    if (data.Color[i] is < 0 or > 255)
                     {
                         throw new Exception(
                             $"Los valores (r, g, b, a) del cuerpo {data.Name} no son correctos: {data.Color}");
@@ -91,9 +96,11 @@ public class DataLoader
                     }
 
                     if (data.InnerRingRadius > data.OuterRingRadius)
+                    {
                         throw new Exception(
                             $"Los datos de los radios de los anillos del cuerpo {data.Name} no son correctos. " +
                             $"{data.InnerRingRadius} > {data.OuterRingRadius}");
+                    }
 
                     if (data.RingColor == null)
                     {
@@ -107,9 +114,9 @@ public class DataLoader
                             $"Los datos de color de los anillos del cuerpo {data.Name} no son correctos: {data.RingColor}");
                     }
 
-                    for (int i = 0; i < colorLength; i++)
+                    for (int i = 0; i < ColorLength; i++)
                     {
-                        if (data.RingColor[i] < 0 || data.RingColor[i] > 255)
+                        if (data.RingColor[i] is < 0 or > 255)
                         {
                             throw new Exception(
                                 $"Los valores (r, g, b, a) de los anillos del cuerpo {data.Name} no son correctos: {data.RingColor}");

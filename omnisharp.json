@@ -2,11 +2,7 @@
   "$schema": "http://json.schemastore.org/omnisharp",
   "FormattingOptions": {
     "EnableEditorConfigSupport": true,
-    "OrganizeImports": true,
-    "NewLine": "\n",
-    "UseTabs": false,
-    "TabSize": 4,
-    "IndentationSize": 4
+    "OrganizeImports": true
   },
   "RoslynExtensionsOptions": {
     "EnableAnalyzersSupport": true,
@@ -14,16 +10,8 @@
     "EnableDecompilationSupport": true,
     "InlayHintsOptions": {
       "EnableForParameters": true,
-      "ForLiteralParameters": true,
-      "ForIndexerParameters": true,
-      "ForObjectCreationParameters": true,
-      "ForOtherParameters": true,
-      "SuppressForParametersThatDifferOnlyBySuffix": true,
-      "SuppressForParametersThatMatchMethodIntent": true,
-      "SuppressForParametersThatMatchArgumentName": true,
       "EnableForTypes": true,
       "ForImplicitVariableTypes": true,
-      "ForLambdaParameterTypes": true,
       "ForImplicitObjectCreation": true
     }
   },
@@ -35,21 +23,11 @@
       "**/.git/**/*"
     ]
   },
-  "ImplementTypeOptions": {
-    "InsertionBehavior": "WithOtherMembersOfTheSameKind",
-    "PropertyGenerationBehavior": "PreferAutoProperties"
-  },
-  "RenameOptions": {
-    "RenameInStrings": false,
-    "RenameInComments": false,
-    "RenameOverloads": false
-  },
   "Sdk": {
     "IncludePrereleases": true
   },
   "MsBuild": {
     "LoadProjectsOnDemand": false,
-    "EnablePackageAutoRestore": true,
-    "ToolsVersion": "Current"
+    "EnablePackageAutoRestore": true
   }
 }

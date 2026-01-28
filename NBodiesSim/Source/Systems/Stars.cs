@@ -3,7 +3,7 @@ using NBodiesSim.Source.Models;
 
 namespace NBodiesSim.Source.Systems;
 
-public class StarList
+internal class StarList
 {
 
 

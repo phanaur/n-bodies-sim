@@ -9,7 +9,7 @@ using Raylib_cs;
 
 namespace NBodiesSim.Source.Core;
 
-public class Camera
+internal class Camera
 {
     // Current state properties
     public Vector2D Position { get; private set; } = Vector2D.Zero;
@@ -46,7 +46,7 @@ public class Camera
 
         RadiusScale += (TargetRadiusScale - RadiusScale) * smoothFactor;
         DistanceScale += (TargetDistanceScale - DistanceScale) * smoothFactor;
-        
+
         // Move the camera toward the target position
         Position += (targetPosition - Position) * smoothFactor;
 
@@ -62,7 +62,7 @@ public class Camera
     {
         LerpSpeed = CameraConstants.InitialLerpSpeed; // Reset the variable when new transitions happen
     }
-    
+
     // Helper method to convert world coordinates to the screen
     public Vector2 WorldToScreen(Vector2D worldPos)
     {

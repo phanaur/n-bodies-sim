@@ -9,7 +9,7 @@ using NBodiesSim.Source.Core;
 
 namespace NBodiesSim.Source.Models;
 
-public class Astro
+internal class Astro
 {
     // Fixed variables
     public required string Name { get; init; }
@@ -40,6 +40,13 @@ public class Astro
     public required Queue<Vector2D> Trail { get; init; } = new Queue<Vector2D>();
 
     public double DesiredTrailTime { get; init; } = 86400 * 30; // Time in seconds we want to see (e.g., 30 days)
+
+    // Kinematic orbit (for satellites with fast orbits that don't tolerate large timesteps)
+    public double? Theta { get; set; } // Current orbital angle (radians)
+
+    public double? OmegaMedia { get; set; } // Mean angular velocity (rad/s)
+
+    public double? OrbitalRadius { get; set; } // Mean orbital radius from parent (meters)
 
     // Non-fixed variables
     public required Vector2D Position { get; set; }

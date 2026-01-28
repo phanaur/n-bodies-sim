@@ -1,6 +1,6 @@
 namespace NBodiesSim.Source.Models;
 
-public static class SimulationConstants
+internal static class SimulationConstants
 {
     public const double FixedDt = 1 / 60.0; // Fixed time for physics calculations (60 FPS)
     public const float CrossSideLength = 10;

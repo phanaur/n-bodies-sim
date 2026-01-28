@@ -77,15 +77,18 @@ jobs:
 
           Timesteps usados (n = substeps de integración RK4):
           - Vista general: 1 día (86400s), n=100
-          - Sol: 1 día (86400s), n=100
+          - Sol: 1 día (86400s), n=300
           - Mercurio: 1 hora (3600s), n=100
-          - Venus: 1 hora (3600s), n=200
+          - Venus: 1 hora (3600s), n=100
           - Tierra: 1 hora (3600s), n=100
-          - Marte: 400 segundos (~7 min), n=200
+          - Marte: 400 segundos (~7 min), n=100
           - Júpiter: 30 minutos (1800s), n=100
-          - Saturno: 1 hora (3600s), n=100
+          - Saturno: 30 minutos (1800s), n=100
           - Urano: 1 hora (3600s), n=100
           - Neptuno: 1 hora (3600s), n=100
+
+          NOTA: Los satélites Fobos y Deimos utilizan órbitas cinemáticas (MCU) para garantizar
+          estabilidad orbital con timesteps grandes, logrando 60 FPS en todas las vistas.
 
           ========================================
           EOF
@@ -166,12 +169,15 @@ jobs:
 
           - ✅ 8 planetas + Sol
           - ✅ 13+ satélites naturales (Luna, Galileanos, Titán, etc.)
+          - ✅ Sistema de física híbrido: N-body completo + órbitas cinemáticas para satélites rápidos
           - ✅ Anillos planetarios (Saturno, Urano, Neptuno)
           - ✅ Cinturón de asteroides y cinturón de Kuiper
           - ✅ Trazas orbitales con gradiente de transparencia
           - ✅ Física gravitatoria N-cuerpos con Runge-Kutta 4 (RK4)
           - ✅ Timesteps adaptativos según el cuerpo observado
+          - ✅ Monitor de conservación de energía en tiempo real
           - ✅ 10,000 estrellas de fondo generadas proceduralmente
+          - ✅ Rendimiento optimizado: 60 FPS estables en todas las vistas
 
           ## 📋 Requisitos
 

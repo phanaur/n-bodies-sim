@@ -11,7 +11,7 @@ using NBodiesSim.Source.Models;
 namespace NBodiesSim.Source.Systems;
 
 [Obsolete("This class is deprecated and has been replaced by PhysicsEngineRK4")]
-public class PhysicsEngineEuler
+internal class PhysicsEngineEuler
 {
     private const double G = 6.674e-11; // Universal gravitational constant in m^3 kg^-1 s^-2
 

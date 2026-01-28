@@ -6,7 +6,7 @@ using Raylib_cs;
 
 namespace NBodiesSim.Source.Models.DTOs;
 
-public readonly struct AstroConfig
+internal readonly struct AstroConfig
 {
     public required KeyboardKey Key { get; init; }
 

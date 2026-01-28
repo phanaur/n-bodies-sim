@@ -2,7 +2,7 @@ using Raylib_cs;
 
 namespace NBodiesSim.Source.Models;
 
-public static class RenderConstants
+internal static class RenderConstants
 {
     // Triangle indicators for off-screen objects
     public const float Margin = 30f;

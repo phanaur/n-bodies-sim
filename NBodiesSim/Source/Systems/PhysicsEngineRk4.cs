@@ -29,12 +29,17 @@
  */
 using NBodiesSim.Source.Core;
 using NBodiesSim.Source.Models;
+using System.Threading.Tasks;
 
 namespace NBodiesSim.Source.Systems;
 
 
-public class PhysicsEngineRk4
+internal class PhysicsEngineRk4
 {
+    private float _futureKinetic = 0;
+    private float _futurePotential = 0;
+    private float _energy = 0;
+    private float _futureEnergy = 0;
 
     private static Vector2D[] CalcAccelerations(List<Astro> astros, Vector2D[] hypothPos)
     {
@@ -45,13 +50,16 @@ public class PhysicsEngineRk4
         {
             acc[i] = Vector2D.Zero;
         }
+        //Parallel.For(0, astros.Count - 1, i =>
         for (int i = 0; i < astros.Count - 1; i++)
         {
             for (int j = i + 1; j < astros.Count; j++)
             {
                 Vector2D rij = hypothPos[j] - hypothPos[i];
                 Vector2D acji = PhysicsConstants.G * (1 / rij.LengthSquared()) * Vector2D.Normalize(rij); // Does not include the other planet's mass
+                //lock (astros[i]) 
                 acc[i] += acji * astros[j].Mass;
+                //lock (astros[j]) 
                 acc[j] -= acji * astros[i].Mass;
             }
         }
@@ -138,10 +146,24 @@ public class PhysicsEngineRk4
 
     public void UpdateRk4(List<Astro> astros, double dt)
     {
-        Vector2D[] initialPos = astros.Select(a => a.Position).ToArray();
+        Vector2D[] initialPos = [.. astros.Select(a => a.Position)];
 
         Vector2D[] hypotheticalPos = new Vector2D[astros.Count];
         Vector2D[] hypotheticalVel = new Vector2D[astros.Count];
+
+        // Pre-build parent cache for kinematic satellites (only once per UpdateRk4 call)
+        Dictionary<int, Astro> parentCache = new Dictionary<int, Astro>();
+        for (int i = 0; i < astros.Count; i++)
+        {
+            if (astros[i].OmegaMedia.HasValue && astros[i].ParentId.HasValue)
+            {
+                if (!parentCache.ContainsKey(i))
+                {
+                    Astro parent = astros.First(a => Math.Abs(a.Id - astros[i].ParentId!.Value) < 0.01);
+                    parentCache[i] = parent;
+                }
+            }
+        }
 
         (Vector2D[] accK1, Vector2D[] velK1) = CalculateK1(astros, initialPos);
 
@@ -153,8 +175,72 @@ public class PhysicsEngineRk4
 
         for (int i = 0; i < astros.Count; i++)
         {
-            astros[i].Velocity += (accK1[i] + 2 * accK2[i] + 2 * accK3[i] + accK4[i]) * dt / 6;
-            astros[i].Position += (velK1[i] + 2 * velK2[i] + 2 * velK3[i] + velK4[i]) * dt / 6;
+            // Check if this body uses kinematic circular motion (MCU) instead of full N-body physics
+            if (astros[i].OmegaMedia.HasValue && astros[i].Theta.HasValue && astros[i].OrbitalRadius.HasValue && astros[i].ParentId.HasValue)
+            {
+                // Kinematic update: circular orbit around parent body
+                Astro parent = parentCache[i];
+
+                // Update orbital angle: θ += ω × dt
+                astros[i].Theta = astros[i].Theta!.Value + astros[i].OmegaMedia!.Value * dt;
+
+                // Keep angle in [0, 2π] range to avoid numerical drift
+                while (astros[i].Theta > 2 * Math.PI)
+                    astros[i].Theta -= 2 * Math.PI;
+
+                double R = astros[i].OrbitalRadius!.Value;
+                double theta = astros[i].Theta!.Value;
+                double omega = astros[i].OmegaMedia!.Value;
+
+                // Position: parent position + circular orbit offset
+                astros[i].Position = parent.Position + new Vector2D(
+                    R * Math.Cos(theta),
+                    R * Math.Sin(theta)
+                );
+
+                // Velocity: parent velocity + tangential velocity (v = ω × R)
+                astros[i].Velocity = parent.Velocity + new Vector2D(
+                    -omega * R * Math.Sin(theta),
+                    omega * R * Math.Cos(theta)
+                );
+            }
+            else
+            {
+                // Standard RK4 update
+                astros[i].Velocity += (accK1[i] + 2 * accK2[i] + 2 * accK3[i] + accK4[i]) * dt / 6;
+                astros[i].Position += (velK1[i] + 2 * velK2[i] + 2 * velK3[i] + velK4[i]) * dt / 6;
+            }
         }
+    }
+
+    public (float, float) CalculateEnergy(List<Astro> astros)
+    {
+        _futureKinetic = 0;
+        _futurePotential = 0;
+        _futureEnergy = 0;
+        for (int i = 0; i < astros.Count; i++)
+        {
+            _futureKinetic += (float)(0.5 * astros[i].Mass * astros[i].Velocity.LengthSquared());
+        }
+        for (int i = 0; i < astros.Count - 1; i++)
+        {
+            for (int j = i + 1; j < astros.Count; j++)
+            {
+                Vector2D rij = astros[j].Position - astros[i].Position;
+                _futurePotential -= (float)(PhysicsConstants.G * astros[i].Mass * astros[j].Mass / rij.Length());
+            }
+        }
+        _futureEnergy = _futureKinetic + _futurePotential;
+
+        if (_energy == 0)
+        {
+            _energy = _futureEnergy;
+            return (0f, 0f);
+        }
+
+        float energyDiff = _futureEnergy - _energy;
+        float energyDiffRel = energyDiff / _energy;
+        _energy = _futureEnergy;
+        return (energyDiff, energyDiffRel);
     }
 }

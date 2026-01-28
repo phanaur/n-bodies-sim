@@ -9,7 +9,7 @@ using Raylib_cs;
 
 namespace NBodiesSim.Source.Systems;
 
-public class InputSystems
+internal class InputSystems
 {
     private readonly Dictionary<KeyboardKey, AstroConfig> _cameraConfigs;
     public InputSystems(Dictionary<KeyboardKey, AstroConfig> cameraConfigs)
@@ -21,12 +21,12 @@ public class InputSystems
     {
         // Set Camera
         int key = Raylib.GetKeyPressed();
-        if (key != (int)KeyboardKey.Null && _cameraConfigs.ContainsKey((KeyboardKey)(key)))
+        if (key != (int)KeyboardKey.Null && _cameraConfigs.ContainsKey((KeyboardKey)key))
         {
-            return _cameraConfigs[(KeyboardKey)(key)];
+            return _cameraConfigs[(KeyboardKey)key];
         }
         return null;
 
     }
-    
+
 }

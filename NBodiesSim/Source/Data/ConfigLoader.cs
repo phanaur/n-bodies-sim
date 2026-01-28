@@ -8,7 +8,7 @@ using Raylib_cs;
 
 namespace NBodiesSim.Source.Data;
 
-public class ConfigLoader
+internal class ConfigLoader
 {
     // Configuration dictionary. Each key has an associated AstroConfig object
     public Dictionary<KeyboardKey, AstroConfig> CameraConf { get; } = new Dictionary<KeyboardKey, AstroConfig>();
@@ -24,16 +24,16 @@ public class ConfigLoader
     {
         try
         {
-            const string filePath = "Data/astrosConfig.json";
+            const string FilePath = "Data/astrosConfig.json";
 
             // Check if the file exists
-            if (!File.Exists(filePath))
+            if (!File.Exists(FilePath))
             {
-                throw new FileNotFoundException($"File not found: {filePath}");
+                throw new FileNotFoundException($"File not found: {FilePath}");
             }
 
             // Attempt to load from a JSON file
-            string jsonAstroConfig = File.ReadAllText(filePath);
+            string jsonAstroConfig = File.ReadAllText(FilePath);
 
             WrapperAstroConfig? wrapperAstrosConfig =
                 JsonSerializer.Deserialize<WrapperAstroConfig>(jsonAstroConfig, JsonOptions);

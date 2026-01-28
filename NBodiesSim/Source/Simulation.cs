@@ -6,14 +6,14 @@ using Raylib_cs;
 
 namespace NBodiesSim.Source;
 
-public class Simulation
+internal class Simulation
 {
     // Mercury visibility condition
     private static string _keyName = "Null";
 
     // 4. Initial configuration setup
     private double _timeStep = 86400; // Each simulation frame represents one Earth day in real time.
-    private double _n = 100; // Number of calculations into which timeStep will be divided. Higher means better precision.
+    private double _n = 300; // Number of calculations into which timeStep will be divided. Higher means better precision.
     private int _textAlign = SimulationConstants.DefaultTextAlign;
 
     private readonly StarList _stars = new StarList();
@@ -77,12 +77,12 @@ public class Simulation
                 _camera.ResetLerp();
                 _textAlign = newConfig.Value.TextAlign;
                 _keyName = newConfig.Value.KeyName;
-                
+
                 // Update the current astro only when the target changes
                 _selectedAstro = astros.First(a => (a.Id - _camera.TargetId) == 0);
                 foreach (Astro astro in _dataLoader.Astros)
                 {
-                    astro.RenderPosition = (astro.PastPosition * (1 - alpha) + astro.Position * alpha);
+                    astro.RenderPosition = astro.PastPosition * (1 - alpha) + astro.Position * alpha;
                 }
             }
 
@@ -111,7 +111,7 @@ public class Simulation
 
             foreach (Astro astro in _dataLoader.Astros)
             {
-                astro.RenderPosition = (astro.PastPosition * (1 - alpha) + astro.Position * alpha);
+                astro.RenderPosition = astro.PastPosition * (1 - alpha) + astro.Position * alpha;
             }
 
             _renderSystem.SaveTrail(astros, _timeStep);
@@ -128,7 +128,8 @@ public class Simulation
                 SimulationConstants.CrossSideLength,
                 _textAlign,
                 _stars,
-                _keyName);
+                _keyName,
+                _physicsEngine);
         }
         Raylib.CloseWindow();
     }

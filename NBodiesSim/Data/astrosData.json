@@ -70,7 +70,10 @@
       "Color": [160, 160, 160, 255],
       "Position": [2.279094e11, 0],
       "Velocity": [0, 26229],
-      "DesiredTrailTime": 0
+      "DesiredTrailTime": 0,
+      "Theta": 0,
+      "OmegaMedia": 0.000228095,
+      "OrbitalRadius": 9.4e6
     },
     {
       "Id": 4.2,
@@ -81,7 +84,10 @@
       "Color": [180, 180, 180, 255],
       "Position": [2.279234e11, 0],
       "Velocity": [0, 25450],
-      "DesiredTrailTime": 0
+      "DesiredTrailTime": 0,
+      "Theta": 0,
+      "OmegaMedia": 0.000057596,
+      "OrbitalRadius": 2.34e7
     },
     {
       "Id": 5,

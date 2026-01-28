@@ -11,8 +11,10 @@ using Raylib_cs;
 
 namespace NBodiesSim.Source.Systems;
 
-public class RenderSystem
+internal class RenderSystem
 {
+    private int _energyDiffAccumulator = 0;
+    private (float _energyDiff, float _energyDiffRel) _diff = (0f, 0f);
     // Get the Sun's radius on screen (in pixels)
     private static float GetSunRadius(Astro sun, double radiusScale)
     {
@@ -28,10 +30,7 @@ public class RenderSystem
     }
 
     // Get the Sun's position on screen (in pixels)
-    private static Vector2 GetSunPositionScreen(Astro sun, Camera camera)
-    {
-        return camera.WorldToScreen(sun.RenderPosition);
-    }
+    private static Vector2 GetSunPositionScreen(Astro sun, Camera camera) => camera.WorldToScreen(sun.RenderPosition);
 
     // Generate coordinates to position the triangle representing a planet that is not visible on screen.
     private static (Vector2[], Vector2) GetTriangle(Vector2 screenPos, Vector2 center, int width, int height)
@@ -76,25 +75,27 @@ public class RenderSystem
 
         // 5. Draw the triangle pointing toward the body
         // Main vertex (tip) - points in the direction of the body
-        triangle[0] = trianPos + new Vector2(
-            (float)Math.Cos(angle) * RenderConstants.TriangleSize,
-            (float)Math.Sin(angle) * RenderConstants.TriangleSize);
+        triangle[0] =
+            trianPos
+            + new Vector2(
+                (float)Math.Cos(angle) * RenderConstants.TriangleSize,
+                (float)Math.Sin(angle) * RenderConstants.TriangleSize
+            );
 
         // Triangle base (two perpendicular vertices)
         float baseAngle1 = angle + (MathF.PI / 2); // 90 degrees to the right
         float baseAngle2 = angle - (MathF.PI / 2); // 90 degrees to the left
         float baseWidth = RenderConstants.TriangleSize * 0.5f;
 
-        triangle[1] = trianPos + new Vector2(
-            (float)Math.Cos(baseAngle1) * baseWidth,
-            (float)Math.Sin(baseAngle1) * baseWidth);
+        triangle[1] =
+            trianPos + new Vector2((float)Math.Cos(baseAngle1) * baseWidth, (float)Math.Sin(baseAngle1) * baseWidth);
 
-        triangle[2] = trianPos + new Vector2(
-            (float)Math.Cos(baseAngle2) * baseWidth,
-            (float)Math.Sin(baseAngle2) * baseWidth);
+        triangle[2] =
+            trianPos + new Vector2((float)Math.Cos(baseAngle2) * baseWidth, (float)Math.Sin(baseAngle2) * baseWidth);
 
         return (triangle, trianPos);
     }
+
     public void SaveTrail(List<Astro> astros, double timeStep)
     {
         foreach (Astro astro in astros)
@@ -106,18 +107,18 @@ public class RenderSystem
             int effectiveTrailLength = (int)(astro.DesiredTrailTime / timeStep);
 
             // Ensure a reasonable minimum
-            if (effectiveTrailLength < 10) effectiveTrailLength = 10;
+            if (effectiveTrailLength < 10)
+                effectiveTrailLength = 10;
 
             if (astro.Trail.Count > effectiveTrailLength)
             {
-                astro.Trail.Dequeue();
+                _ = astro.Trail.Dequeue();
             }
         }
     }
 
     private static void DrawTriangles(Vector2 screenPos, Camera camera, Astro astro)
     {
-
         (Vector2[], Vector2) triangle = GetTriangle(screenPos, camera.Center, camera.Width, camera.Height);
 
         // Draw the triangle (ensuring correct order)
@@ -169,11 +170,7 @@ public class RenderSystem
         Rlgl.End();
     }
 
-    private static void DrawAstro(
-        Astro astro,
-        Vector2 screenPos,
-        Camera camera,
-        int textAlign)
+    private static void DrawAstro(Astro astro, Vector2 screenPos, Camera camera, int textAlign)
     {
         float radio = (float)(astro.Radius / camera.RadiusScale);
 
@@ -188,12 +185,19 @@ public class RenderSystem
         }
 
         // Draw the trail only if there are two or more positions
-        if (astro.Trail.Count > 1) DrawTrail(astro, camera);
+        if (astro.Trail.Count > 1)
+            DrawTrail(astro, camera);
 
         Raylib.DrawCircleV(center: screenPos, radius: radio, color: astro.Color);
 
         // Optional: Draw the body's name near the triangle
-        Raylib.DrawText(astro.Name, (int)screenPos.X - textAlign, (int)screenPos.Y + textAlign, RenderConstants.BodyNameFontSize, astro.Color);
+        Raylib.DrawText(
+            astro.Name,
+            (int)screenPos.X - textAlign,
+            (int)screenPos.Y + textAlign,
+            RenderConstants.BodyNameFontSize,
+            astro.Color
+        );
     }
 
     private static void DrawRings(Astro selectedAstro, Camera camera)
@@ -217,10 +221,10 @@ public class RenderSystem
                     startAngle: 0,
                     endAngle: 360,
                     segments: 50,
-                    selectedAstro.RingColor.Value);
+                    selectedAstro.RingColor.Value
+                );
             }
         }
-
     }
 
     private static void DrawAsteroidBelt(Vector2 sunScreenPos, Camera camera, string keyName)
@@ -230,9 +234,25 @@ public class RenderSystem
         float asteroidBeltOuter = (float)(4.9e11 / camera.DistanceScale);
 
         // Only draw if the belt can be visible on screen
-        if (!(sunScreenPos.X + asteroidBeltOuter > 0) || !(sunScreenPos.X - asteroidBeltOuter < camera.Width) ||
-            !(sunScreenPos.Y + asteroidBeltOuter > 0) || !(sunScreenPos.Y - asteroidBeltOuter < camera.Height)) return;
-        Raylib.DrawRing(sunScreenPos, asteroidBeltInner, asteroidBeltOuter, 0, 360, RenderConstants.BeltRingSegments, RenderConstants.AsteroidBeltColor);
+        if (
+            !(sunScreenPos.X + asteroidBeltOuter > 0)
+            || !(sunScreenPos.X - asteroidBeltOuter < camera.Width)
+            || !(sunScreenPos.Y + asteroidBeltOuter > 0)
+            || !(sunScreenPos.Y - asteroidBeltOuter < camera.Height)
+        )
+        {
+            return;
+        }
+
+        Raylib.DrawRing(
+            sunScreenPos,
+            asteroidBeltInner,
+            asteroidBeltOuter,
+            0,
+            360,
+            RenderConstants.BeltRingSegments,
+            RenderConstants.AsteroidBeltColor
+        );
 
         // Draw small asteroids in the belt
         Random rnd = new Random(42); // Fixed seed so they always appear in the same place
@@ -245,8 +265,11 @@ public class RenderSystem
             float yAsteroid = sunScreenPos.Y + (float)(Math.Sin(angle) * asteroidRadius);
 
             // Only draw if inside the screen
-            if (!(xAsteroid >= 0) || !(xAsteroid <= camera.Width) || !(yAsteroid >= 0) ||
-                !(yAsteroid <= camera.Height)) continue;
+            if (!(xAsteroid >= 0) || !(xAsteroid <= camera.Width) || !(yAsteroid >= 0) || !(yAsteroid <= camera.Height))
+            {
+                continue;
+            }
+
             float size = 1.0f + ((float)rnd.NextDouble() * 1.5f);
             Raylib.DrawCircleV(new Vector2(xAsteroid, yAsteroid), size, RenderConstants.AsteroidColor);
         }
@@ -254,7 +277,13 @@ public class RenderSystem
         // Text: if zoomed out, outside the belt; otherwise, between the Sun and the ring
         float textRadius = keyName == "Space" ? asteroidBeltOuter * 2f : asteroidBeltInner * 0.9f;
         int textWidth = Raylib.MeasureText("Asteroid belt", 20);
-        Raylib.DrawText("Asteroid belt", (int)(sunScreenPos.X - ((float)textWidth / 2)), (int)(sunScreenPos.Y - textRadius), 20, new Color(139, 125, 107, 150));
+        Raylib.DrawText(
+            "Asteroid belt",
+            (int)(sunScreenPos.X - ((float)textWidth / 2)),
+            (int)(sunScreenPos.Y - textRadius),
+            20,
+            new Color(139, 125, 107, 150)
+        );
     }
 
     private static void DrawKuiperBelt(Vector2 sunPosScreen, Camera camera)
@@ -263,9 +292,25 @@ public class RenderSystem
         float kuiperBeltOuter = (float)(7.5e12 / camera.DistanceScale);
 
         // Only draw if the belt can be visible on screen
-        if (!(sunPosScreen.X + kuiperBeltOuter > 0) || !(sunPosScreen.X - kuiperBeltOuter < camera.Width) ||
-            !(sunPosScreen.Y + kuiperBeltOuter > 0) || !(sunPosScreen.Y - kuiperBeltOuter < camera.Height)) return;
-        Raylib.DrawRing(sunPosScreen, kuiperBeltInner, kuiperBeltOuter, 0, 360, RenderConstants.BeltRingSegments, RenderConstants.KuiperBeltColor);
+        if (
+            !(sunPosScreen.X + kuiperBeltOuter > 0)
+            || !(sunPosScreen.X - kuiperBeltOuter < camera.Width)
+            || !(sunPosScreen.Y + kuiperBeltOuter > 0)
+            || !(sunPosScreen.Y - kuiperBeltOuter < camera.Height)
+        )
+        {
+            return;
+        }
+
+        Raylib.DrawRing(
+            sunPosScreen,
+            kuiperBeltInner,
+            kuiperBeltOuter,
+            0,
+            360,
+            RenderConstants.BeltRingSegments,
+            RenderConstants.KuiperBeltColor
+        );
 
         // Draw small objects in the Kuiper belt
         Random rnd = new Random(123); // Different seed for different distribution
@@ -278,7 +323,8 @@ public class RenderSystem
             float yObjeto = sunPosScreen.Y + (float)(Math.Sin(angle) * objRadius);
 
             // Only draw if inside the screen
-            if (!(xObjeto >= 0) || !(xObjeto <= camera.Width) || !(yObjeto >= 0) || !(yObjeto <= camera.Height)) continue;
+            if (!(xObjeto >= 0) || !(xObjeto <= camera.Width) || !(yObjeto >= 0) || !(yObjeto <= camera.Height))
+                continue;
 
             float size = 1.0f + ((float)rnd.NextDouble() * 1.5f);
             Raylib.DrawCircleV(new Vector2(xObjeto, yObjeto), size, RenderConstants.KuiperObjectColor);
@@ -287,12 +333,17 @@ public class RenderSystem
         // Text inside the ring, between the Sun and the inner edge
         float textRadius = kuiperBeltInner * 0.9f; // 70% of the inner radius
         int textWidth = Raylib.MeasureText("Kuiper belt", 20);
-        Raylib.DrawText("Kuiper belt", (int)(sunPosScreen.X - ((float)textWidth / 2)), (int)(sunPosScreen.Y - textRadius), 20, new Color(100, 100, 120, 150));
+        Raylib.DrawText(
+            "Kuiper belt",
+            (int)(sunPosScreen.X - ((float)textWidth / 2)),
+            (int)(sunPosScreen.Y - textRadius),
+            20,
+            new Color(100, 100, 120, 150)
+        );
     }
 
     private static void DrawCross(float crossSide, Astro selectedAstro, Camera camera)
     {
-
         double distCamAstro = Vector2D.Distance(camera.Position, selectedAstro.RenderPosition);
         bool fixedObj = distCamAstro < 1e7;
 
@@ -307,20 +358,21 @@ public class RenderSystem
             float oscilacion = (float)Math.Sin(Raylib.GetTime() * RenderConstants.CrossPulseSpeed);
 
             // In the Draw function, when objBloqueado is true:
-            float expansion = (float)Math.Sin(Raylib.GetTime() * RenderConstants.CrossPulseSpeed) * RenderConstants.CrossExpansionAmplitude; // Oscillates +- 2 pixels
+            float expansion =
+                (float)Math.Sin(Raylib.GetTime() * RenderConstants.CrossPulseSpeed)
+                * RenderConstants.CrossExpansionAmplitude; // Oscillates +- 2 pixels
             float ladoFinal = crossSide + expansion;
 
             // 2. Convert range [-1, 1] to [0.2, 1.0] so it never fully disappears
             float factorOpacidad = (oscilacion * 0.4f) + 0.6f;
-
-
 
             // 3. Apply opacity to the body's original color
             colorCruz = new Color(
                 Color.DarkGray.R,
                 Color.DarkGray.G,
                 Color.DarkGray.B,
-                a: (byte)(factorOpacidad * 255));
+                a: (byte)(factorOpacidad * 255)
+            );
             Raylib.DrawLineV(center + new Vector2(ladoFinal, 0), center + new Vector2(-ladoFinal, 0), colorCruz);
             Raylib.DrawLineV(center + new Vector2(0, ladoFinal), center + new Vector2(0, -ladoFinal), colorCruz);
         }
@@ -379,22 +431,49 @@ public class RenderSystem
         Rlgl.End();
     }
 
-    private static void DrawInfoText(Camera camera)
+    private void DrawInfoText(Camera camera, List<Astro> astros, PhysicsEngineRk4 physicsEngine)
     {
         Raylib.DrawText(
             text: "N-Bodies Simulator | Press Escape (Esc) to exit ",
             posX: 10,
             posY: 10,
             fontSize: 20,
-            color: Color.White);
+            color: Color.White
+        );
         Raylib.DrawText(
             text: "Camera: 0 - Sun | 1 - Mercury | 2 - Venus | ··· | 8 - Neptune | Space: Full system view",
             posX: 10,
             posY: Raylib.GetRenderHeight() - 30,
             fontSize: 20,
-            color: Color.White);
+            color: Color.White
+        );
         Raylib.DrawText(
-            text: $"FPS {Raylib.GetFPS()}", posX: camera.Width - 200, posY: 30, fontSize: 20, color: Color.Green);
+            text: $"FPS {Raylib.GetFPS()}",
+            posX: camera.Width - 200,
+            posY: 30,
+            fontSize: 20,
+            color: Color.Green
+        );
+        if (_energyDiffAccumulator >= 60)
+        {
+            _diff = physicsEngine.CalculateEnergy(astros);
+            _energyDiffAccumulator = 0;
+        }
+        Raylib.DrawText(
+                text: $"EnergyDiff = {_diff._energyDiff:E3}",
+                posX: camera.Width - 300,
+                posY: 60,
+                fontSize: 20,
+                color: Color.White
+                );
+        Raylib.DrawText(
+                text: $"EnergyDiffRel = {_diff._energyDiffRel:E3}",
+                posX: camera.Width - 300,
+                posY: 90,
+                fontSize: 20,
+                color: Color.White
+                );
+        _energyDiffAccumulator++;
     }
 
     private static void DrawBodies(
@@ -404,7 +483,8 @@ public class RenderSystem
         string keyName,
         float sunRadiusAtScale,
         Vector2 sunPosScreen,
-        int textAlign)
+        int textAlign
+    )
     {
         foreach (Astro astro in astros)
         {
@@ -428,10 +508,8 @@ public class RenderSystem
             // 1. Check if the body is outside the screen limits
             // Create a rectangle with screen dimensions and check if the body collides with it
 
-            Rectangle screenBounds = new Rectangle(0, 0, camera.Width,
-                camera.Height);
-            bool enPantalla =
-                Raylib.CheckCollisionPointRec(screenPos, screenBounds);
+            Rectangle screenBounds = new Rectangle(0, 0, camera.Width, camera.Height);
+            bool enPantalla = Raylib.CheckCollisionPointRec(screenPos, screenBounds);
 
             if (!enPantalla)
             {
@@ -457,7 +535,7 @@ public class RenderSystem
 
     private static (float sunRadiusAtScale, Vector2 sunPosScreen) GetSun(List<Astro> astros, Camera camera)
     {
-        Astro sol = astros.First(a => a.Id == 0);
+        Astro sol = astros.First(static a => a.Id == 0);
 
         float sunRadiusAtScale = RenderSystem.GetSunRadius(sol, camera.RadiusScale);
 
@@ -474,7 +552,9 @@ public class RenderSystem
         float crossSideLength,
         int textAlign,
         StarList stars,
-        string keyName)
+        string keyName,
+        PhysicsEngineRk4 physicsEngine
+    )
     {
         Raylib.BeginDrawing();
         Raylib.ClearBackground(Color.Black);
@@ -483,7 +563,7 @@ public class RenderSystem
         DrawStars(camera, stars);
 
         // Draw Text info
-        DrawInfoText(camera);
+        DrawInfoText(camera, astros, physicsEngine);
 
         // Calculate sun radius and position in Screen before drawing objects
         (float sunRadiusAtScale, Vector2 sunPosScreen) = GetSun(astros, camera);
