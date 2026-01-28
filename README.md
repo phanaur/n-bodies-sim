@@ -20,6 +20,19 @@ NBodiesSim simulates the gravitational interactions between celestial bodies in 
 - **Energy Conservation Monitoring**: Real-time display of energy drift to verify simulation accuracy
 - **Cross-Platform**: Runs on Windows, Linux, and macOS
 
+## 🔥 Recent Performance Improvements
+
+### Trail Rendering Optimization (v1.1)
+- **Fixed critical bug**: Trail queues previously grew indefinitely, causing FPS degradation from 160→20 over time
+- **Memory efficiency**: Trails now properly maintain size limits (1.5-3 orbits worth of points)
+- **Stable performance**: 60 FPS maintained even after hours of simulation
+- **Visual quality**: Optimized trail lengths preserve ability to observe orbital perturbations and precession
+
+### Hybrid Physics System
+- **Fast satellites**: Phobos and Deimos use kinematic circular motion (MCU) for stable orbits with large timesteps
+- **Performance gain**: Mars view improved from 4 FPS → 60 FPS (15x improvement)
+- **Extensible**: System can handle any satellite with problematic orbital periods
+
 ## 🎮 Controls
 
 | Key | Action |
@@ -275,6 +288,21 @@ Current performance with 25+ celestial bodies:
 - **RK4 Subdivisions**: 100-300 per timestep (configurable per camera view)
 - **Energy Conservation**: Relative energy drift < 10⁻⁷ per frame (excellent for visualization purposes)
 - **Optimizations**: Kinematic satellites (Phobos, Deimos) bypass full N-body calculations, improving performance by 15x in Mars view
+
+## ⚠️ Known Issues
+
+### 1. Quaoar Orbital Instability
+- **Symptom**: Quaoar drifts out of Kuiper Belt orbit, then returns (incomplete orbit)
+- **Cause**: Large timestep (1 day) insufficient for weak solar gravity at 43 AU
+- **Workaround**: Under investigation - may require kinematic orbits or increased timestep subdivisions
+- **Impact**: Visual only, does not affect inner solar system
+
+### 2. Phobos Escape (Specific Hardware)
+- **Symptom**: Phobos escapes Mars orbit in some test cases despite using MCU
+- **Occurs**: Only on specific hardware configurations (Case 4: i3-12100F + GTX 1080)
+- **Expected**: MCU should guarantee perfect circular orbit
+- **Status**: Under investigation - possible theta overflow or rendering issue
+- **Workaround**: None currently, investigation ongoing
 
 ## 🧪 Testing
 
