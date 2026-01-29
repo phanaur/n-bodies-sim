@@ -1,5 +1,5 @@
-using NBodiesSim.Source.Data;
 using NBodiesSim.Source.Core;
+using NBodiesSim.Source.Data;
 using NBodiesSim.Source.Models;
 using NBodiesSim.Source.Systems;
 using Raylib_cs;
@@ -20,7 +20,6 @@ internal class Simulation
     private readonly Camera _camera = new Camera();
     private Astro? _selectedAstro;
 
-
     private readonly PhysicsEngineRk4 _physicsEngine;
     private readonly RenderSystem _renderSystem;
     private readonly DataLoader _dataLoader;
@@ -30,7 +29,8 @@ internal class Simulation
         PhysicsEngineRk4 physicsEngine,
         RenderSystem renderSystem,
         DataLoader dataLoader,
-        InputSystems inputSystems)
+        InputSystems inputSystems
+    )
     {
         _physicsEngine = physicsEngine;
         _renderSystem = renderSystem;
@@ -86,7 +86,6 @@ internal class Simulation
                 }
             }
 
-
             // Physics: Once per frame, independent of FPS
             accumulator += dt;
 
@@ -111,12 +110,16 @@ internal class Simulation
 
             foreach (Astro astro in _dataLoader.Astros)
             {
+                //if (astro.OmegaMedia.HasValue)
+                if (false)
+                {
+                    astro.RenderPosition = astro.Position;
+                    continue;
+                }
                 astro.RenderPosition = astro.PastPosition * (1 - alpha) + astro.Position * alpha;
             }
 
             _renderSystem.SaveTrail(astros, _timeStep);
-
-
 
             _camera.Update(dt, _selectedAstro.RenderPosition);
 
@@ -129,7 +132,8 @@ internal class Simulation
                 _textAlign,
                 _stars,
                 _keyName,
-                _physicsEngine);
+                _physicsEngine
+            );
         }
         Raylib.CloseWindow();
     }

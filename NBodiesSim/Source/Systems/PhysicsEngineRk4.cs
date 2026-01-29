@@ -3,7 +3,7 @@
  *
  * It consists of three four main calculation methods: CalculateK1, CalculateK2, CalculateK3 and CalculateK4. Each one
  * of them calculates the hypothetical velocity and acceleration of the bodies for fractions of a given time, dt:
- * 
+ *
  * - CalculateK1: Updates the astros acceleration parameters and returns the current values of velocity and position in t = 0
  * - CalculateK2: Calculates the acceleration and velocity of the bodies for t = dt / 2, using the results of K1
  * - CalculateK3: Calculates the acceleration and velocity of the bodies for t = dt / 2, using the results of K2
@@ -27,19 +27,18 @@
  * Subsequently, there is a method accessed by the simulation that encompasses the entire physics calculation. For that,
  * it calculates a weighted average of the results of K1, K2, K3 and K4 to update the position and velocity of the bodies.
  */
+using System.Threading.Tasks;
 using NBodiesSim.Source.Core;
 using NBodiesSim.Source.Models;
-using System.Threading.Tasks;
 
 namespace NBodiesSim.Source.Systems;
 
-
 internal class PhysicsEngineRk4
 {
-    private float _futureKinetic = 0;
-    private float _futurePotential = 0;
-    private float _energy = 0;
-    private float _futureEnergy = 0;
+    private float _futureKinetic;
+    private float _futurePotential;
+    private float _energy;
+    private float _futureEnergy;
 
     private static Vector2D[] CalcAccelerations(List<Astro> astros, Vector2D[] hypothPos)
     {
@@ -57,14 +56,15 @@ internal class PhysicsEngineRk4
             {
                 Vector2D rij = hypothPos[j] - hypothPos[i];
                 Vector2D acji = PhysicsConstants.G * (1 / rij.LengthSquared()) * Vector2D.Normalize(rij); // Does not include the other planet's mass
-                //lock (astros[i]) 
+                //lock (astros[i])
                 acc[i] += acji * astros[j].Mass;
-                //lock (astros[j]) 
+                //lock (astros[j])
                 acc[j] -= acji * astros[i].Mass;
             }
         }
         return acc;
     }
+
     private static (Vector2D[] acck1, Vector2D[] velk1) CalculateK1(List<Astro> astros, Vector2D[] initialPos)
     {
         Vector2D[] acck1 = CalcAccelerations(astros, initialPos);
@@ -72,13 +72,15 @@ internal class PhysicsEngineRk4
 
         return (acck1, velk1);
     }
+
     private static (Vector2D[] accK2, Vector2D[] velK2) CalculateK2(
         List<Astro> astros,
         double dt,
-        Vector2D[] velK1,  // position slopes of k1
-        Vector2D[] accK1,  // velocity slopes of k1
+        Vector2D[] velK1, // position slopes of k1
+        Vector2D[] accK1, // velocity slopes of k1
         Vector2D[] hypotheticalPos,
-        Vector2D[] hypotheticalVel)
+        Vector2D[] hypotheticalVel
+    )
     {
         // 1. Calculate hypothetical positions and velocities
 
@@ -95,13 +97,15 @@ internal class PhysicsEngineRk4
         // Return a copy to avoid array aliasing
         return (accK2, hypotheticalVel.ToArray());
     }
+
     private static (Vector2D[] accK3, Vector2D[] velK3) CalculateK3(
         List<Astro> astros,
         double dt,
-        Vector2D[] velK2,  // position slopes of k2
-        Vector2D[] accK2,  // velocity slopes of k2
+        Vector2D[] velK2, // position slopes of k2
+        Vector2D[] accK2, // velocity slopes of k2
         Vector2D[] hypotheticalPos,
-        Vector2D[] hypotheticalVel)
+        Vector2D[] hypotheticalVel
+    )
     {
         // 1. Calculate hypothetical positions and velocities
 
@@ -122,12 +126,12 @@ internal class PhysicsEngineRk4
     private static (Vector2D[] accK4, Vector2D[] velK4) CalculateK4(
         List<Astro> astros,
         double dt,
-        Vector2D[] velK3,  // position slopes of k3
-        Vector2D[] accK3,  // velocity slopes of k3
+        Vector2D[] velK3, // position slopes of k3
+        Vector2D[] accK3, // velocity slopes of k3
         Vector2D[] hypotheticalPos,
-        Vector2D[] hypotheticalVel)
+        Vector2D[] hypotheticalVel
+    )
     {
-
         // 1. Calculate hypothetical positions and velocities
 
         for (int i = 0; i < astros.Count; i++)
@@ -176,7 +180,8 @@ internal class PhysicsEngineRk4
         for (int i = 0; i < astros.Count; i++)
         {
             // Check if this body uses kinematic circular motion (MCU) instead of full N-body physics
-            if (astros[i].OmegaMedia.HasValue && astros[i].Theta.HasValue && astros[i].OrbitalRadius.HasValue && astros[i].ParentId.HasValue)
+            //if (astros[i].OmegaMedia.HasValue && astros[i].Theta.HasValue && astros[i].OrbitalRadius.HasValue && astros[i].ParentId.HasValue)
+            if (false)
             {
                 // Kinematic update: circular orbit around parent body
                 Astro parent = parentCache[i];
@@ -193,16 +198,11 @@ internal class PhysicsEngineRk4
                 double omega = astros[i].OmegaMedia!.Value;
 
                 // Position: parent position + circular orbit offset
-                astros[i].Position = parent.Position + new Vector2D(
-                    R * Math.Cos(theta),
-                    R * Math.Sin(theta)
-                );
+                astros[i].Position = parent.Position + new Vector2D(R * Math.Cos(theta), R * Math.Sin(theta));
 
                 // Velocity: parent velocity + tangential velocity (v = ω × R)
-                astros[i].Velocity = parent.Velocity + new Vector2D(
-                    -omega * R * Math.Sin(theta),
-                    omega * R * Math.Cos(theta)
-                );
+                astros[i].Velocity =
+                    parent.Velocity + new Vector2D(-omega * R * Math.Sin(theta), omega * R * Math.Cos(theta));
             }
             else
             {

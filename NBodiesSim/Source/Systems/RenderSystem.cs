@@ -13,7 +13,7 @@ namespace NBodiesSim.Source.Systems;
 
 internal class RenderSystem
 {
-    private int _energyDiffAccumulator = 0;
+    private int _energyDiffAccumulator;
     private (float _energyDiff, float _energyDiffRel) _diff = (0f, 0f);
     // Get the Sun's radius on screen (in pixels)
     private static float GetSunRadius(Astro sun, double radiusScale)
@@ -107,8 +107,8 @@ internal class RenderSystem
             int effectiveTrailLength = (int)(astro.DesiredTrailTime / timeStep);
 
             // Ensure a reasonable minimum
-            if (effectiveTrailLength < 10)
-                effectiveTrailLength = 10;
+            if (effectiveTrailLength < 1000)
+                effectiveTrailLength = 1000;
 
             // Remove ALL excess points, not just one per frame
             while (astro.Trail.Count > effectiveTrailLength)
@@ -171,7 +171,7 @@ internal class RenderSystem
         Rlgl.End();
     }
 
-    private static void DrawAstro(Astro astro, Vector2 screenPos, Camera camera, int textAlign)
+    public static void DrawAstro(Astro astro, Vector2 screenPos, Camera camera, int textAlign)
     {
         float radio = (float)(astro.Radius / camera.RadiusScale);
 
@@ -186,8 +186,7 @@ internal class RenderSystem
         }
 
         // Draw the trail only if there are two or more positions
-        if (astro.Trail.Count > 1)
-            DrawTrail(astro, camera);
+        if (astro.Trail.Count > 1) DrawTrail(astro, camera);
 
         Raylib.DrawCircleV(center: screenPos, radius: radio, color: astro.Color);
 
@@ -484,8 +483,7 @@ internal class RenderSystem
         string keyName,
         float sunRadiusAtScale,
         Vector2 sunPosScreen,
-        int textAlign
-    )
+        int textAlign)
     {
         foreach (Astro astro in astros)
         {
@@ -510,15 +508,15 @@ internal class RenderSystem
             // Create a rectangle with screen dimensions and check if the body collides with it
 
             Rectangle screenBounds = new Rectangle(0, 0, camera.Width, camera.Height);
-            bool enPantalla = Raylib.CheckCollisionPointRec(screenPos, screenBounds);
+            bool onScreen = Raylib.CheckCollisionPointRec(screenPos, screenBounds);
 
-            if (!enPantalla)
+            if (!onScreen)
             {
-                DrawTriangles(screenPos, camera, astro);
+                RenderSystem.DrawTriangles(screenPos, camera, astro);
             }
             else
             {
-                DrawAstro(astro, screenPos, camera, textAlign);
+                RenderSystem.DrawAstro(astro, screenPos, camera, textAlign);
             }
         }
     }
@@ -554,8 +552,7 @@ internal class RenderSystem
         int textAlign,
         StarList stars,
         string keyName,
-        PhysicsEngineRk4 physicsEngine
-    )
+        PhysicsEngineRk4 physicsEngine)
     {
         Raylib.BeginDrawing();
         Raylib.ClearBackground(Color.Black);

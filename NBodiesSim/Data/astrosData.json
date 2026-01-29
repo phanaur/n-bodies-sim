@@ -287,7 +287,7 @@
       "Mass": 8.32e19,
       "Radius": 2.17e5,
       "Color": [120, 110, 95, 255],
-      "Position": [0, -4.70e11],
+      "Position": [0, -4.7e11],
       "Velocity": [16780, 0],
       "DesiredTrailTime": 176515200
     },
@@ -319,7 +319,7 @@
       "Radius": 5.55e5,
       "Color": [180, 190, 200, 255],
       "Position": [6.44e12, 0],
-      "Velocity": [0, 5556],
+      "Velocity": [0, 4540],
       "DesiredTrailTime": 10918905651
     },
     {
