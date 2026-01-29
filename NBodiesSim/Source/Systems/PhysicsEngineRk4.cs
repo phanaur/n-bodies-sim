@@ -39,6 +39,7 @@ internal class PhysicsEngineRk4
     private float _futurePotential;
     private float _energy;
     private float _futureEnergy;
+    private float _initialEnergy;
 
     private static Vector2D[] CalcAccelerations(List<Astro> astros, Vector2D[] hypothPos)
     {
@@ -213,7 +214,7 @@ internal class PhysicsEngineRk4
         }
     }
 
-    public (float, float) CalculateEnergy(List<Astro> astros)
+    public (float, float, float) CalculateEnergy(List<Astro> astros)
     {
         _futureKinetic = 0;
         _futurePotential = 0;
@@ -235,12 +236,14 @@ internal class PhysicsEngineRk4
         if (_energy == 0)
         {
             _energy = _futureEnergy;
-            return (0f, 0f);
+            _initialEnergy = _futureEnergy;
+            return (0f, 0f, 0f);
         }
 
         float energyDiff = _futureEnergy - _energy;
         float energyDiffRel = energyDiff / _energy;
+        float accumulatedEnergDiff = (_futureEnergy - _initialEnergy) / _initialEnergy;
         _energy = _futureEnergy;
-        return (energyDiff, energyDiffRel);
+        return (energyDiff, energyDiffRel, accumulatedEnergDiff);
     }
 }

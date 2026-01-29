@@ -87,11 +87,12 @@ jobs:
           - Urano: 1 hora (3600s), n=300
           - Neptuno: 1 hora (3600s), n=300
 
-          OPTIMIZACIONES:
+          OPTIMIZACIONES (v1.2):
           - Trazas orbitales optimizadas: 1.5-3 órbitas según distancia
           - Bug crítico corregido: colas de trazas ahora se limpian correctamente
           - Rendimiento estable: 60 FPS incluso después de horas de simulación
-          - Satélites Fobos/Deimos: órbitas cinemáticas para estabilidad
+          - Posiciones de Fobos/Deimos corregidas: ahora orbitan correctamente con física N-body
+          - Monitor de error acumulado de energía para verificación de estabilidad a largo plazo
 
           ========================================
           EOF
@@ -172,27 +173,28 @@ jobs:
 
           - ✅ 8 planetas + Sol + objetos del Cinturón de Kuiper
           - ✅ 13+ satélites naturales (Luna, Galileanos, Titán, etc.)
-          - ✅ Sistema de física híbrido: N-body completo + órbitas cinemáticas para satélites rápidos
+          - ✅ Física gravitatoria N-cuerpos completa con Runge-Kutta 4 (RK4)
           - ✅ Anillos planetarios (Saturno, Urano, Neptuno)
           - ✅ Cinturón de asteroides y cinturón de Kuiper
           - ✅ Trazas orbitales optimizadas (1.5-3 órbitas) con gradiente de transparencia
-          - ✅ Física gravitatoria N-cuerpos con Runge-Kutta 4 (RK4)
           - ✅ Timesteps adaptativos según el cuerpo observado
-          - ✅ Monitor de conservación de energía en tiempo real (drift < 10⁻⁷)
+          - ✅ Monitor de conservación de energía con error acumulado en tiempo real
           - ✅ 10,000 estrellas de fondo generadas proceduralmente
           - ✅ Rendimiento optimizado: 60 FPS estables incluso después de horas
 
-          ## 🔥 Mejoras Recientes (v1.1)
+          ## 🔥 Mejoras Recientes (v1.2)
 
-          - **Bug crítico corregido**: Colas de trazas ahora se limpian correctamente (eliminaba solo 1 punto/frame)
+          - **Bug crítico corregido (v1.1)**: Colas de trazas ahora se limpian correctamente (eliminaba solo 1 punto/frame)
           - **Sin degradación de FPS**: Mantiene 60 FPS estables durante toda la sesión
           - **Trazas optimizadas**: 25-40% menos puntos sin perder capacidad de ver perturbaciones orbitales
-          - **Sistema híbrido**: Phobos/Deimos con MCU para estabilidad orbital perfecta
+          - **Satélites de Marte corregidos**: Posiciones de Fobos y Deimos corregidas (estaban 10x más cerca)
+          - **Órbitas estables**: Todos los cuerpos usan física N-body completa con timesteps optimizados
+          - **Monitoreo mejorado**: Error acumulado de energía para verificación de estabilidad a largo plazo
 
           ## ⚠️ Problemas Conocidos
 
-          - Quaoar puede derivar de su órbita en el Cinturón de Kuiper (timestep grande para distancia lejana)
-          - Fobos puede escapar en configuraciones específicas de hardware (bajo investigación)
+          - Quaoar puede mostrar deriva orbital leve en el Cinturón de Kuiper (timestep grande + gravedad solar débil a 43 AU)
+          - Impacto visual únicamente, sistema solar interior no afectado
 
           ## 📋 Requisitos
 

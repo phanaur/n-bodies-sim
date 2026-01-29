@@ -14,7 +14,8 @@ namespace NBodiesSim.Source.Systems;
 internal class RenderSystem
 {
     private int _energyDiffAccumulator;
-    private (float _energyDiff, float _energyDiffRel) _diff = (0f, 0f);
+    private (float _energyDiff, float _energyDiffRel, float _accumulatedenergyDiffRel) _diff = (0f, 0f, 0f);
+
     // Get the Sun's radius on screen (in pixels)
     private static float GetSunRadius(Astro sun, double radiusScale)
     {
@@ -186,7 +187,8 @@ internal class RenderSystem
         }
 
         // Draw the trail only if there are two or more positions
-        if (astro.Trail.Count > 1) DrawTrail(astro, camera);
+        if (astro.Trail.Count > 1)
+            DrawTrail(astro, camera);
 
         Raylib.DrawCircleV(center: screenPos, radius: radio, color: astro.Color);
 
@@ -454,25 +456,32 @@ internal class RenderSystem
             fontSize: 20,
             color: Color.Green
         );
-        if (_energyDiffAccumulator >= 60)
+        if (_energyDiffAccumulator >= Raylib.GetFPS())
         {
             _diff = physicsEngine.CalculateEnergy(astros);
             _energyDiffAccumulator = 0;
         }
         Raylib.DrawText(
-                text: $"EnergyDiff = {_diff._energyDiff:E3}",
-                posX: camera.Width - 300,
-                posY: 60,
-                fontSize: 20,
-                color: Color.White
-                );
+            text: $"EnergyDiff = {_diff._energyDiff:E3}",
+            posX: camera.Width - 300,
+            posY: 60,
+            fontSize: 20,
+            color: Color.White
+        );
         Raylib.DrawText(
-                text: $"EnergyDiffRel = {_diff._energyDiffRel:E3}",
-                posX: camera.Width - 300,
-                posY: 90,
-                fontSize: 20,
-                color: Color.White
-                );
+            text: $"EnergyDiffRel = {_diff._energyDiffRel:E3}",
+            posX: camera.Width - 300,
+            posY: 90,
+            fontSize: 20,
+            color: Color.White
+        );
+        Raylib.DrawText(
+            text: $"Accumulated EnergyDiffRel = {_diff._accumulatedenergyDiffRel:E3}",
+            posX: camera.Width - 450,
+            posY: 120,
+            fontSize: 20,
+            color: Color.White
+        );
         _energyDiffAccumulator++;
     }
 
@@ -483,7 +492,8 @@ internal class RenderSystem
         string keyName,
         float sunRadiusAtScale,
         Vector2 sunPosScreen,
-        int textAlign)
+        int textAlign
+    )
     {
         foreach (Astro astro in astros)
         {
@@ -552,7 +562,8 @@ internal class RenderSystem
         int textAlign,
         StarList stars,
         string keyName,
-        PhysicsEngineRk4 physicsEngine)
+        PhysicsEngineRk4 physicsEngine
+    )
     {
         Raylib.BeginDrawing();
         Raylib.ClearBackground(Color.Black);

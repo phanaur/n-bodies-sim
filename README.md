@@ -9,7 +9,7 @@ NBodiesSim simulates the gravitational interactions between celestial bodies in 
 ## ✨ Features
 
 - **Accurate Physics**: Implementation of the Runge-Kutta 4th order (RK4) method for precise orbital mechanics
-- **Hybrid Physics System**: Combines full N-body physics for planets with optimized kinematic orbits for fast-moving satellites
+- **Full N-body Simulation**: All celestial bodies interact gravitationally with each other
 - **Real Solar System Data**: Initial conditions based on actual planetary positions and velocities
 - **Multiple Camera Views**: Focus on any planet to see its satellites and rings
 - **Smooth Camera Transitions**: Interpolated camera movement between different viewpoints
@@ -17,7 +17,7 @@ NBodiesSim simulates the gravitational interactions between celestial bodies in 
 - **Planetary Rings**: Saturn, Uranus, and Neptune rendered with their characteristic rings
 - **10,000 Background Stars**: Procedurally generated starfield for immersion
 - **Frame-Rate Independent Physics**: Physics calculations run at fixed timestep regardless of rendering FPS
-- **Energy Conservation Monitoring**: Real-time display of energy drift to verify simulation accuracy
+- **Energy Conservation Monitoring**: Real-time display of energy drift and cumulative error to verify simulation accuracy
 - **Cross-Platform**: Runs on Windows, Linux, and macOS
 
 ## 🔥 Recent Performance Improvements
@@ -28,10 +28,11 @@ NBodiesSim simulates the gravitational interactions between celestial bodies in 
 - **Stable performance**: 60 FPS maintained even after hours of simulation
 - **Visual quality**: Optimized trail lengths preserve ability to observe orbital perturbations and precession
 
-### Hybrid Physics System
-- **Fast satellites**: Phobos and Deimos use kinematic circular motion (MCU) for stable orbits with large timesteps
-- **Performance gain**: Mars view improved from 4 FPS → 60 FPS (15x improvement)
-- **Extensible**: System can handle any satellite with problematic orbital periods
+### Mars Satellite Corrections (v1.2)
+- **Fixed position data**: Corrected Phobos and Deimos positions (were 10x too close to Mars)
+- **Accurate orbits**: Satellites now maintain stable orbits using full N-body physics
+- **Performance**: Mars view maintains 60 FPS with proper timestep subdivisions (TargetN=300)
+- **Energy monitoring**: Added cumulative energy error tracking for long-term stability verification
 
 ## 🎮 Controls
 
@@ -182,9 +183,6 @@ Defines properties for each celestial body:
 - `desiredTrailTime`: Trail duration in seconds
 - `hasRings`: Boolean for ring rendering
 - `parentId` (optional): For moons, ID of parent planet
-- `theta` (optional): Initial orbital angle in radians (for kinematic satellites)
-- `omegaMedia` (optional): Mean angular velocity in rad/s (for kinematic satellites)
-- `orbitalRadius` (optional): Mean orbital radius in meters (for kinematic satellites)
 
 ### Camera Configurations (`Data/astrosConfig.json`)
 
@@ -223,11 +221,11 @@ Defines camera behavior for each viewpoint:
 
 ### Key Components
 
-1. **PhysicsEngineRK4**: Implements hybrid physics engine
+1. **PhysicsEngineRK4**: Implements RK4 physics engine
    - `CalcAccelerations()`: Computes gravitational forces (O(n²))
    - `CalculateK1/K2/K3/K4()`: Four RK4 evaluation stages
-   - `UpdateRk4()`: Main physics update with kinematic orbit handling
-   - `CalculateEnergy()`: Monitors energy conservation (kinetic + potential)
+   - `UpdateRk4()`: Main physics update loop
+   - `CalculateEnergy()`: Monitors energy conservation with cumulative error tracking
 
 2. **RenderSystem**: Handles all visualization
    - Celestial bodies with clamped radii (2-40 pixels)
@@ -250,13 +248,12 @@ Defines camera behavior for each viewpoint:
 
 ### Optimizations
 
-- **Hybrid Physics System**: Fast-orbiting satellites (Phobos, Deimos) use kinematic circular motion (MCU) instead of full N-body calculations, maintaining perfect orbits without timestep limitations
-- **Parent Body Caching**: Satellite parent references cached per physics update, eliminating redundant lookups
 - **Array Reuse**: Temporary arrays (`hypotheticalPos`, `hypotheticalVel`) created once per timestep, not per K-evaluation
 - **Batch Rendering**: Stars and orbital trails rendered using Raylib's batching system for optimal GPU performance
 - **Spatial Culling**: Off-screen objects skipped during rendering
 - **Fixed Timestep**: Predictable physics regardless of hardware
-- **Adaptive Timesteps**: Different camera views use appropriate timesteps (1 day for outer planets, minutes for inner planets and satellites)
+- **Adaptive Timesteps**: Different camera views use appropriate timesteps (1 day for outer planets, hours/minutes for inner planets and satellites)
+- **Trail Memory Management**: Efficient queue-based trail system with automatic length limiting
 
 ### Precision
 
@@ -284,25 +281,18 @@ Planned features (as documented in `Program.cs`):
 
 Current performance with 25+ celestial bodies:
 - **FPS**: 60 (stable, vsync-limited across all views)
-- **Physics Complexity**: O(n²) for planets and slow satellites; O(1) for fast satellites using kinematic orbits
-- **RK4 Subdivisions**: 100-300 per timestep (configurable per camera view)
-- **Energy Conservation**: Relative energy drift < 10⁻⁷ per frame (excellent for visualization purposes)
-- **Optimizations**: Kinematic satellites (Phobos, Deimos) bypass full N-body calculations, improving performance by 15x in Mars view
+- **Physics Complexity**: O(n²) for all bodies (full N-body simulation)
+- **RK4 Subdivisions**: 300 per timestep (configurable per camera view)
+- **Energy Conservation**: Relative energy drift < 10⁻⁷ per frame; cumulative error monitored in real-time
+- **Long-term Stability**: Maintains stable performance after extended simulation runs
 
 ## ⚠️ Known Issues
 
-### 1. Quaoar Orbital Instability
-- **Symptom**: Quaoar drifts out of Kuiper Belt orbit, then returns (incomplete orbit)
-- **Cause**: Large timestep (1 day) insufficient for weak solar gravity at 43 AU
-- **Workaround**: Under investigation - may require kinematic orbits or increased timestep subdivisions
+### Quaoar Orbital Instability
+- **Symptom**: Quaoar may show slight orbital drift in Kuiper Belt
+- **Cause**: Large timestep (1 day) combined with weak solar gravity at 43 AU distance
 - **Impact**: Visual only, does not affect inner solar system
-
-### 2. Phobos Escape (Specific Hardware)
-- **Symptom**: Phobos escapes Mars orbit in some test cases despite using MCU
-- **Occurs**: Only on specific hardware configurations (Case 4: i3-12100F + GTX 1080)
-- **Expected**: MCU should guarantee perfect circular orbit
-- **Status**: Under investigation - possible theta overflow or rendering issue
-- **Workaround**: None currently, investigation ongoing
+- **Status**: Under observation during long-term simulation runs
 
 ## 🧪 Testing
 
