@@ -31,7 +31,7 @@ internal class RenderSystem
     }
 
     // Get the Sun's position on screen (in pixels)
-    private static Vector2 GetSunPositionScreen(Astro sun, Camera camera) => camera.WorldToScreen(sun.RenderPosition);
+    private static Vector2 GetSunPositionScreen(Astro sun, Camera camera) => camera.WorldToScreen(sun.Position);
 
     // Generate coordinates to position the triangle representing a planet that is not visible on screen.
     private static (Vector2[], Vector2) GetTriangle(Vector2 screenPos, Vector2 center, int width, int height)
@@ -102,7 +102,7 @@ internal class RenderSystem
         foreach (Astro astro in astros)
         {
             // Save the position in the trail
-            astro.Trail.Enqueue(astro.RenderPosition);
+            astro.Trail.Enqueue(astro.Position);
 
             // Calculate how many points we need based on the current timeStep
             int effectiveTrailLength = (int)(astro.DesiredTrailTime / timeStep);
@@ -207,7 +207,7 @@ internal class RenderSystem
         if (selectedAstro is { HasRings: true, RingColor: not null })
         {
             // posPantalla of the current body
-            Vector2 screenPos = camera.WorldToScreen(selectedAstro.RenderPosition);
+            Vector2 screenPos = camera.WorldToScreen(selectedAstro.Position);
 
             // Factor to make rings look proportionally correct
             double ringScale = camera.DistanceScale * 0.8;
@@ -346,7 +346,7 @@ internal class RenderSystem
 
     private static void DrawCross(float crossSide, Astro selectedAstro, Camera camera)
     {
-        double distCamAstro = Vector2D.Distance(camera.Position, selectedAstro.RenderPosition);
+        double distCamAstro = Vector2D.Distance(camera.Position, selectedAstro.Position);
         bool fixedObj = distCamAstro < 1e7;
 
         Color colorCruz;
@@ -503,7 +503,7 @@ internal class RenderSystem
                 continue;
             }
 
-            Vector2 screenPos = camera.WorldToScreen(astro.RenderPosition);
+            Vector2 screenPos = camera.WorldToScreen(astro.Position);
 
             // Calculate distance on screen from the Sun to the body (in pixels)
             float distFromSun = Vector2.Distance(sunPosScreen, screenPos);

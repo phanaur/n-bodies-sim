@@ -21,16 +21,16 @@ internal class DataLoader
     {
         try
         {
-            const string FilePath = "Data/astrosData.json";
+            const string filePath = "Data/astrosData.json";
 
             // Check if the file exists
-            if (!File.Exists(FilePath))
+            if (!File.Exists(filePath))
             {
-                throw new FileNotFoundException($"File not found: {FilePath}");
+                throw new FileNotFoundException($"File not found: {filePath}");
             }
 
             // Generate astros
-            string jsonAstroData = File.ReadAllText(FilePath);
+            string jsonAstroData = File.ReadAllText(filePath);
             WrapperAstroData? wrapperAstroData = JsonSerializer.Deserialize<WrapperAstroData>(jsonAstroData);
 
             // Check deserialization
@@ -72,9 +72,9 @@ internal class DataLoader
                 if (data.Color.Length != 4)
                     throw new Exception($"Los datos de color del cuerpo {data.Name} no son correctos: {data.Color}");
 
-                const int ColorLength = 4;
+                const int colorLength = 4;
 
-                for (int i = 0; i < ColorLength; i++)
+                for (int i = 0; i < colorLength; i++)
                 {
                     if (data.Color[i] is < 0 or > 255)
                     {
@@ -114,7 +114,7 @@ internal class DataLoader
                             $"Los datos de color de los anillos del cuerpo {data.Name} no son correctos: {data.RingColor}");
                     }
 
-                    for (int i = 0; i < ColorLength; i++)
+                    for (int i = 0; i < colorLength; i++)
                     {
                         if (data.RingColor[i] is < 0 or > 255)
                         {
@@ -136,8 +136,6 @@ internal class DataLoader
                     Radius = data.Radius,
                     Color = new Color(data.Color[0], data.Color[1], data.Color[2], data.Color[3]),
                     Position = new Vector2D(data.Position[0], data.Position[1]),
-                    PastPosition = new Vector2D(data.Position[0], data.Position[1]),
-                    RenderPosition = new Vector2D(data.Position[0], data.Position[1]),
                     Velocity = new Vector2D(data.Velocity[0], data.Velocity[1]),
                     Acceleration = Vector2D.Zero,
                     DesiredTrailTime = desiredTrailTime,

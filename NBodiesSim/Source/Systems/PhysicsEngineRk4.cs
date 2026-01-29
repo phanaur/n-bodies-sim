@@ -27,7 +27,6 @@
  * Subsequently, there is a method accessed by the simulation that encompasses the entire physics calculation. For that,
  * it calculates a weighted average of the results of K1, K2, K3 and K4 to update the position and velocity of the bodies.
  */
-using System.Threading.Tasks;
 using NBodiesSim.Source.Core;
 using NBodiesSim.Source.Models;
 
@@ -156,20 +155,6 @@ internal class PhysicsEngineRk4
         Vector2D[] hypotheticalPos = new Vector2D[astros.Count];
         Vector2D[] hypotheticalVel = new Vector2D[astros.Count];
 
-        // Pre-build parent cache for kinematic satellites (only once per UpdateRk4 call)
-        Dictionary<int, Astro> parentCache = new Dictionary<int, Astro>();
-        for (int i = 0; i < astros.Count; i++)
-        {
-            if (astros[i].OmegaMedia.HasValue && astros[i].ParentId.HasValue)
-            {
-                if (!parentCache.ContainsKey(i))
-                {
-                    Astro parent = astros.First(a => Math.Abs(a.Id - astros[i].ParentId!.Value) < 0.01);
-                    parentCache[i] = parent;
-                }
-            }
-        }
-
         (Vector2D[] accK1, Vector2D[] velK1) = CalculateK1(astros, initialPos);
 
         (Vector2D[] accK2, Vector2D[] velK2) = CalculateK2(astros, dt, velK1, accK1, hypotheticalPos, hypotheticalVel);
@@ -180,37 +165,9 @@ internal class PhysicsEngineRk4
 
         for (int i = 0; i < astros.Count; i++)
         {
-            // Check if this body uses kinematic circular motion (MCU) instead of full N-body physics
-            //if (astros[i].OmegaMedia.HasValue && astros[i].Theta.HasValue && astros[i].OrbitalRadius.HasValue && astros[i].ParentId.HasValue)
-            if (false)
-            {
-                // Kinematic update: circular orbit around parent body
-                Astro parent = parentCache[i];
-
-                // Update orbital angle: θ += ω × dt
-                astros[i].Theta = astros[i].Theta!.Value + astros[i].OmegaMedia!.Value * dt;
-
-                // Keep angle in [0, 2π] range to avoid numerical drift
-                while (astros[i].Theta > 2 * Math.PI)
-                    astros[i].Theta -= 2 * Math.PI;
-
-                double R = astros[i].OrbitalRadius!.Value;
-                double theta = astros[i].Theta!.Value;
-                double omega = astros[i].OmegaMedia!.Value;
-
-                // Position: parent position + circular orbit offset
-                astros[i].Position = parent.Position + new Vector2D(R * Math.Cos(theta), R * Math.Sin(theta));
-
-                // Velocity: parent velocity + tangential velocity (v = ω × R)
-                astros[i].Velocity =
-                    parent.Velocity + new Vector2D(-omega * R * Math.Sin(theta), omega * R * Math.Cos(theta));
-            }
-            else
-            {
-                // Standard RK4 update
-                astros[i].Velocity += (accK1[i] + 2 * accK2[i] + 2 * accK3[i] + accK4[i]) * dt / 6;
-                astros[i].Position += (velK1[i] + 2 * velK2[i] + 2 * velK3[i] + velK4[i]) * dt / 6;
-            }
+            // Standard RK4 update
+            astros[i].Velocity += (accK1[i] + 2 * accK2[i] + 2 * accK3[i] + accK4[i]) * dt / 6;
+            astros[i].Position += (velK1[i] + 2 * velK2[i] + 2 * velK3[i] + velK4[i]) * dt / 6;
         }
     }
 

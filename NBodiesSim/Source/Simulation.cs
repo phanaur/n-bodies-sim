@@ -8,133 +8,105 @@ namespace NBodiesSim.Source;
 
 internal class Simulation
 {
-    // Mercury visibility condition
-    private static string _keyName = "Null";
+  // Mercury visibility condition
+  private static string _keyName = "Null";
 
-    // 4. Initial configuration setup
-    private double _timeStep = 86400; // Each simulation frame represents one Earth day in real time.
-    private double _n = 300; // Number of calculations into which timeStep will be divided. Higher means better precision.
-    private int _textAlign = SimulationConstants.DefaultTextAlign;
+  // 4. Initial configuration setup
+  private double _timeStep = 86400; // Each simulation frame represents one Earth day in real time.
+  private double _n = 300; // Number of calculations into which timeStep will be divided. Higher means better precision.
+  private int _textAlign = SimulationConstants.DefaultTextAlign;
 
-    private readonly StarList _stars = new StarList();
-    private readonly Camera _camera = new Camera();
-    private Astro? _selectedAstro;
+  private readonly StarList _stars = new StarList();
+  private readonly Camera _camera = new Camera();
+  private Astro? _selectedAstro;
 
-    private readonly PhysicsEngineRk4 _physicsEngine;
-    private readonly RenderSystem _renderSystem;
-    private readonly DataLoader _dataLoader;
-    private readonly InputSystems _inputSystems;
+  private readonly PhysicsEngineRk4 _physicsEngine;
+  private readonly RenderSystem _renderSystem;
+  private readonly DataLoader _dataLoader;
+  private readonly InputSystems _inputSystems;
 
-    public Simulation(
-        PhysicsEngineRk4 physicsEngine,
-        RenderSystem renderSystem,
-        DataLoader dataLoader,
-        InputSystems inputSystems
-    )
+  public Simulation(
+      PhysicsEngineRk4 physicsEngine,
+      RenderSystem renderSystem,
+      DataLoader dataLoader,
+      InputSystems inputSystems
+  )
+  {
+    _physicsEngine = physicsEngine;
+    _renderSystem = renderSystem;
+    _dataLoader = dataLoader;
+    _inputSystems = inputSystems;
+
+    // 1. Create the Raylib window
+    Raylib.SetConfigFlags(ConfigFlags.FullscreenMode | ConfigFlags.Msaa4xHint);
+    Raylib.InitWindow(_camera.Width, _camera.Height, "N-Bodies Simulator");
+    Raylib.SetTargetFPS(Raylib.GetMonitorRefreshRate(0));
+
+    // Generate initial stars (only once)
+    _stars.GenerateStars();
+  }
+
+  public void Run()
+  {
+    List<Astro> astros = _dataLoader.Astros;
+    _selectedAstro = astros.First(a => (a.Id - _camera.TargetId) == 0);
+
+    // Variables for the independent physics calculations
+    double accumulator = 0;
+
+    // Warm-up: run physics once to initialize PastPosition
+    _physicsEngine.UpdateRk4(astros, _timeStep / _n);
+
+    // 5. Main loop
+    while (!Raylib.WindowShouldClose())
     {
-        _physicsEngine = physicsEngine;
-        _renderSystem = renderSystem;
-        _dataLoader = dataLoader;
-        _inputSystems = inputSystems;
+      double dt = Raylib.GetFrameTime();
+      var newConfig = _inputSystems.ProcessInput();
+      if (newConfig != null)
+      {
+        _camera.TargetId = newConfig.Value.Id;
+        _camera.TargetDistanceScale = newConfig.Value.TargetDistanceScale;
+        _camera.TargetRadiusScale = newConfig.Value.TargetRadiusScale;
+        _timeStep = newConfig.Value.TargetTimeStep;
+        _n = newConfig.Value.TargetN;
+        _camera.ResetLerp();
+        _textAlign = newConfig.Value.TextAlign;
+        _keyName = newConfig.Value.KeyName;
 
-        // 1. Create the Raylib window
-        Raylib.SetConfigFlags(ConfigFlags.FullscreenMode | ConfigFlags.Msaa4xHint);
-        Raylib.InitWindow(_camera.Width, _camera.Height, "N-Bodies Simulator");
-        Raylib.SetTargetFPS(Raylib.GetMonitorRefreshRate(0));
-
-        // Generate initial stars (only once)
-        _stars.GenerateStars();
-    }
-
-    public void Run()
-    {
-        List<Astro> astros = _dataLoader.Astros;
+        // Update the current astro only when the target changes
         _selectedAstro = astros.First(a => (a.Id - _camera.TargetId) == 0);
+      }
 
-        // Variables for the independent physics calculations
-        double accumulator = 0;
-        double alpha = 0;
+      // Physics: Once per frame, independent of FPS
+      accumulator += dt;
 
-        // Warm-up: run physics once to initialize PastPosition
-        foreach (Astro astro in astros)
+      while (accumulator >= SimulationConstants.FixedDt)
+      {
+        for (int i = 0; i < _n; i++)
         {
-            astro.PastPosition = astro.Position;
+          //_physicsEngine.UpdatePhysics(_dataLoader.Astros, _targetTimeStep / _n);
+          _physicsEngine.UpdateRk4(_dataLoader.Astros, _timeStep / _n);
         }
-        _physicsEngine.UpdateRk4(astros, _timeStep / _n);
 
-        // 5. Main loop
-        while (!Raylib.WindowShouldClose())
-        {
-            double dt = Raylib.GetFrameTime();
-            var newConfig = _inputSystems.ProcessInput();
-            if (newConfig != null)
-            {
-                _camera.TargetId = newConfig.Value.Id;
-                _camera.TargetDistanceScale = newConfig.Value.TargetDistanceScale;
-                _camera.TargetRadiusScale = newConfig.Value.TargetRadiusScale;
-                _timeStep = newConfig.Value.TargetTimeStep;
-                _n = newConfig.Value.TargetN;
-                _camera.ResetLerp();
-                _textAlign = newConfig.Value.TextAlign;
-                _keyName = newConfig.Value.KeyName;
+        accumulator -= SimulationConstants.FixedDt;
+      }
 
-                // Update the current astro only when the target changes
-                _selectedAstro = astros.First(a => (a.Id - _camera.TargetId) == 0);
-                foreach (Astro astro in _dataLoader.Astros)
-                {
-                    astro.RenderPosition = astro.PastPosition * (1 - alpha) + astro.Position * alpha;
-                }
-            }
+      _renderSystem.SaveTrail(astros, _timeStep);
 
-            // Physics: Once per frame, independent of FPS
-            accumulator += dt;
+      _camera.Update(dt, _selectedAstro.Position);
 
-            while (accumulator >= SimulationConstants.FixedDt)
-            {
-                // Save previous positions
-                foreach (Astro astro in _dataLoader.Astros)
-                {
-                    astro.PastPosition = astro.Position;
-                }
-
-                for (int i = 0; i < _n; i++)
-                {
-                    //_physicsEngine.UpdatePhysics(_dataLoader.Astros, _targetTimeStep / _n);
-                    _physicsEngine.UpdateRk4(_dataLoader.Astros, _timeStep / _n);
-                }
-
-                accumulator -= SimulationConstants.FixedDt;
-            }
-
-            alpha = accumulator / SimulationConstants.FixedDt;
-
-            foreach (Astro astro in _dataLoader.Astros)
-            {
-                //if (astro.OmegaMedia.HasValue)
-                if (false)
-                {
-                    astro.RenderPosition = astro.Position;
-                    continue;
-                }
-                astro.RenderPosition = astro.PastPosition * (1 - alpha) + astro.Position * alpha;
-            }
-
-            _renderSystem.SaveTrail(astros, _timeStep);
-
-            _camera.Update(dt, _selectedAstro.RenderPosition);
-
-            // Draw frame
-            _renderSystem.Draw(
-                astros,
-                _camera,
-                _selectedAstro,
-                SimulationConstants.CrossSideLength,
-                _textAlign,
-                _stars,
-                _keyName,
-                _physicsEngine
-            );
-        }
-        Raylib.CloseWindow();
+      // Draw frame
+      _renderSystem.Draw(
+          astros,
+          _camera,
+          _selectedAstro,
+          SimulationConstants.CrossSideLength,
+          _textAlign,
+          _stars,
+          _keyName,
+          _physicsEngine
+      );
     }
+    Raylib.CloseWindow();
+  }
 }

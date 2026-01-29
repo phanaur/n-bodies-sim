@@ -24,16 +24,16 @@ internal class ConfigLoader
     {
         try
         {
-            const string FilePath = "Data/astrosConfig.json";
+            const string filePath = "Data/astrosConfig.json";
 
             // Check if the file exists
-            if (!File.Exists(FilePath))
+            if (!File.Exists(filePath))
             {
-                throw new FileNotFoundException($"File not found: {FilePath}");
+                throw new FileNotFoundException($"File not found: {filePath}");
             }
 
             // Attempt to load from a JSON file
-            string jsonAstroConfig = File.ReadAllText(FilePath);
+            string jsonAstroConfig = File.ReadAllText(filePath);
 
             WrapperAstroConfig? wrapperAstrosConfig =
                 JsonSerializer.Deserialize<WrapperAstroConfig>(jsonAstroConfig, JsonOptions);
