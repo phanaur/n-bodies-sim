@@ -24,11 +24,11 @@ internal class Simulation
   private readonly RenderSystem _renderSystem;
   private readonly DataLoader _dataLoader;
   private readonly InputSystems _inputSystems;
-  private readonly SimulationLogger _logger;
+  //private readonly SimulationLogger _logger;
 
   //Variables for loggin when necessary
   private double _simulatedTime;
-  private double _lastLogTime;
+  //private double _lastLogTime;
   //private const double LogInterval = 360;
   private (double, double, double, double) _lastEnergyCalc = (0, 0, 0, 0);
 
