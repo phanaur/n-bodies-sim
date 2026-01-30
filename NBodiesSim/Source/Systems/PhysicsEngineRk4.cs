@@ -34,11 +34,11 @@ namespace NBodiesSim.Source.Systems;
 
 internal class PhysicsEngineRk4
 {
-    private float _futureKinetic;
-    private float _futurePotential;
-    private float _energy;
-    private float _futureEnergy;
-    private float _initialEnergy;
+    private double _futureKinetic;
+    private double _futurePotential;
+    private double _energy;
+    private double _futureEnergy;
+    private double _initialEnergy;
 
     private static Vector2D[] CalcAccelerations(List<Astro> astros, Vector2D[] hypothPos)
     {
@@ -171,7 +171,7 @@ internal class PhysicsEngineRk4
         }
     }
 
-    public (float, float, float) CalculateEnergy(List<Astro> astros)
+    public (double, double, double, double) CalculateEnergy(List<Astro> astros)
     {
         _futureKinetic = 0;
         _futurePotential = 0;
@@ -194,13 +194,13 @@ internal class PhysicsEngineRk4
         {
             _energy = _futureEnergy;
             _initialEnergy = _futureEnergy;
-            return (0f, 0f, 0f);
+            return (0f, 0f, 0f, 0f);
         }
 
-        float energyDiff = _futureEnergy - _energy;
-        float energyDiffRel = energyDiff / _energy;
-        float accumulatedEnergDiff = (_futureEnergy - _initialEnergy) / _initialEnergy;
+        double energyDiff = _futureEnergy - _energy;
+        double energyDiffRel = energyDiff / _energy;
+        double accumulatedEnergDiff = (_futureEnergy - _initialEnergy) / _initialEnergy;
         _energy = _futureEnergy;
-        return (energyDiff, energyDiffRel, accumulatedEnergDiff);
+        return (_energy, energyDiff, energyDiffRel, accumulatedEnergDiff);
     }
 }

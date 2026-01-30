@@ -7,7 +7,7 @@
       "Id": 0,
       "TargetDistanceScale": 1e9,
       "TargetRadiusScale": 1e6,
-      "TargetTimeStep": 86400,
+      "TargetTimeStep": 43200,
       "TargetN": 300,
       "InitialLerpSpeed": 0.08,
       "TextAlign": 40
@@ -19,7 +19,7 @@
       "Id": 0,
       "TargetDistanceScale": 1.5e10,
       "TargetRadiusScale": 8e7,
-      "TargetTimeStep": 86400,
+      "TargetTimeStep": 43200,
       "TargetN": 300,
       "InitialLerpSpeed": 0.08,
       "TextAlign": 20
@@ -31,7 +31,7 @@
       "Id": 0,
       "TargetDistanceScale": 1e9,
       "TargetRadiusScale": 1e6,
-      "TargetTimeStep": 86400,
+      "TargetTimeStep": 43200,
       "TargetN": 300,
       "InitialLerpSpeed": 0.08,
       "TextAlign": 40

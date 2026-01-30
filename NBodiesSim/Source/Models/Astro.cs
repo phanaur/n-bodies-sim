@@ -9,7 +9,7 @@ using NBodiesSim.Source.Core;
 
 namespace NBodiesSim.Source.Models;
 
-internal class Astro
+public class Astro
 {
     // Fixed variables
     public required string Name { get; init; }

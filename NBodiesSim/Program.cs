@@ -34,14 +34,18 @@ internal static class Program
         RenderSystem render = new RenderSystem();
         DataLoader data = new DataLoader();
         ConfigLoader config = new ConfigLoader();
+
+        // SimulationLogger
+        //SimulationLogger logger = new SimulationLogger(data.Astros);
         
         // 2. Create the InputSystem, which depends on the configuration
         InputSystems input = new InputSystems(config.CameraConf);
         
         // 3. Create the simulation, passing all systems
-        Simulation sim = new Simulation(physics, render, data, input);
+        Simulation sim = new Simulation(physics, render, data, input); //logger);
         
         // 4. Run the simulation
+        sim.Initialize();
         sim.Run();
     }
 }

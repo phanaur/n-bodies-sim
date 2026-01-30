@@ -14,7 +14,8 @@ namespace NBodiesSim.Source.Systems;
 internal class RenderSystem
 {
     private int _energyDiffAccumulator;
-    private (float _energyDiff, float _energyDiffRel, float _accumulatedenergyDiffRel) _diff = (0f, 0f, 0f);
+    private (double _energy, double _energyDiff, double _energyDiffRel, double _accumulatedEnergyDiffRel) _diff = (0f, 0f, 0f, 0f);
+    private double _timePassed;
 
     // Get the Sun's radius on screen (in pixels)
     private static float GetSunRadius(Astro sun, double radiusScale)
@@ -433,12 +434,19 @@ internal class RenderSystem
         Rlgl.End();
     }
 
-    private void DrawInfoText(Camera camera, List<Astro> astros, PhysicsEngineRk4 physicsEngine)
+    private void DrawInfoText(Camera camera, (double, double, double, double) lastEnergyCalc, double simulatedTime)
     {
         Raylib.DrawText(
             text: "N-Bodies Simulator | Press Escape (Esc) to exit ",
             posX: 10,
             posY: 10,
+            fontSize: 20,
+            color: Color.White
+        );
+        Raylib.DrawText(
+            text: $"Simulated time: {_timePassed:F3} years",
+            posX: 10,
+            posY: 40,
             fontSize: 20,
             color: Color.White
         );
@@ -458,27 +466,35 @@ internal class RenderSystem
         );
         if (_energyDiffAccumulator >= Raylib.GetFPS())
         {
-            _diff = physicsEngine.CalculateEnergy(astros);
+            _timePassed = simulatedTime / PhysicsConstants.TerrestialYear;
+            _diff = lastEnergyCalc;
             _energyDiffAccumulator = 0;
         }
         Raylib.DrawText(
-            text: $"EnergyDiff = {_diff._energyDiff:E3}",
+            text: $"Energy = {_diff._energy:E3}",
             posX: camera.Width - 300,
             posY: 60,
             fontSize: 20,
             color: Color.White
         );
         Raylib.DrawText(
-            text: $"EnergyDiffRel = {_diff._energyDiffRel:E3}",
+            text: $"EnergyDiff = {_diff._energyDiff:E3}",
             posX: camera.Width - 300,
             posY: 90,
             fontSize: 20,
             color: Color.White
         );
         Raylib.DrawText(
-            text: $"Accumulated EnergyDiffRel = {_diff._accumulatedenergyDiffRel:E3}",
-            posX: camera.Width - 450,
+            text: $"EnergyDiffRel = {_diff._energyDiffRel:E3}",
+            posX: camera.Width - 300,
             posY: 120,
+            fontSize: 20,
+            color: Color.White
+        );
+        Raylib.DrawText(
+            text: $"Accumulated EnergyDiffRel = {_diff._accumulatedEnergyDiffRel:E3}",
+            posX: camera.Width - 450,
+            posY: 150,
             fontSize: 20,
             color: Color.White
         );
@@ -562,7 +578,9 @@ internal class RenderSystem
         int textAlign,
         StarList stars,
         string keyName,
-        PhysicsEngineRk4 physicsEngine
+        PhysicsEngineRk4 physicsEngine,
+        (double, double, double, double) lastEnergyCalc,
+        double simulatedTime
     )
     {
         Raylib.BeginDrawing();
@@ -572,7 +590,7 @@ internal class RenderSystem
         DrawStars(camera, stars);
 
         // Draw Text info
-        DrawInfoText(camera, astros, physicsEngine);
+        DrawInfoText(camera, lastEnergyCalc, simulatedTime);
 
         // Calculate sun radius and position in Screen before drawing objects
         (float sunRadiusAtScale, Vector2 sunPosScreen) = GetSun(astros, camera);
